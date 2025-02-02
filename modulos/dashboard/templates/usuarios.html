@@ -1,0 +1,231 @@
+{% extends "base_dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+	<div class="page-wrapper">
+<!-- Page header -->
+<div class="page-header d-print-none">
+	<div class="container-xl">
+		<div class="row g-2 align-items-center">
+			<div class="col">
+				<h2 class="page-title">
+					Datatables
+				</h2>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% if messages %}
+  <div class="mt-3">
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+		<!-- Page body -->
+		<div class="page-body">
+			<div class="container-xl">
+				<div class="d-flex justify-content-between">
+					<select id="filtroRol" class="form-select w-25">
+						<option value="">Todos</option>
+						<option value="estudiante">Estudiantes</option>
+						<option value="psicologo">Psicólogos</option>
+						<option value="administrativo">Administrativos</option>
+					</select>
+	
+					
+					<a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modal-usuario">
+						Crear usuario +
+					</a>
+					
+					{% include 'formularios/crear_usuario.html' %}
+					
+					
+
+
+					
+
+
+				</div>
+			
+				
+				
+<div class="card mt-2">
+	<div class="card-body p-0">
+		
+
+		
+		<div id="table-default" class="table-responsive">
+			
+			<table id="usuariosTable" class="display">
+				<thead>
+					<tr>
+						<th>Usuario</th>
+						<th>Identificación</th>  <!-- Columna combinada -->
+						<th>Nombre</th>
+						<th>Apellido</th>
+						<th>Rol</th>
+						<th>Email</th>
+						<th>Imagen</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for usuario in usuarios %}
+					<tr>
+						<td>{{ usuario.username }}</td>
+						<td>
+							{% if usuario.tipo_identificacion %}
+								{{ usuario.get_tipo_identificacion_display }}: {{ usuario.identificacion }}
+							{% else %}
+								{{ usuario.identificacion }}  <!-- Para roles que no tienen tipo_identificacion -->
+							{% endif %}
+						</td>
+						<td>{{ usuario.first_name }}</td>
+						<td>{{ usuario.last_name }}</td>
+						<td>{{ usuario.get_rol_display }}</td>
+						<td>{{ usuario.email }}</td>
+						<td>
+							{% if usuario.imagen %}
+							<img src="{{ usuario.imagen.url }}" alt="Imagen de {{ usuario.username }}" width="50" height="50">
+						{% else %}
+							No disponible
+						{% endif %}
+						</td>
+						
+						<td>
+							<a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+							data-bs-target="#modal-usuario{{ usuario.id }}" data-usuario-id="{{ usuario.id }}">
+							Editar
+						 </a>
+
+							{% include 'formularios/editar_usuario.html' %}
+
+							
+							<a href="" class="btn btn-danger btn-sm">Eliminar</a>
+							
+
+						
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+		<footer class="footer footer-transparent d-print-none">
+	<div class="container-xl">
+		<div class="row text-center align-items-center flex-row-reverse">
+			<div class="col-lg-auto ms-lg-auto">
+				<ul class="list-inline list-inline-dots mb-0">
+					<li class="list-inline-item"><a href="https://tabler.io/docs" target="_blank" class="link-secondary" rel="noopener">Documentation</a></li>
+					<li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
+					<li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary" rel="noopener">Source code</a></li>
+					<li class="list-inline-item">
+						<a href="https://github.com/sponsors/codecalm" target="_blank" class="link-secondary" rel="noopener">
+	<!-- Download SVG icon from http://tabler.io/icons/icon/heart -->
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon text-pink icon-inline icon-4"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
+							Sponsor
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="col-12 col-lg-auto mt-3 mt-lg-0">
+				<ul class="list-inline list-inline-dots mb-0">
+					<li class="list-inline-item">
+						Copyright &copy; 2025
+						<a href="." class="link-secondary">Tabler</a>.
+						All rights reserved.
+					</li>
+					<li class="list-inline-item">
+						<a href="./changelog.html" class="link-secondary" rel="noopener">
+							v1.0.0
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+	</div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar DataTables
+        const table = new DataTable('#usuariosTable', {
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+            },
+            columnDefs: [
+                { orderable: false, targets: [7] } // Deshabilitar ordenamiento en la columna de acciones
+            ]
+        });
+
+        // Manejar el filtrado por rol
+        const filtroRol = document.getElementById('filtroRol');
+        filtroRol.addEventListener('change', function () {
+            const rol = this.value;
+            table.column(4).search(rol).draw(); // Filtrar por la columna de rol (índice 4)
+        });
+
+
+		//formulario:
+
+		
+	const form = document.querySelector('#form-crear-usuario');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();  // Evitar el comportamiento por defecto
+
+      // Recargar la página para enviar el formulario
+      window.location.href = "{% url 'usuarios' %}";
+    });
+
+
+	const modalUsuario = document.getElementById('modal-usuario');
+    const formUsuario = document.getElementById('form-usuario');
+    const modalTitulo = document.getElementById('modal-usuario-titulo');
+
+    // Seleccionar todos los botones de editar
+    const botonesEditar = document.querySelectorAll('.btn-warning');
+
+    botonesEditar.forEach(boton => {
+        boton.addEventListener('click', function() {
+            const usuarioId = this.getAttribute('data-usuario-id');
+
+            // Actualizar la acción del formulario
+            formUsuario.action = `/crear_editar_usuario/${usuarioId}/`;
+
+            // Cambiar el título del modal
+            modalTitulo.textContent = 'Editar usuario';
+        });
+    });
+
+    // Restablecer el modal cuando se cierre
+    modalUsuario.addEventListener('hidden.bs.modal', function() {
+        formUsuario.action = "{% url 'crear_editar_usuario' %}";  // Restablecer la acción del formulario
+        modalTitulo.textContent = 'Crear usuario';  // Restablecer el título del modal
+    });
+
+    });
+</script>
+	<!-- Libs JS -->
+
+</body>
+{% endblock %}
+
+</html>

@@ -1,0 +1,24 @@
+{% load crispy_forms_tags %}
+<div class="modal modal-blur fade" id="{{ usuario.id }}-modal-usuario" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-usuario-titulo">Editar usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'editar_usuario' usuario_id=usuario.id %}" enctype="multipart/form-data" id="form-usuario">
+
+
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary ms-auto">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
