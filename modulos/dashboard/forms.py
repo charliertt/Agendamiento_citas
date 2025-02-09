@@ -1,0 +1,124 @@
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas
+from django.core.exceptions import ObjectDoesNotExist
+
+class UsuarioPersonalizadoCreationForm(UserCreationForm):
+    especializacion = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control campo-psicologo hidden'})
+    )
+
+    class Meta:
+        model = UsuarioPersonalizado
+        fields = [
+            'username', 'first_name', 'last_name', 'email',
+            'tipo_identificacion', 'identificacion', 'rol',
+            'imagen', 'especializacion', 'eps', 'alergias',
+            'enfermedades'
+        ]
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'tipo_identificacion': forms.Select(attrs={'class': 'form-control'}),
+            'identificacion': forms.TextInput(attrs={'class': 'form-control'}),
+            'rol': forms.Select(attrs={'class': 'form-control', 'id': 'id_rol'}),
+            'imagen': forms.FileInput(attrs={'class': 'form-control'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'eps': forms.TextInput(attrs={'class': 'form-control'}),
+            'alergias': forms.TextInput(attrs={'class': 'form-control'}),
+            'enfermedades': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()  # Guardar primero el usuario
+            
+            # Crear Psicologo solo si el rol es correcto
+            if user.rol == 'psicologo':
+                Psicologo.objects.create(
+                    usuario=user,
+                    especializacion=self.cleaned_data['especializacion']
+                )
+            
+        return user
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        rol = cleaned_data.get('rol')
+        especializacion = cleaned_data.get('especializacion')
+
+        if rol == 'psicologo' and not especializacion:
+            self.add_error('especializacion', 'Este campo es requerido para psicólogos')
+        elif rol != 'psicologo':
+            cleaned_data['especializacion'] = None  # Limpiar campo si no aplica
+
+        return cleaned_data
+
+
+class UsuarioPersonalizadoEditForm(forms.ModelForm):
+    especializacion = forms.CharField(required=False)
+
+    class Meta:
+        model = UsuarioPersonalizado
+        fields = [
+            'username', 'first_name', 'last_name', 'email',
+            'tipo_identificacion', 'identificacion',
+            'eps', 'alergias', 'enfermedades',  
+            'imagen', 'rol', 'especializacion',
+        ]
+        # ... widgets y demás código ...
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Verificar si existe psicólogo sin usar la relación inversa
+        if self.instance.pk:
+            psicologo = Psicologo.objects.filter(usuario=self.instance).first()
+            self.fields['especializacion'].initial = psicologo.especializacion if psicologo else ''
+
+    def clean(self):
+        cleaned_data = super().clean()
+        rol = cleaned_data.get('rol')
+        especializacion = cleaned_data.get('especializacion')
+        
+        if rol == 'psicologo' and not especializacion:
+            self.add_error('especializacion', 'Requerido para psicólogos')
+        
+        return cleaned_data
+
+    
+
+    
+class HorarioForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+    
+        self.is_edit = kwargs.pop('is_edit', False)
+        super().__init__(*args, **kwargs)
+        
+        
+    
+    class Meta:
+        model = Horario
+        fields = ['psicologo', 'dia_semana', 'hora_inicio', 'hora_fin', 'disponible']
+        widgets = {
+            'psicologo': forms.Select(attrs={'class': 'form-control'}),
+            'dia_semana': forms.Select(attrs={'class': 'form-control'}),
+            'hora_inicio': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'hora_fin': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'disponible': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        }
+
+    
+class PreguntasForm(forms.ModelForm):
+    class Meta:
+        model = Preguntas
+        fields = ['categoria', 'pregunta', 'respuesta']
+        widgets = {
+            'categoria': forms.Select(attrs={'class': 'form-control'}),
+            'pregunta': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Pregunta'}),
+            'respuesta': forms.NullBooleanSelect(attrs={'class': 'form-control'})
+        }
