@@ -67,9 +67,33 @@ class Administrativo(models.Model):
 # Create your models here.
 
     
+
 class Preguntas(models.Model):
+    # Definición de las constantes para cada categoría
+    ANSIEDAD   = 'ANS'
+    ESTRES     = 'EST'
+    DIALOGO    = 'DIA'
+    AUTOESTIMA = 'AUT'
+    RESILIENCIA= 'RES'
+    EMPATIA    = 'EMP'
+    
+    # Tupla de opciones (código, etiqueta legible)
+    CATEGORIA_CHOICES = [
+        (ANSIEDAD,   'Ansiedad'),
+        (ESTRES,     'Estrés'),
+        (DIALOGO,    'Diálogo'),
+        (AUTOESTIMA, 'Autoestima'),
+        (RESILIENCIA,'Resiliencia'),
+        (EMPATIA,    'Empatía'),
+    ]
+    
     id_pregunta = models.AutoField(primary_key=True)
-    categoria=models.CharField(max_length=200)
+    # Se establece el choices y se define un valor por defecto
+    categoria = models.CharField(
+        max_length=3, 
+        choices=CATEGORIA_CHOICES, 
+        default=ANSIEDAD
+    )
     pregunta = models.CharField(max_length=200)
     respuesta = models.BooleanField()
 

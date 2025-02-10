@@ -119,6 +119,6 @@ class PreguntasForm(forms.ModelForm):
         fields = ['categoria', 'pregunta', 'respuesta']
         widgets = {
             'categoria': forms.Select(attrs={'class': 'form-control'}),
-            'pregunta': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Pregunta'}),
+            'pregunta': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Pregunta'}),
             'respuesta': forms.NullBooleanSelect(attrs={'class': 'form-control'})
         }

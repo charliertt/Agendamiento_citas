@@ -52,77 +52,99 @@
 
 		
 		<div id="table-default" class="table-responsive">
-			<div class="card">
-			  <div class="card-header">
-				<h3 class="card-title">Tabla de Preguntas</h3>
-			  </div>
-			  <div class="card-body p-0">
-				<table id="preguntasTable" class="table table-vcenter table-hover table-striped mb-0">
-				  <thead>
-					<tr>
-					  <th class="w-25">Categoría</th>
-					  <th>Pregunta</th>
-					  <th class="w-15">Respuesta</th>
-					  <th class="w-15 text-center">Acciones</th>
-					</tr>
-				  </thead>
-				  <tbody>
-					{% for pregunta in preguntas %}
-					<tr>
-					  <td>
-						<span class="badge badge-outline text-blue bg-blue-100">{{ pregunta.categoria }}</span>
-					  </td>
-					  <td>{{ pregunta.pregunta }}</td>
-					  <td>
-						{% if pregunta.respuesta %}
-						  <span class="badge badge-outline text-blue bg-green-100">Verdadero</span>
-						{% else %}
-						  <span class="badge badge-outline text-red bg-red-100">Falso</span>
-						{% endif %}
-					  </td>
-					  <td class="text-center">
-						<div class="btn-list d-flex justify-content-center gap-2">
-						  <a href="" class="btn btn-icon btn-warning" title="Editar">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" 
-								 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-								 class="icon icon-tabler icon-tabler-pencil">
-							  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-							  <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
-							  <path d="M13.5 6.5l4 4" />
-							</svg>
-						  </a>
-						  <a href="" class="btn btn-icon btn-danger" title="Eliminar">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" 
-								 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-								 class="icon icon-tabler icon-tabler-trash">
-							  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-							  <path d="M4 7l16 0" />
-							  <path d="M10 11l0 6" />
-							  <path d="M14 11l0 6" />
-							  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-							  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-							</svg>
-						  </a>
-						</div>
-					  </td>
-					</tr>
-					{% endfor %}
-				  </tbody>
-				</table>
-			  </div>
-			</div>
-		  </div>
-		  
 			
+			<h3>Tabla de Preguntas</h3>
+			
+			  <div class="card-body p-0">
 
-				
-
+				<table id="preguntasTable" class="display w-100">
+					<thead>
+					  <tr>
+						<th class="w-25">Categoría</th>
+						<th class="w-15">Respuesta</th>
+						<th class="w-15 text-center">Acciones</th>
+						
+					  </tr>
+					</thead>
+					<tbody>
+					  {% for pregunta in preguntas %}
+					  <tr>
+						<td>
+							<button class="btn btn-sm btn-success" type="button"
+								  data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}"
+								  aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+							+
+						  </button>
+						  <span class="badge badge-outline text-blue bg-blue-100">{{ pregunta.categoria }}</span>
+						</td>
+						<td>
+						  {% if pregunta.respuesta %}
+							<span class="badge badge-outline text-blue bg-green-100">Verdadero</span>
+						  {% else %}
+							<span class="badge badge-outline text-red bg-red-100">Falso</span>
+						  {% endif %}
+						</td>
+						<td class="text-center">
+						  <div class="btn-list d-flex justify-content-center gap-2">
+							<a href="#" class="btn btn-icon btn-warning" title="Editar" data-bs-toggle="modal" data-bs-target="#modal-editar-pregunta-{{ pregunta.id_pregunta }}">
+								<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-bolt"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M19 16l-2 3h4l-2 3" /></svg>
+							</a>
+							{% include 'formularios/editar_pregunta.html' %}
+							<a href="" class="btn btn-icon btn-danger" title="Eliminar">
+							  <!-- Icono de eliminar -->
+							</a>
+						  </div>
+						</td>
+					
+					  </tr>
+					  <!-- Fila para mostrar el contenido colapsable (la pregunta) -->
+					  <tr>
+						<!-- El colspan se ajusta a la cantidad de columnas que se muestran en la tabla (4 columnas) -->
+						<td colspan="3" class="p-0 border-0">
+						  <div class="collapse" id="collapse{{ forloop.counter }}">
+							<div class="p-2">
+							  {{ pregunta.pregunta }}
+							</div>
+						  </div>
+						</td>
+					  </tr>
+					  {% endfor %}
+					</tbody>
+				  </table>
+				  
+				  <!-- Script para cambiar el botón (color y signo) según el estado del collapse -->
+				  <script>
+					document.addEventListener("DOMContentLoaded", function() {
+					  document.querySelectorAll('.collapse').forEach(function(collapseEl) {
+						// Cuando se expande el contenido, actualiza el botón a rojo y cambia el signo a "-"
+						collapseEl.addEventListener('shown.bs.collapse', function () {
+						  var btn = document.querySelector('[data-bs-target="#' + collapseEl.id + '"]');
+						  if (btn) {
+							btn.classList.remove('btn-success');
+							btn.classList.add('btn-danger');
+							btn.textContent = '-';
+						  }
+						});
+						// Cuando se oculta el contenido, vuelve a actualizar el botón a verde con el signo "+"
+						collapseEl.addEventListener('hidden.bs.collapse', function () {
+						  var btn = document.querySelector('[data-bs-target="#' + collapseEl.id + '"]');
+						  if (btn) {
+							btn.classList.remove('btn-danger');
+							btn.classList.add('btn-success');
+							btn.textContent = '+';
+						  }
+						});
+					  });
+					});
+				  </script>
+				  
+				  
+				  
+			
 
 <!-- Script para auto-abrir el modal cuando hay horario -->
 
-		</div>
-	</div>
-</div>
+	
 
 			</div>
 		</div>
@@ -143,28 +165,7 @@
 
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Inicializar DataTables
-        const table = new DataTable('#usuariosTable', {
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
-            },
-           
-        });
 
-        // Manejar el filtrado por rol
-       
-
-
-		//formulario:
-
-		
-	
-    });
-
-    
-</script>
 	<!-- Libs JS -->
 
 </body>

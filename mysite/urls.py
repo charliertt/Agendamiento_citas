@@ -39,12 +39,15 @@ urlpatterns = [
     path('eliminar_usuario/<int:usuario_id>/', dashboard_views.eliminar_usuario, name="eliminar_usuario"),
     
     #horarios
+    path('horarios/',  dashboard_views.horarios, name='horarios'),  
     path('horario/<int:horario_id>/',  dashboard_views.crear_editar_horario, name='crear_editar_horario'),
-    path('horarios/',  dashboard_views.horarios, name='horarios'),  # 
     path('eliminar_horario/<int:horario_id>/', dashboard_views.eliminar_horario, name="eliminar_horario"),
     
     #preguntas
     path('preguntas_tabla/', dashboard_views.preguntas_tabla, name="preguntas_tabla"),
+    path('pregunta/<int:pregunta_id>/', dashboard_views.crear_editar_pregunta, name='crear_editar_pregunta'),
+
+
 ]
 
 if settings.DEBUG:
