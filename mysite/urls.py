@@ -38,6 +38,9 @@ urlpatterns = [
     path('editar_usuario/<int:usuario_id>/', dashboard_views.editar_usuario, name="editar_usuario"),
     path('eliminar_usuario/<int:usuario_id>/', dashboard_views.eliminar_usuario, name="eliminar_usuario"),
     
+    path('login/', dashboard_views.login_vista, name="login"),
+    
+
     #horarios
     path('horarios/',  dashboard_views.horarios, name='horarios'),  
     path('horario/<int:horario_id>/',  dashboard_views.crear_editar_horario, name='crear_editar_horario'),
@@ -46,7 +49,20 @@ urlpatterns = [
     #preguntas
     path('preguntas_tabla/', dashboard_views.preguntas_tabla, name="preguntas_tabla"),
     path('pregunta/<int:pregunta_id>/', dashboard_views.crear_editar_pregunta, name='crear_editar_pregunta'),
+    path('eliminar_pregunta/<int:pregunta_id>/', dashboard_views.eliminar_pregunta, name="eliminar_pregunta"),
 
+    #citas:
+    path('citas/', dashboard_views.CitaListView.as_view(), name='citas'),
+    path('citas/editar/<int:pk>/', dashboard_views.CitaUpdateView.as_view(), name='cita_update'),
+    path('citas/eliminar/<int:pk>/', dashboard_views.CitaDeleteView.as_view(), name='cita_delete'),
+    #__________________________________citas_fronted______________________________________________
+    
+    # Ruta para obtener horarios en la API
+   
+    path('agendar-cita/', landing_views.agendar_cita, name='agendar_cita'),
+    path('horarios-disponibles/', landing_views.obtener_horarios_disponibles, name='horarios_disponibles'),
+
+     
 
 ]
 

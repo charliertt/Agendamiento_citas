@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from modulos.dashboard.models import Preguntas
+from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita
+from django.http import JsonResponse
+import datetime
 
 # Create your views here.
-def index(request):
-    
-    return render(request, 'index.html')
+
 def blog(request):
     
     return render(request, 'blog.html')
@@ -45,3 +45,49 @@ def validar_pregunta(request):
                                                   'porcentaje': porcentaje})  
     else:
         return redirect('preguntas')  
+    
+    
+    
+
+def index(request):
+    psicologos = Psicologo.objects.all()  # Obtiene todos los psicólogos de la base de datos
+    context = {
+        'psicologos': psicologos
+    }
+    return render(request, 'index.html', context)
+    
+    
+def agendar_cita(request):
+    psicologos = Psicologo.objects.all()  # Obtener todos los psicólogos
+
+    if request.method == 'POST':
+        # Procesar el formulario cuando el usuario seleccione un horario y envíe la cita
+        psicologo_id = request.POST.get('psicologo')
+        dia = request.POST.get('dia')
+        hora = request.POST.get('hora')
+        psicologo = Psicologo.objects.get(id=psicologo_id)
+        
+        # Crear la cita en el horario seleccionado
+        cita = Cita.objects.create(
+            estudiante=request.user.estudiante,  # Suponiendo que el usuario logueado es un estudiante
+            psicologo=psicologo,
+            fecha_hora=f"{dia} {hora}",
+            asunto="Asunto de la sesión"  # Podrías obtener esto también desde el formulario
+        )
+        cita.save()
+
+        # Redirigir o enviar un mensaje de éxito
+        return redirect('citas_confirmadas')  # Redirigir a una vista de confirmación o lista de citas
+
+    return render(request, 'agendar_cita.html', {'psicologos': psicologos})
+
+
+def obtener_horarios_disponibles(request):
+    psicologo_id = request.GET.get('psicologo_id')
+    dia = request.GET.get('dia')
+    
+    horarios = Horario.objects.filter(psicologo_id=psicologo_id, dia_semana=dia, disponible=True)
+    
+    horarios_json = [{'hora_inicio': str(h.hora_inicio), 'hora_fin': str(h.hora_fin)} for h in horarios]
+    
+    return JsonResponse({'horarios': horarios_json})

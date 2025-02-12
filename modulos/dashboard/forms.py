@@ -1,9 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.forms import AuthenticationForm
+
 
 class UsuarioPersonalizadoCreationForm(UserCreationForm):
+    # Campo extra para psicólogos (puedes mantener o adaptar según tus necesidades)
     especializacion = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control campo-psicologo hidden'})
@@ -36,17 +39,19 @@ class UsuarioPersonalizadoCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         if commit:
-            user.save()  # Guardar primero el usuario
-            
-            # Crear Psicologo solo si el rol es correcto
+            user.save()  # Primero se guarda el usuario
+            # Crear objeto en el modelo correspondiente según el rol
             if user.rol == 'psicologo':
                 Psicologo.objects.create(
                     usuario=user,
                     especializacion=self.cleaned_data['especializacion']
                 )
-            
+            elif user.rol == 'estudiante':
+                Estudiante.objects.create(
+                    usuario=user
+                )
         return user
-    
+
     def clean(self):
         cleaned_data = super().clean()
         rol = cleaned_data.get('rol')
@@ -90,6 +95,12 @@ class UsuarioPersonalizadoEditForm(forms.ModelForm):
         
         return cleaned_data
 
+
+
+class EmailAuthenticationForm(AuthenticationForm):
+    # Sobreescribimos el campo username para que sea de tipo EmailField y se muestre como "Correo Electrónico"
+    username = forms.EmailField(label="Correo Electrónico", max_length=254)
+
     
 
     
@@ -122,3 +133,33 @@ class PreguntasForm(forms.ModelForm):
             'pregunta': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Pregunta'}),
             'respuesta': forms.NullBooleanSelect(attrs={'class': 'form-control'})
         }
+
+
+class CitaForm(forms.ModelForm):
+    class Meta:
+        model = Cita
+        fields = ['fecha_hora', 'estudiante', 'psicologo', 'asunto', 'estado', 'notas']
+        widgets = {
+            'fecha_hora': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control',
+                    'type': 'datetime-local'
+                },
+                format='%Y-%m-%dT%H:%M'  # Formato que espera el input datetime-local
+            ),
+            'estudiante': forms.Select(attrs={'class': 'form-control'}),
+            'psicologo': forms.Select(attrs={'class': 'form-control'}),
+            'asunto': forms.TextInput(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+            'notas': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Comentarios adicionales (opcional)'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Si se está editando una instancia existente, formatear la fecha para el input datetime-local
+        if self.instance and self.instance.pk and self.instance.fecha_hora:
+            self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')

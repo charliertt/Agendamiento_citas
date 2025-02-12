@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.db.models.signals import post_save
@@ -21,6 +22,11 @@ class UsuarioPersonalizado(AbstractUser):
     eps = models.CharField(max_length=200, blank=True, null=True, default='ninguna')
     alergias = models.CharField(max_length=200, blank=True, null=True, default='ninguna')
     enfermedades = models.CharField(max_length=200, blank=True, null=True, default='ninguna')
+    email = models.EmailField(unique=True)  # Asegúrate de que el email sea único
+
+    USERNAME_FIELD = 'email'      # Se usará el email para autenticarse
+    REQUIRED_FIELDS = ['username']
+    
   
     imagen = models.ImageField(upload_to='emedia/', blank=True, null=True)
 
@@ -66,6 +72,82 @@ class Administrativo(models.Model):
     # Campos específicos para administrativos (si los hay)
 # Create your models here.
 
+class Horario(models.Model):
+    psicologo = models.ForeignKey(Psicologo, on_delete=models.CASCADE, related_name='horarios')
+    dia_semana = models.CharField(
+        max_length=10,
+        choices=[('Lunes', 'Lunes'),
+                 ('Martes', 'Martes'),
+                 ('Miércoles', 'Miércoles'),
+                 ('Jueves', 'Jueves'),
+                 ('Viernes', 'Viernes'),
+                 ('Sábado', 'Sábado'),
+                 ('Domingo', 'Domingo')],
+    )
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    disponible = models.BooleanField(default=True)  # Opcional: Para marcar si el horario está disponible o no.
+
+    def __str__(self):
+        return f"{self.psicologo.usuario.username} - {self.dia_semana}: {self.hora_inicio} a {self.hora_fin}"
+    
+
+
+
+class Cita(models.Model):
+    ESTADOS = [
+        ('agendada', 'Agendada'),
+        ('cancelada', 'Cancelada'),
+        ('completada', 'Completada'),
+    ]
+
+    fecha_hora = models.DateTimeField(
+        verbose_name="Fecha y Hora de la Cita",
+        help_text="Indica la fecha y hora en la que se realizará la cita."
+    )
+    
+    # Relación con el estudiante a través del modelo Estudiante
+    estudiante = models.ForeignKey(
+        Estudiante,
+        on_delete=models.CASCADE,
+        related_name='citas_estudiante',
+        verbose_name="Estudiante"
+    )
+    
+    # Relación con el psicólogo (se mantiene la relación con el modelo Psicologo)
+    psicologo = models.ForeignKey(
+        Psicologo,
+        on_delete=models.CASCADE,
+        related_name='citas',
+        verbose_name="Psicólogo"
+    )
+    
+    asunto = models.CharField(
+        max_length=255,
+        verbose_name="Asunto",
+        help_text="Tema o motivo de la cita."
+    )
+    
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADOS,
+        default='agendada',
+        verbose_name="Estado"
+    )
+    
+    notas = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Notas",
+        help_text="Comentarios adicionales (opcional)."
+    )
+
+    def __str__(self):
+        return (
+            f"Cita #{self.id} - {self.estudiante.usuario.username} "  # Accedemos al username a través de la relación Estudiante → UsuarioPersonalizado
+            f"con {self.psicologo.usuario.username} - {self.fecha_hora.strftime('%d/%m/%Y %H:%M')}"
+        )
+
     
 
 class Preguntas(models.Model):
@@ -100,25 +182,7 @@ class Preguntas(models.Model):
     def __str__(self):
         return f'{self.pregunta} - {"Verdadero" if self.respuesta else "Falso"}'
 
-class Horario(models.Model):
-    psicologo = models.ForeignKey(Psicologo, on_delete=models.CASCADE, related_name='horarios')
-    dia_semana = models.CharField(
-        max_length=10,
-        choices=[('Lunes', 'Lunes'),
-                 ('Martes', 'Martes'),
-                 ('Miércoles', 'Miércoles'),
-                 ('Jueves', 'Jueves'),
-                 ('Viernes', 'Viernes'),
-                 ('Sábado', 'Sábado'),
-                 ('Domingo', 'Domingo')],
-    )
-    hora_inicio = models.TimeField()
-    hora_fin = models.TimeField()
-    disponible = models.BooleanField(default=True)  # Opcional: Para marcar si el horario está disponible o no.
 
-    def __str__(self):
-        return f"{self.psicologo.usuario.username} - {self.dia_semana}: {self.hora_inicio} a {self.hora_fin}"
-    
     
 
 

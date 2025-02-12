@@ -6,6 +6,7 @@
 
 
 
+
   <main class="main mt-4">
 
     <!-- Hero Section -->
@@ -82,7 +83,29 @@
   z-index:100;
 }
 
+.time-btn {
+  background-color: #f0f4ff;
+  border: none;
+  color: #1a1a1a;
+  padding: 10px 15px;
+  margin: 0;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  min-width: 120px;
+}
+
+/* Botón seleccionado */
+.time-btn.active {
+  border: 2px solid #2f2fff;
+  color: #2f2fff;
+}
+
+
+
     </style>
+
+
 
     </section><!-- /Clients Section -->
 
@@ -320,135 +343,206 @@
     <!-- Features Section -->
     <!-- /Features Section -->
 
+    <style>
+      /* Personalización de los íconos de los controles */
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        padding: 10px;
+      }
+    </style>
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio section">
-
-      <!-- Section Title -->
+      <!-- Título de la Sección -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Agenda tu Cita</h2>
         <p>Selecciona una fecha disponible</p>
-
-           
       </div>
-      
-
-      <div class="container">
-        <div class="row">
-          <div class="col-6">
-            <div id='calendar'></div>
-          </div>
-
-          <div class="col-6">
-
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-              <h1 class="text-center"> Formulario </h1>
-              <div class="row gy-4">
-
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control mb-4" placeholder="Nombre" required>
-                  
-                  <input type="text" class="form-control mt-2" placeholder="Usuario" required>
-                </div>
-
-                <div class="col-md-6 ">
-                  <input type="text" name="apellido" class="form-control mb-4" placeholder="Apellido" required>
-
-                  <input type="password" class="form-control" name="email" placeholder="Contraseña" required>
-                </div>
-
-                <div class="col-12">
-                 <input type="email" class="form-control" name="email" placeholder="Correo" required>
-                </div>
-
-                <div class="col-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Motivo de consulta" required></textarea>
-                </div>
-
-                <div class="col-12 text-center">
-
-                  <div id="horas-disponibles">
-                 
+  
+      <div class="container my-4">
+        <div class="card">
+          <div class="card-body">
+            <!-- Carrusel de Días -->
+            <div id="daysCarousel" class="carousel slide" data-bs-ride="false">
+              <div class="carousel-inner">
+                <!-- Primer slide: semana actual -->
+                <div class="carousel-item active">
+                  <!-- Contenedor para los nombres de días -->
+                  <div class="d-flex justify-content-center gap-5" id="weekdays-current">
+                    <!-- Aquí se insertan dinámicamente los nombres (LUN, MAR, ...) -->
                   </div>
-
-                  <button type="submit" class="btn btn-primary mt-4 w-100">Agendar cita </button>
-
-                
-
-               
+                  <hr class="col-6 mx-auto">
+                  <!-- Contenedor para los botones de fecha -->
+                  <div class="d-flex justify-content-center gap-4" id="weekdates-current">
+                    <!-- Aquí se insertan dinámicamente los botones de fecha -->
+                  </div>
                 </div>
-
-              </div>
-       
-
-          </div>
-          
-
-        </form>
-
-
-        </div>
-
-
-
-        <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-              
-              locale: 'es',
-              initialView: 'dayGridMonth', // Vista del mes
-              selectable: true, // Permite seleccionar una fecha
-              select: function(info) {
-                // Lógica cuando se selecciona una fecha
-                let selectedDate = info.startStr;
-                console.log("Fecha seleccionada: " + selectedDate);
-                
-                // Mostrar las horas disponibles
-                mostrarHorasDisponibles(selectedDate);
-              }
-            });
-      
-            calendar.render();
-          });
-      
-          function mostrarHorasDisponibles(fecha) {
-            // Limpiar horas anteriores
-            document.getElementById('horas-disponibles').innerHTML = '';
-      
-            // Horas disponibles (puedes cambiar esto para que sea dinámico)
-            const horas = ['9:00am', '1:00pm', '5:00pm', '6:00pm', '7:00pm'];
             
-            // Mostrar botones con las horas
-            horas.forEach(hora => {
-              let button = document.createElement('button');
-              button.className = 'btn btn-primary';
-              button.innerText = hora;
-              button.onclick = function() {
-                swal("Cita programada", "Cita programada para " + fecha + " a las " + hora, "success");
-              };
-              document.getElementById('horas-disponibles').appendChild(button);
-            });
-          }
-        </script>
-
-
-     
-
-
-      
-
-
-      
-
-          </div><!-- End Portfolio Container -->
-
+                <!-- Segundo slide: semana siguiente -->
+                <div class="carousel-item">
+                  <div class="d-flex justify-content-center gap-5" id="weekdays-next">
+                    <!-- Nombres de días -->
+                  </div>
+                  <hr class="col-6 mx-auto">
+                  <div class="d-flex justify-content-center gap-4" id="weekdates-next">
+                    <!-- Botones de fecha -->
+                  </div>
+                </div>
+              </div>
+              <!-- Controles del Carrusel -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#daysCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+                <span class="visually-hidden">Anterior</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#daysCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+                <span class="visually-hidden">Siguiente</span>
+              </button>
+            </div>
+          </div>
         </div>
+           <!----- DIV HORARIO-->
+      <!-- Sección de horario -->
+<div class="mt-4">
+  <h3>¿Qué hora?</h3>
+  <p>Duración: 30 minutos</p>
+  <div class="row justify-content-center gap-0 mx-auto">
+    <!-- Primera columna -->
+    <div class="col-2 text-center">
+      <button class="time-btn active mb-3 w-100">09:00 AM</button>
+      <button class="time-btn mb-3 w-100">10:00 AM</button>
+      <button class="time-btn mb-3 w-100">11:00 AM</button>
+    </div>
+    <!-- Segunda columna -->
+    <div class="col-2 text-center">
+      <button class="time-btn mb-3 w-100">12:00 PM</button>
+      <button class="time-btn mb-3 w-100">13:00 PM</button>
+      <button class="time-btn mb-3 w-100">14:00 PM</button>
+    </div>
+    <!-- Tercera columna -->
+    <div class="col-2 text-center">
+      <button class="time-btn mb-3 w-100">15:00 PM</button>
+      <button class="time-btn mb-3 w-100">17:00 PM</button>
+    </div>
+  </div>
+</div>
 
       </div>
-
+      
+    
     </section><!-- /Portfolio Section -->
 
     <!-- Pricing Section -->
+    <script>
+      document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active', 'btn-primary'));
+          this.classList.add('active', 'btn-primary');
+          console.log('Día seleccionado: ', this.innerText);
+        });
+      });
+    </script>
+
+
+    <script>
+      // Esperamos a que cargue el DOM
+      document.addEventListener('DOMContentLoaded', () => {
+        // Arreglos para formatear días y meses
+        const daysShort = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
+        const monthsShort = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 
+                             'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+    
+        // 1) Obtener el lunes de la semana actual
+        const today = new Date();
+        // getDay() retorna: Domingo=0, Lunes=1, Martes=2, ...
+        const dayOfWeek = today.getDay();
+        // Hallar el offset para llegar al lunes de la semana actual
+        // Si hoy es domingo (0), offset será -6, si es lunes (1), offset 0, etc.
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        const currentMonday = new Date(today);
+        currentMonday.setDate(today.getDate() + mondayOffset);
+    
+        // 2) Función para obtener un array de 7 días (lunes a domingo)
+        function getWeekDates(startDate) {
+          const days = [];
+          for (let i = 0; i < 7; i++) {
+            const d = new Date(startDate);
+            d.setDate(d.getDate() + i);
+            days.push(d);
+          }
+          return days;
+        }
+    
+        // 3) Obtener las dos semanas
+        const currentWeek = getWeekDates(currentMonday); // semana actual
+        const nextMonday = new Date(currentMonday);
+        nextMonday.setDate(nextMonday.getDate() + 7);
+        const nextWeek = getWeekDates(nextMonday);       // semana siguiente
+    
+        // 4) Función que inyecta en el DOM los días y fechas
+        function renderWeek(weekArray, weekdaysContainerId, weekdatesContainerId) {
+          const weekdaysContainer = document.getElementById(weekdaysContainerId);
+          const weekdatesContainer = document.getElementById(weekdatesContainerId);
+    
+          // Limpiar contenido previo (si recargamos varias veces)
+          weekdaysContainer.innerHTML = '';
+          weekdatesContainer.innerHTML = '';
+    
+          weekArray.forEach(dateObj => {
+            // Día de la semana (DOM, LUN, MAR, ...)
+            const dayName = daysShort[dateObj.getDay()];
+            // Número de día (1-31)
+            const dayNum = dateObj.getDate();
+            // Mes corto (ENE, FEB, ...)
+            const monthName = monthsShort[dateObj.getMonth()];
+    
+            // Crear el span para el nombre del día
+            const daySpan = document.createElement('span');
+            daySpan.classList.add('text-center');
+            daySpan.textContent = dayName;
+            weekdaysContainer.appendChild(daySpan);
+    
+            // Crear el botón para la fecha
+            const dayBtn = document.createElement('button');
+            dayBtn.classList.add('day-btn', 'btn', 'btn-primary');
+            dayBtn.innerHTML = `${dayNum}<br>${monthName}`;
+    
+            // Desactivar sábados (SAB) y domingos (DOM)
+            if (dayName === 'SAB' || dayName === 'DOM') {
+              dayBtn.disabled = true;         // O dayBtn.setAttribute('disabled', true);
+              dayBtn.classList.remove('btn-primary');
+              dayBtn.classList.add('btn-secondary'); 
+            }
+    
+            // Agregar listener para marcar activo
+            dayBtn.addEventListener('click', function() {
+              // Quitar 'active' de todos
+              document.querySelectorAll('.day-btn').forEach(b => {
+                b.classList.remove('active', 'btn-primary');
+                // Si era sábado o domingo, vuelve a btn-secondary
+                if (b.disabled) {
+                  b.classList.add('btn-secondary');
+                }
+              });
+              // Marcar este como activo si no está deshabilitado
+              if (!this.disabled) {
+                this.classList.add('active', 'btn-primary');
+                this.classList.remove('btn-secondary');
+                console.log('Día seleccionado:', dayName, dayNum, monthName);
+              }
+            });
+    
+            weekdatesContainer.appendChild(dayBtn);
+          });
+        }
+    
+        // 5) Renderizar la semana actual y la siguiente
+        renderWeek(currentWeek, 'weekdays-current', 'weekdates-current');
+        renderWeek(nextWeek, 'weekdays-next', 'weekdates-next');
+      });
+    </script>
+    
     
 
     <!-- Faq Section -->
@@ -524,6 +618,8 @@
 
           <!-- End Team Member -->
 <!-- End Team Member -->
+
+
 
          
 

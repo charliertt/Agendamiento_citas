@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas
-from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante
+from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import authenticate, login
 
 # Create your views here.
 def dashboard(request): 
@@ -10,6 +13,12 @@ def dashboard(request):
 
 def usuarios(request):
     usuarios_list = list(UsuarioPersonalizado.objects.all())
+    
+    estudiantes = UsuarioPersonalizado.objects.filter(rol='estudiante')
+    print(estudiantes)
+    
+    psicologos = Psicologo.objects.all()
+    print(psicologos)
 
     # Formulario de creación
     creation_form = UsuarioPersonalizadoCreationForm()
@@ -65,16 +74,26 @@ def editar_usuario(request, usuario_id):
 
             # Manejo explícito del psicólogo
             if nuevo_rol == 'psicologo':
-                # Forzar creación/actualización
-                psicologo, created = Psicologo.objects.update_or_create(
+                Psicologo.objects.update_or_create(
                     usuario=usuario_actualizado,
                     defaults={'especializacion': especializacion}
                 )
             else:
-                # Eliminar si existe
+                # Si el rol no es psicólogo, eliminamos cualquier registro de Psicologo asociado
                 Psicologo.objects.filter(usuario=usuario_actualizado).delete()
             
-            usuario_actualizado.save()  # Guardar cambios del usuario
+            # Manejo explícito del estudiante
+            if nuevo_rol == 'estudiante':
+                # En este caso, el modelo Estudiante no tiene campos adicionales, por lo que se puede crear sin defaults
+                Estudiante.objects.update_or_create(
+                    usuario=usuario_actualizado,
+                    defaults={}
+                )
+            else:
+                # Si el rol no es estudiante, eliminamos el registro si existe
+                Estudiante.objects.filter(usuario=usuario_actualizado).delete()
+            
+            usuario_actualizado.save()  # Guardar los cambios del usuario
             messages.success(request, '¡Usuario actualizado!')
             return redirect('usuarios')
         else:
@@ -92,6 +111,31 @@ def eliminar_usuario(request, usuario_id):
         messages.success(request, 'Usuario eliminado con éxito')
         return redirect('usuarios')
     return render(request, 'usuarios.html', {'usuario': usuario})
+
+
+#login:
+
+def login_vista(request):
+    if request.method == "POST":
+        print("POST request received")
+        print(f"Request Data: {request.POST}")
+        form = EmailAuthenticationForm(request=request, data=request.POST)
+        if form.is_valid():
+            print("Form is valid")
+            user = form.get_user()
+            print(f"Authenticated User: {user}")
+            login(request, user)
+            print(f"User {user} logged in")
+            return redirect('dashboard')
+        else:
+            print("Form is invalid")
+            print(f"Form Errors: {form.errors}")
+            messages.error(request, "El email o la contraseña son incorrectos")
+    else: 
+        print("GET request received")
+        form = EmailAuthenticationForm()
+
+    return render(request, "login.html", {"form": form})
     
     
     
@@ -146,6 +190,9 @@ def eliminar_horario(request, horario_id):
         messages.success(request, 'Horario eliminado con éxito')
         return redirect('horarios')
     return render(request, 'horarios.html', {'horario': horario})
+
+
+    
 
 
 #horarios
@@ -207,4 +254,55 @@ def crear_editar_pregunta(request, pregunta_id):
         return redirect('preguntas_tabla')
     
     
+
+def eliminar_pregunta(request, pregunta_id):
+    pregunta = get_object_or_404(Preguntas, id_pregunta=pregunta_id)
+    if request.method == 'POST':
+        pregunta.delete()
+        messages.success(request, 'Pregunta eliminada con éxito')
+        return redirect('preguntas_tabla')
+    return render(request, 'preguntas_tabla.html', {'pregunta': pregunta})
+
+
+#citas:
+class CitaListView(ListView):
+    model = Cita
+    template_name = "citas.html"  # Plantilla para listar las citas
+    context_object_name = "citas"
+    ordering = ['-fecha_hora']  
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Formulario para la creación de una nueva cita
+        context['form'] = CitaForm()
+        # Para cada cita en la lista, asignamos un formulario de edición
+        for cita in context['citas']:
+            cita.form_editar = CitaForm(instance=cita)
+        return context
+    
+
+
+class CitaUpdateView(UpdateView):
+    model = Cita
+    form_class = CitaForm
+    # Puedes utilizar una plantilla es pecífica para el formulario; si usas modales, quizás la plantilla sea idéntica a la que usas en el modal.
+    template_name = "citas.html"  
+    success_url = reverse_lazy("citas ")
+
+    def form_valid(self, form):
+        messages.success(self.request, "¡Cita editada correctamente!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Hubo un error al editar la cita. Verifica los datos ingresados.")
+        return super().form_invalid(form)
+
+class CitaDeleteView(DeleteView):
+    model = Cita
+    # Esta plantilla se usa para confirmar la eliminación; también podrías hacer la confirmación mediante un modal.
+    template_name = "cita_confirm_delete.html"
+    success_url = reverse_lazy("cita_list")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "¡Cita eliminada correctamente!")
+        return super().delete(request, *args, **kwargs)

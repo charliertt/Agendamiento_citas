@@ -1,0 +1,139 @@
+{% extends "base_dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+	<div class="page-wrapper">
+<!-- Page header -->
+<div class="page-header d-print-none">
+	<div class="container-xl">
+		<div class="row g-2 align-items-center">
+			<div class="col">
+				<h2 class="page-title">
+					Datatables
+				</h2>
+
+
+
+				<a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modal-horario">
+					+
+			   </a>
+			   
+
+			
+
+				  {% include 'layout/mensajes.html' %}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+		<!-- Page body -->
+		<div class="page-body">
+			<div class="container-xl">
+				
+			
+				
+				
+<div class="card mt-2">
+	<div class="card-body p-0">
+
+
+		
+		
+
+		
+		<div id="table-default" class="table-responsive">
+			
+			<table id="usuariosTable" class="display">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Fecha y Hora</th>
+						<th>Estudiante</th>
+						<th>Psicólogo</th>
+						<th>Asunto</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for cita in citas %}
+					<tr>
+					  <td>{{ cita.id }}-</td>
+					  <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+					  <td>{{ cita.estudiante }}</td>
+					  <td>{{ cita.psicologo }}</td>
+					  <td>{{ cita.asunto }}</td>
+					  <td>{{ cita.estado }}</td>
+					  <td>
+						<a href="" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modal-editar-cita-{{ cita.id }}">Editar</a>
+
+						{% include 'formularios/editar_cita.html' %}	
+
+						<a href="" class="btn btn-sm btn-danger">Eliminar</a>
+					  </td>
+					</tr>
+				  {% empty %}
+					<tr>
+					  <td colspan="7">No hay citas disponibles.</td>
+					</tr>
+				  {% endfor %}
+				</tbody>
+
+				
+
+
+<!-- Script para auto-abrir el modal cuando hay horario -->
+
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+		<footer class="footer footer-transparent d-print-none">
+	<div class="container-xl">
+		<div class="row text-center align-items-center flex-row-reverse">
+			<div class="col-lg-auto ms-lg-auto">
+				
+			</div>
+			<div class="col-12 col-lg-auto mt-3 mt-lg-0">
+				
+			</div>
+		</div>
+	</div>
+</footer>
+	</div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar DataTables
+        const table = new DataTable('#usuariosTable', {
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+            },
+           
+        });
+
+       
+
+		
+	
+    });
+
+    
+</script>
+	<!-- Libs JS -->
+
+</body>
+{% endblock %}
+
+</html>
