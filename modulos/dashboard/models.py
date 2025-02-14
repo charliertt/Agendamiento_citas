@@ -52,8 +52,13 @@ class UsuarioPersonalizado(AbstractUser):
         return f"{self.username} - {self.get_rol_display()}"
 
 
+
 class Estudiante(models.Model):
     usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='estudiante')
+    
+    def __str__(self):
+        return self.usuario.username
+    
     
    
 

@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita
+from datetime import timedelta, datetime
 from django.http import JsonResponse
-import datetime
+from datetime import timedelta
+import datetime  # Cambiamos esto para usar el módulo completo
+
 
 # Create your views here.
 
@@ -49,12 +52,42 @@ def validar_pregunta(request):
     
     
 
+def generar_intervalos(hora_inicio, hora_fin):
+    intervalos = []
+    hora_actual = datetime.datetime.combine(datetime.datetime.today(), hora_inicio)  # Cambiado a datetime.datetime
+    hora_limite = datetime.datetime.combine(datetime.datetime.today(), hora_fin)  # Cambiado a datetime.datetime
+
+    while hora_actual <= hora_limite:
+        intervalos.append(hora_actual.time())  # Solo guardar la parte de la hora, sin la fecha
+        hora_actual += timedelta(hours=1)  # Incrementar en 1 hora
+
+    return intervalos
+
 def index(request):
-    psicologos = Psicologo.objects.all()  # Obtiene todos los psicólogos de la base de datos
+    psicologos = Psicologo.objects.prefetch_related('horarios').all()  # prefetch de horarios
+    psicologos_con_horarios = []
+    for psicologo in psicologos:
+        horarios_con_intervalos = []
+        dias_disponibles = set()
+        for horario in psicologo.horarios.all():
+            if horario.disponible:
+                dias_disponibles.add(horario.dia_semana)
+                intervalos = generar_intervalos(horario.hora_inicio, horario.hora_fin)
+                horarios_con_intervalos.append({
+                    'horario': horario,
+                    'intervalos': intervalos
+                })
+        psicologos_con_horarios.append({
+            'psicologo': psicologo,
+            'horarios_con_intervalos': horarios_con_intervalos,
+            'dias_disponibles': list(dias_disponibles)  # Ej: ['Miércoles', 'Viernes']
+        })
+
     context = {
-        'psicologos': psicologos
+        'psicologos_con_horarios': psicologos_con_horarios
     }
     return render(request, 'index.html', context)
+
     
     
 def agendar_cita(request):

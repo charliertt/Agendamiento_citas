@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="post" action="{% url 'crear_editar_horario' horario.id %}" id="form-horario">
+        <form method="post" action="{% url 'crear_editar_horario' horario.id %}" id="form-editar-horario-{{ horario.id }}">
           {% csrf_token %}
           <div class="row row-bordered">
             {% for field in horario.form_editar %}
