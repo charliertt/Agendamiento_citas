@@ -279,10 +279,11 @@
     <!-- Section Title -->
     <div class="container section-title" data-aos="fade-up">
       <h2>Servicios</h2>
-    <div class="d-flex justify-content-center">
-      <p class="text-center">Ofrecemos soluciones tecnológicas para gestionar eficientemente tus citas psicológicas. Nuestra plataforma
-        simplifica cada aspecto del proceso, desde la reserva hasta el seguimiento del paciente, brindando una
-        experiencia fluida tanto para los profesionales como para sus pacientes.</p>
+      <div class="d-flex justify-content-center">
+        <p class="text-center">Ofrecemos soluciones tecnológicas para gestionar eficientemente tus citas psicológicas.
+          Nuestra plataforma
+          simplifica cada aspecto del proceso, desde la reserva hasta el seguimiento del paciente, brindando una
+          experiencia fluida tanto para los profesionales como para sus pacientes.</p>
       </div>
     </div><!-- End Section Title -->
 
@@ -391,11 +392,11 @@
   <section id="portfolio" class="portfolio section">
     <!-- Título de la Sección -->
     <div class="container section-title" data-aos="fade-up">
-      
+
       <h2>Agenda tu Cita</h2>
       {% for psicologo in psicologos %}
-  <p>{{ psicologo.usuario.username }}</p>
-{% endfor %}
+      <p>{{ psicologo.usuario.username }}</p>
+      {% endfor %}
 
       <p>Selecciona una fecha disponible</p>
     </div>
@@ -404,6 +405,7 @@
 
     <div class="container my-4">
       <div class="card">
+        
         <div class="card-body">
           <!-- Carrusel de Días -->
           <div id="daysCarousel" class="carousel slide" data-bs-ride="false">
@@ -450,56 +452,58 @@
         </div>
       </div>
       <!----- DIV HORARIO-->
+      <div id="horarioSection" class="mt-4" style="display:none;">
       <div class="mt-4">
         <div class="mt-4 mb-4">
-            <h3 class="text-center"><strong>¿Qué hora?</strong></h3>
-            <p class="text-center">Duración: 30 minutos</p>
+          <h3 class="text-center"><strong>¿Qué hora?</strong></h3>
+          <p class="text-center">Duración: 30 minutos</p>
         </div>
-    
-        <div class="mt-4 row justify-content-center gap-0 mx-auto">
-            {% if psicologos_con_horarios %}
-                {% for psicologo_data in psicologos_con_horarios %}
+      </div>
 
-                <div class="psicologo" data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
-                    <h3 class="text-left">Horarios de {{ psicologo_data.psicologo.usuario.username }}</h3>
-    
-                    <!-- Recorremos cada horario de ese psicólogo -->
-                    {% for horario_data in psicologo_data.horarios_con_intervalos %}
-                    
-    
-                        <div class="mt-4 row justify-content-center gap-0 mx-auto">
-                            <!-- Primera columna -->
-                            <div class="col-2 text-center">
-                                {% for intervalo in horario_data.intervalos|slice:":3" %}
-                                    <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                                {% endfor %}
-                            </div>
-                            
-                            <!-- Segunda columna -->
-                            <div class="col-2 text-center">
-                                {% for intervalo in horario_data.intervalos|slice:"3:6" %}
-                                    <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                                {% endfor %}
-                            </div>
-                            
-                            <!-- Tercera columna -->
-                            <div class="col-2 text-center">
-                                {% for intervalo in horario_data.intervalos|slice:"6:9" %}
-                                    <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                                {% endfor %}
-                            </div>
-                        </div>
-                      </div>
-                    {% endfor %}
-                {% endfor %}
-            {% else %}
-                <p class="text-center">No hay horarios disponibles para mostrar.</p>
-            {% endif %}
+        <div class="mt-4 row justify-content-center gap-0 mx-auto">
+          {% if psicologos_con_horarios %}
+          {% for psicologo_data in psicologos_con_horarios %}
+          <div class="psicologo" data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
+            <h3 class="text-left">Horarios de {{ psicologo_data.psicologo.usuario.username }}</h3>
+
+            <!-- Recorremos cada horario del psicólogo -->
+            {% for horario_data in psicologo_data.horarios_con_intervalos %}
+            <!-- Envolvemos cada bloque de horario en un contenedor con el atributo data-day -->
+            <div class="horario-container" data-day="{{ horario_data.horario.dia_semana }}">
+              <div class="mt-4 row justify-content-center gap-0 mx-auto">
+                <!-- Primera columna -->
+                <div class="col-2 text-center">
+                  {% for intervalo in horario_data.intervalos|slice:":3" %}
+                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
+                  {% endfor %}
+                </div>
+
+                <!-- Segunda columna -->
+                <div class="col-2 text-center">
+                  {% for intervalo in horario_data.intervalos|slice:"3:6" %}
+                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
+                  {% endfor %}
+                </div>
+
+                <!-- Tercera columna -->
+                <div class="col-2 text-center">
+                  {% for intervalo in horario_data.intervalos|slice:"6:9" %}
+                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+          {% else %}
+          <p class="text-center">No hay horarios disponibles para mostrar.</p>
+          {% endif %}
         </div>
-    </div>
-    
-    
-    
+      </div>
+
+
+
 
 
   </section><!-- /Portfolio Section -->
@@ -516,169 +520,132 @@
     });
   </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Arreglos para formatear días y meses
-      const daysShort = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
-      const monthsShort = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-      // Array con nombres completos de los días
-      const fullDays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Arreglos para formatear días y meses
+    const daysShort = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
+    const monthsShort = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+    const fullDays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   
-      // Fecha actual
-      const today = new Date();
-      console.log("Fecha actual:", today);
+    // Fecha actual
+    const today = new Date();
+    const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   
-      // Normalizamos la fecha actual (sin horas, minutos, etc.)
-      const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      console.log("Fecha actual normalizada:", todayNormalized);
+    // Obtener el lunes de la semana actual
+    const dayOfWeek = today.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const currentMonday = new Date(today);
+    currentMonday.setDate(today.getDate() + mondayOffset);
   
-      // 1) Obtener el lunes de la semana actual
-      const dayOfWeek = today.getDay();
-      console.log("Día de la semana actual (0=DOM, 1=LUN, ...):", dayOfWeek);
-      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      console.log("Offset para llegar al lunes:", mondayOffset);
-  
-      const currentMonday = new Date(today);
-      currentMonday.setDate(today.getDate() + mondayOffset);
-      console.log("Lunes de la semana actual:", currentMonday);
-  
-      // 2) Función para obtener un array de 7 días (lunes a domingo)
-      function getWeekDates(startDate) {
-        const days = [];
-        for (let i = 0; i < 7; i++) {
-          const d = new Date(startDate);
-          d.setDate(d.getDate() + i);
-          days.push(d);
-        }
-        console.log("Fechas de la semana iniciando en:", startDate, days);
-        return days;
+    // Función para obtener un array de 7 días (lunes a domingo)
+    function getWeekDates(startDate) {
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + i);
+        days.push(d);
       }
+      return days;
+    }
   
-      // 3) Obtener las dos semanas: actual y siguiente
-      const currentWeek = getWeekDates(currentMonday);
-      const nextMonday = new Date(currentMonday);
-      nextMonday.setDate(nextMonday.getDate() + 7);
-      console.log("Próximo lunes:", nextMonday);
-      const nextWeek = getWeekDates(nextMonday);
+    const currentWeek = getWeekDates(currentMonday);
+    const nextMonday = new Date(currentMonday);
+    nextMonday.setDate(nextMonday.getDate() + 7);
+    const nextWeek = getWeekDates(nextMonday);
   
-      // 4) Función que inyecta en el DOM los días y fechas
-      function renderWeek(weekArray, weekdaysContainerId, weekdatesContainerId) {
-        const weekdaysContainer = document.getElementById(weekdaysContainerId);
-        const weekdatesContainer = document.getElementById(weekdatesContainerId);
+    // Función que inyecta en el DOM los días y fechas
+    function renderWeek(weekArray, weekdaysContainerId, weekdatesContainerId) {
+      const weekdaysContainer = document.getElementById(weekdaysContainerId);
+      const weekdatesContainer = document.getElementById(weekdatesContainerId);
+      if (!weekdaysContainer || !weekdatesContainer) return;
   
-        // Verificar que los contenedores existan
-        if (!weekdaysContainer) {
-          console.error("No se encontró el contenedor de días:", weekdaysContainerId);
-          return;
+      weekdaysContainer.innerHTML = '';
+      weekdatesContainer.innerHTML = '';
+  
+      weekArray.forEach(dateObj => {
+        const dayShort = daysShort[dateObj.getDay()];
+        const fullDay = fullDays[dateObj.getDay()];
+        const dayNum = dateObj.getDate();
+        const monthName = monthsShort[dateObj.getMonth()];
+  
+        const daySpan = document.createElement('span');
+        daySpan.classList.add('text-center');
+        daySpan.textContent = dayShort;
+        weekdaysContainer.appendChild(daySpan);
+  
+        const dayBtn = document.createElement('button');
+        dayBtn.classList.add('day-btn', 'btn', 'btn-primary');
+        dayBtn.innerHTML = `${dayNum}<br>${monthName}`;
+        dayBtn.dataset.day = fullDay;
+  
+        if (dayShort === 'SAB' || dayShort === 'DOM') {
+          dayBtn.disabled = true;
+          dayBtn.classList.remove('btn-primary');
+          dayBtn.classList.add('btn-secondary');
         }
-        if (!weekdatesContainer) {
-          console.error("No se encontró el contenedor de fechas:", weekdatesContainerId);
-          return;
+  
+        const dateNormalized = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+        if (dateNormalized < todayNormalized) {
+          dayBtn.disabled = true;
+          dayBtn.classList.remove('btn-primary');
+          dayBtn.classList.add('btn-secondary');
         }
   
-        // Limpiar contenido previo
-        weekdaysContainer.innerHTML = '';
-        weekdatesContainer.innerHTML = '';
-  
-        weekArray.forEach(dateObj => {
-          // Día de la semana en formato corto y completo
-          const dayShort = daysShort[dateObj.getDay()];
-          const fullDay = fullDays[dateObj.getDay()];
-          // Número de día (1-31)
-          const dayNum = dateObj.getDate();
-          // Mes corto (ENE, FEB, ...)
-          const monthName = monthsShort[dateObj.getMonth()];
-  
-          console.log("Procesando fecha:", dateObj, "=>", dayShort, dayNum, monthName);
-  
-          // Crear el span para el nombre del día (abreviado)
-          const daySpan = document.createElement('span');
-          daySpan.classList.add('text-center');
-          daySpan.textContent = dayShort;
-          weekdaysContainer.appendChild(daySpan);
-  
-          // Crear el botón para la fecha y asignar data-day con el nombre completo
-          const dayBtn = document.createElement('button');
-          dayBtn.classList.add('day-btn', 'btn', 'btn-primary');
-          // Se muestra el día y el mes (puedes ajustar el formato a tu gusto)
-          dayBtn.innerHTML = `${dayNum}<br>${monthName}`;
-          dayBtn.dataset.day = fullDay; // Asignamos el día completo para comparación
-  
-          // Desactivar sábados (SAB) y domingos (DOM)
-          if (dayShort === 'SAB' || dayShort === 'DOM') {
-            console.log("Desactivando fin de semana:", dayShort, dayNum);
-            dayBtn.disabled = true;
-            dayBtn.classList.remove('btn-primary');
-            dayBtn.classList.add('btn-secondary');
-          }
-  
-          // Desactivar días anteriores a hoy (normalizando las fechas)
-          const dateNormalized = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-          if (dateNormalized < todayNormalized) {
-            console.log("Desactivando día anterior a hoy:", dateObj);
-            dayBtn.disabled = true;
-            dayBtn.classList.remove('btn-primary');
-            dayBtn.classList.add('btn-secondary');
-          }
-  
-          // Agregar listener para marcar activo
-          dayBtn.addEventListener('click', function () {
-            // Quitar 'active' de todos los botones
-            document.querySelectorAll('.day-btn').forEach(b => {
-              b.classList.remove('active', 'btn-primary');
-              if (b.disabled) {
-                b.classList.add('btn-secondary');
-              }
-            });
-            // Marcar este como activo si no está deshabilitado
-            if (!this.disabled) {
-              this.classList.add('active', 'btn-primary');
-              this.classList.remove('btn-secondary');
-              console.log('Día seleccionado:', fullDay, dayNum, monthName);
-            }
+        dayBtn.addEventListener('click', function () {
+          document.querySelectorAll('.day-btn').forEach(b => {
+            b.classList.remove('active', 'btn-primary');
+            if (b.disabled) b.classList.add('btn-secondary');
           });
-  
-          weekdatesContainer.appendChild(dayBtn);
-        });
-      }
-  
-      // 5) Renderizar la semana actual y la siguiente
-      console.log("Renderizando semana actual...");
-      renderWeek(currentWeek, 'weekdays-current', 'weekdates-current');
-      console.log("Renderizando próxima semana...");
-      renderWeek(nextWeek, 'weekdays-next', 'weekdates-next');
-  
-      // 6) Verificar que los contenedores se han llenado correctamente (depuración)
-      console.log("Contenido de 'weekdays-current':", document.getElementById('weekdays-current').innerHTML);
-      console.log("Contenido de 'weekdates-current':", document.getElementById('weekdates-current').innerHTML);
-  
-      // 7) Aplicar la disponibilidad según el atributo data-dias-disponibles del psicólogo
-      const psicologoElem = document.querySelector('.psicologo');
-      if (psicologoElem) {
-        const disponiblesData = psicologoElem.dataset.diasDisponibles;
-        console.log("Días disponibles del psicólogo:", disponiblesData);
-        const availableDays = disponiblesData ? disponiblesData.split(',') : [];
-        console.log("Array de días disponibles:", availableDays);
-  
-        // Recorrer cada botón de día y desactivar aquellos que no estén en la disponibilidad
-        document.querySelectorAll('.day-btn').forEach(btn => {
-          const fullDay = btn.dataset.day; // Obtenemos el día completo asignado
-          if (!availableDays.includes(fullDay)) {
-            console.log(`Desactivando día ${fullDay} ya que no está disponible.`);
-            btn.disabled = true;
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-secondary');
+          if (!this.disabled) {
+            this.classList.add('active', 'btn-primary');
+            this.classList.remove('btn-secondary');
+            // Mostrar la sección de horarios
+            document.getElementById('horarioSection').style.display = 'block';
+            // Filtrar los horarios según el día seleccionado
+            filterHorarios(this.dataset.day);
           }
         });
-      } else {
-        console.warn("No se encontró un elemento con la clase 'psicologo' para aplicar la disponibilidad.");
-      }
-    });
-  </script>
   
+        weekdatesContainer.appendChild(dayBtn);
+      });
+    }
   
+    renderWeek(currentWeek, 'weekdays-current', 'weekdates-current');
+    renderWeek(nextWeek, 'weekdays-next', 'weekdates-next');
   
+    // Aplicar disponibilidad (si aplica)
+    const psicologoElem = document.querySelector('.psicologo');
+    if (psicologoElem) {
+      const disponiblesData = psicologoElem.dataset.diasDisponibles;
+      const availableDays = disponiblesData ? disponiblesData.split(',') : [];
+      document.querySelectorAll('.day-btn').forEach(btn => {
+        const fullDay = btn.dataset.day;
+        if (!availableDays.includes(fullDay)) {
+          btn.disabled = true;
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-secondary');
+        }
+      });
+    }
   
+    // Función que filtra y muestra únicamente los horarios correspondientes al día seleccionado
+    function filterHorarios(selectedDay) {
+      document.querySelectorAll('.horario-container').forEach(container => {
+        container.style.display = container.dataset.day === selectedDay ? 'block' : 'none';
+      });
+    }
+  
+    // (Opcional) Mostrar horarios del día actual al cargar
+    const todayDayName = fullDays[today.getDay()];
+    filterHorarios(todayDayName);
+  });
+</script>
+
+
+
+
+
+
 
 
 
