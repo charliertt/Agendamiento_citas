@@ -47,51 +47,42 @@
 		
 
 		
-		<div id="table-default" class="table-responsive">
-			
-			<table id="usuariosTable" class="display">
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Fecha y Hora</th>
-						<th>Estudiante</th>
-						<th>Psicólogo</th>
-						<th>Asunto</th>
-						<th>Estado</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for cita in citas %}
-					<tr>
-					  <td>{{ cita.id }}-</td>
-					  <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
-					  <td>{{ cita.estudiante }}</td>
-					  <td>{{ cita.psicologo }}</td>
-					  <td>{{ cita.asunto }}</td>
-					  <td>{{ cita.estado }}</td>
-					  <td>
-						<a href="" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modal-editar-cita-{{ cita.id }}">Editar</a>
-
-						{% include 'formularios/editar_cita.html' %}	
-
-						<a href="" class="btn btn-sm btn-danger">Eliminar</a>
-					  </td>
-					</tr>
-				  {% empty %}
-					<tr>
-					  <td colspan="7">No hay citas disponibles.</td>
-					</tr>
-				  {% endfor %}
-				</tbody>
-
-				
-
-
-<!-- Script para auto-abrir el modal cuando hay horario -->
-
-		</div>
-	</div>
+		<div class="row">
+			{% for cita in citas %}
+			<div class="col-md-4 mb-4">
+			  <div class="card shadow-sm border-0">
+				<!-- Imagen opcional: Si no tienes una imagen asociada, reemplaza el src por una imagen por defecto -->
+				<a href="#">
+				  <img class="card-img-top" src="/ruta/a/tu-imagen-por-defecto.jpg" alt="Imagen de la cita">
+				</a>
+				<div class="card-body">
+				  <h5 class="card-title text-primary">{{ cita.asunto }}</h5>
+				  <p class="card-text">
+					<small class="text-muted">
+					  <i class="fas fa-calendar-alt"></i> {{ cita.fecha_hora|date:"d/m/Y H:i" }}
+					</small>
+				  </p>
+				  <ul class="list-unstyled">
+					<li><strong>ID:</strong> {{ cita.id }}</li>
+					<li><strong>Estudiante:</strong> {{ cita.estudiante }}</li>
+					<li><strong>Psicólogo:</strong> {{ cita.psicologo }}</li>
+					<li><strong>Estado:</strong> {{ cita.estado }}</li>
+				  </ul>
+				</div>
+				<div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+				  <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-editar-cita-{{ cita.id }}">Editar</a>
+				  {% include 'formularios/editar_cita.html' %}
+				  <a href="#" class="btn btn-sm btn-outline-danger">Eliminar</a>
+				</div>
+			  </div>
+			</div>
+			{% empty %}
+			<div class="col-12">
+			  <div class="alert alert-info">No hay citas disponibles.</div>
+			</div>
+			{% endfor %}
+		  </div>
+		  
 </div>
 
 			</div>
