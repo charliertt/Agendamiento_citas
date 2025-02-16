@@ -368,464 +368,79 @@
   <!-- Features Section -->
   <!-- /Features Section -->
 
-  <style>
-    /* Personalización de los íconos de los controles */
-    .carousel-control-prev i.bi,
-    /* Apuntamos específicamente a los iconos de Bootstrap Icons */
-    .carousel-control-next i.bi {
-      display: inline-block;
-      /* Aseguramos que se muestren */
-      font-size: 2em;
-      /* Ajusta el tamaño */
-      color: black;
-      /* O cualquier color que contraste con tu fondo */
-    }
-
-    /* Opcional: Si quieres cambiar el color al pasar el ratón por encima */
-    .carousel-control-prev:hover i.bi,
-    .carousel-control-next:hover i.bi {
-      color: blue;
-      /* Ejemplo de color al hacer hover */
-    }
-  </style>
   <!-- Portfolio Section -->
-  <section id="portfolio" class="portfolio section">
-    <!-- Título de la Sección -->
-    <!-- Sección de selección de Psicólogo -->
-<div class="container section-title" data-aos="fade-up">
-  <h2>Agenda tu Cita</h2>
-  {% for psicologo in psicologos %}
-    <p>{{ psicologo.usuario.username }}</p>
-  {% endfor %}
-  <p>Selecciona el psicólogo</p>
-</div>
 
-<div class="container">
-  <div class="row">
-    {% for item in psicologos_con_horarios %}
-    <div class="col-md-6 mb-4">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <!-- Imagen del psicólogo -->
-            <div>
-              {% if item.psicologo.usuario.imagen %}
-                <img src="{{ item.psicologo.usuario.imagen.url }}" alt="Foto psicólogo" class="rounded-circle" width="60" height="60">
-              {% else %}
-                <img src="{% static 'img/imagen.png' %}" alt="Foto psicólogo" class="rounded-circle" width="60" height="60">
-              {% endif %}
-            </div>
-            <div class="ms-3">
-              <!-- Nombre y especialización -->
-              <h5>{{ item.psicologo.usuario.username }}</h5>
-              <p class="mb-0">{{ item.psicologo.especializacion }}</p>
-              <p class="text-muted">$40.000 COP</p>
-            </div>
-          </div>
-          <!-- Modalidad y duración -->
-          <div class="d-flex justify-content-between mt-3">
-            <div>
-              <p class="mb-0">Modalidad</p>
-              <p class="fw-bold">Presencial</p>
-            </div>
-            <div>
-              <p class="mb-0">Duración</p>
-              <p class="fw-bold">45 min</p>
-            </div>
-          </div>
-          <!-- Botón de Ver horas: se asigna data para el modal -->
-          <div class="text-end">
-            <a href="#" 
-               class="btn btn-primary" 
-               data-bs-toggle="modal" 
-               data-bs-target="#horasModal" 
-               data-psicologo="{{ item.psicologo.usuario.username }}">
-              <i class="bi bi-calendar"></i> Ver horas
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+
+  <!-- ==================== SECCIÓN DE AGENDA DE CITAS ==================== -->
+<section id="portfolio" class="portfolio section">
+
+  <!-- Título y selección de psicólogo -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Agenda tu Cita</h2>
+    {% for psicologo in psicologos %}
+      <p>{{ psicologo.usuario.username }}</p>
     {% endfor %}
+    <p>Selecciona el psicólogo</p>
   </div>
-</div>
 
-<!-- Modal de Horarios -->
-<div class="modal fade" id="horasModal" tabindex="-1" aria-labelledby="horasModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="horasModalLabel">Selecciona un horario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Carrusel de Días -->
-        <div id="daysCarousel" class="carousel slide" data-bs-ride="false">
-          <div class="carousel-inner">
-            <!-- Slide: Semana pasada -->
-            <div class="carousel-item">
-              <div class="d-flex justify-content-center gap-5" id="weekdays-prev">
-                <!-- Nombres de días -->
+  <!-- Tarjetas de Psicólogos -->
+  <div class="container">
+    <div class="row">
+      {% for item in psicologos_con_horarios %}
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <!-- Información del Psicólogo -->
+            <div class="d-flex align-items-center">
+              <div class="psychologist-image">
+                {% if item.psicologo.usuario.imagen %}
+                  <img src="{{ item.psicologo.usuario.imagen.url }}" alt="Foto psicólogo" class="rounded-circle" width="60" height="60">
+                {% else %}
+                  <img src="{% static 'img/imagen.png' %}" alt="Foto psicólogo" class="rounded-circle" width="60" height="60">
+                {% endif %}
               </div>
-              <hr class="col-6 mx-auto">
-              <div class="d-flex justify-content-center gap-4" id="weekdates-prev">
-                <!-- Botones de fecha -->
-              </div>
-            </div>
-            <!-- Slide: Semana actual -->
-            <div class="carousel-item active">
-              <div class="d-flex justify-content-center gap-5" id="weekdays-current">
-                <!-- Nombres de días -->
-              </div>
-              <hr class="col-6 mx-auto">
-              <div class="d-flex justify-content-center gap-4" id="weekdates-current">
-                <!-- Botones de fecha -->
+              <div class="ms-3">
+                <h5>{{ item.psicologo.usuario.username }}</h5>
+                <p class="mb-0">{{ item.psicologo.especializacion }}</p>
+                <p class="text-muted">$40.000 COP</p>
               </div>
             </div>
-            <!-- Slide: Semana siguiente -->
-            <div class="carousel-item">
-              <div class="d-flex justify-content-center gap-5" id="weekdays-next">
-                <!-- Nombres de días -->
-              </div>
-              <hr class="col-6 mx-auto">
-              <div class="d-flex justify-content-center gap-4" id="weekdates-next">
-                <!-- Botones de fecha -->
-              </div>
-            </div>
-          </div>
-          <!-- Controles del Carrusel -->
-          <button class="carousel-control-prev" type="button" data-bs-target="#daysCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true" style="display: none;"></span>
-            <span class="visually-hidden">Anterior</span>
-            <i class="faq-toggle bi bi-chevron-left"></i>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#daysCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true" style="display: none;"></span>
-            <span class="visually-hidden">Siguiente</span>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </button>
-        </div>
 
-        <!-- Sección de Horarios -->
-        <div id="horarioSection" class="mt-4">
-          <div class="mt-4">
-            <div class="mt-4 mb-4">
-              <h3 class="text-center"><strong>¿Qué hora?</strong></h3>
-              <p class="text-center">Duración: 30 minutos</p>
+            <!-- Modalidad y Duración -->
+            <div class="d-flex justify-content-between mt-3">
+              <div>
+                <p class="mb-0">Modalidad</p>
+                <p class="fw-bold">Presencial</p>
+              </div>
+              <div>
+                <p class="mb-0">Duración</p>
+                <p class="fw-bold">45 min</p>
+              </div>
             </div>
-          </div>
-          <div class="mt-4 row justify-content-center gap-0 mx-auto">
-            {% if psicologos_con_horarios %}
-              {% for psicologo_data in psicologos_con_horarios %}
-                <!-- Se agrega data-psicologo para identificar el bloque -->
-                <div class="psicologo" data-psicologo="{{ psicologo_data.psicologo.usuario.username }}" data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
-                  <h3 class="text-left">Horarios de {{ psicologo_data.psicologo.usuario.username }}</h3>
-                  {% for horario_data in psicologo_data.horarios_con_intervalos %}
-                    <div class="horario-container" data-day="{{ horario_data.horario.dia_semana }}">
-                      <div class="mt-4 row justify-content-center gap-0 mx-auto">
-                        <!-- Primera columna -->
-                        <div class="col-2 text-center">
-                          {% for intervalo in horario_data.intervalos|slice:":3" %}
-                            <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                          {% endfor %}
-                        </div>
-                        <!-- Segunda columna -->
-                        <div class="col-2 text-center">
-                          {% for intervalo in horario_data.intervalos|slice:"3:6" %}
-                            <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                          {% endfor %}
-                        </div>
-                        <!-- Tercera columna -->
-                        <div class="col-2 text-center">
-                          {% for intervalo in horario_data.intervalos|slice:"6:9" %}
-                            <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                          {% endfor %}
-                        </div>
-                      </div>
-                    </div>
-                  {% endfor %}
-                </div>
-              {% endfor %}
-            {% else %}
-              <p class="text-center">No hay horarios disponibles para mostrar.</p>
-            {% endif %}
+
+            <!-- Botón para ver horarios (abre el modal) -->
+            <div class="text-end">
+              <a href="#" 
+                 class="btn btn-primary" 
+                 data-bs-toggle="modal" 
+                 data-bs-target="#horasModal" 
+                 data-psicologo="{{ item.psicologo.usuario.username }}">
+                <i class="bi bi-calendar"></i> Ver horas
+              </a>
+            </div>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-         <button type="button" class="btn btn-primary">Confirmar Horario</button>
-      </div>
+      {% endfor %}
     </div>
   </div>
-</div>
+<!-- ==================== Modal de Horarios ==================== -->
 
-
-
-    <div class="container my-4">
-     
-
-      
-      <div class="card mt-4">
-        
-        <div class="card-body">
-
-          
-          <!-- Carrusel de Días -->
-          <div id="daysCarousel" class="carousel slide" data-bs-ride="false">
-            <div class="carousel-inner">
-              <!-- Primer slide: semana actual -->
-              <div class="carousel-item active">
-                <!-- Contenedor para los nombres de días -->
-                <div class="d-flex justify-content-center gap-5" id="weekdays-current">
-                  <!-- Aquí se insertan dinámicamente los nombres (LUN, MAR, ...) -->
-                </div>
-                <hr class="col-6 mx-auto">
-                <!-- Contenedor para los botones de fecha -->
-                <div class="d-flex justify-content-center gap-4" id="weekdates-current">
-                  <!-- Aquí se insertan dinámicamente los botones de fecha -->
-                </div>
-              </div>
-
-              <!-- Segundo slide: semana siguiente -->
-              <div class="carousel-item">
-                <div class="d-flex justify-content-center gap-5" id="weekdays-next">
-                  <!-- Nombres de días -->
-                </div>
-                <hr class="col-6 mx-auto">
-                <div class="d-flex justify-content-center gap-4" id="weekdates-next">
-                  <!-- Botones de fecha -->
-                </div>
-              </div>
-            </div>
-            <!-- Controles del Carrusel -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#daysCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true" style="display: none;"></span>
-              <span class="visually-hidden">Anterior</span>
-              <i class="faq-toggle bi bi-chevron-left"></i>
-            </button>
-
-            <button class="carousel-control-next" type="button" data-bs-target="#daysCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true" style="display: none;"></span>
-              <span class="visually-hidden">Siguiente</span>
-              <i class="faq-toggle bi bi-chevron-right"></i>
-            </button>
-
-
-          </div>
-        </div>
-      </div>
-      <!----- DIV HORARIO-->
-      <div id="horarioSection" class="mt-4" style="display:none;">
-      <div class="mt-4">
-        <div class="mt-4 mb-4">
-          <h3 class="text-center"><strong>¿Qué hora?</strong></h3>
-          <p class="text-center">Duración: 30 minutos</p>
-        </div>
-      </div>
-
-        <div class="mt-4 row justify-content-center gap-0 mx-auto">
-          {% if psicologos_con_horarios %}
-          {% for psicologo_data in psicologos_con_horarios %}
-          <div class="psicologo" data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
-            <h3 class="text-left">Horarios de {{ psicologo_data.psicologo.usuario.username }}</h3>
-
-            <!-- Recorremos cada horario del psicólogo -->
-            {% for horario_data in psicologo_data.horarios_con_intervalos %}
-            <!-- Envolvemos cada bloque de horario en un contenedor con el atributo data-day -->
-            <div class="horario-container" data-day="{{ horario_data.horario.dia_semana }}">
-              <div class="mt-4 row justify-content-center gap-0 mx-auto">
-                <!-- Primera columna -->
-                <div class="col-2 text-center">
-                  {% for intervalo in horario_data.intervalos|slice:":3" %}
-                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                  {% endfor %}
-                </div>
-
-                <!-- Segunda columna -->
-                <div class="col-2 text-center">
-                  {% for intervalo in horario_data.intervalos|slice:"3:6" %}
-                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                  {% endfor %}
-                </div>
-
-                <!-- Tercera columna -->
-                <div class="col-2 text-center">
-                  {% for intervalo in horario_data.intervalos|slice:"6:9" %}
-                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-          {% endfor %}
-          {% else %}
-          <p class="text-center">No hay horarios disponibles para mostrar.</p>
-          {% endif %}
-        </div>
-      </div>
-
-
-
-
-
-  </section><!-- /Portfolio Section -->
-
-  <!-- Pricing Section -->
-
-  <script>
-    document.querySelectorAll('.day-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active', 'btn-primary'));
-        this.classList.add('active', 'btn-primary');
-        console.log('Día seleccionado: ', this.innerText);
-      });
-    });
-  </script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Arreglos para formatear días y meses
-    const daysShort = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
-    const monthsShort = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-    const fullDays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  {% include 'modal_cita.html' %}
   
-    // Fecha actual
-    const today = new Date();
-    const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  
-    // Obtener el lunes de la semana actual
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const currentMonday = new Date(today);
-    currentMonday.setDate(today.getDate() + mondayOffset);
-  
-    // Función para obtener un array de 7 días (lunes a domingo)
-    function getWeekDates(startDate) {
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(startDate);
-        d.setDate(d.getDate() + i);
-        days.push(d);
-      }
-      return days;
-    }
-  
-    const currentWeek = getWeekDates(currentMonday);
-    const nextMonday = new Date(currentMonday);
-    nextMonday.setDate(nextMonday.getDate() + 7);
-    const nextWeek = getWeekDates(nextMonday);
-  
-    // Función que inyecta en el DOM los días y fechas
-    function renderWeek(weekArray, weekdaysContainerId, weekdatesContainerId) {
-      const weekdaysContainer = document.getElementById(weekdaysContainerId);
-      const weekdatesContainer = document.getElementById(weekdatesContainerId);
-      if (!weekdaysContainer || !weekdatesContainer) return;
-  
-      weekdaysContainer.innerHTML = '';
-      weekdatesContainer.innerHTML = '';
-  
-      weekArray.forEach(dateObj => {
-        const dayShort = daysShort[dateObj.getDay()];
-        const fullDay = fullDays[dateObj.getDay()];
-        const dayNum = dateObj.getDate();
-        const monthName = monthsShort[dateObj.getMonth()];
-  
-        const daySpan = document.createElement('span');
-        daySpan.classList.add('text-center');
-        daySpan.textContent = dayShort;
-        weekdaysContainer.appendChild(daySpan);
-  
-        const dayBtn = document.createElement('button');
-        dayBtn.classList.add('day-btn', 'btn', 'btn-primary');
-        dayBtn.innerHTML = `${dayNum}<br>${monthName}`;
-        dayBtn.dataset.day = fullDay;
-  
-        if (dayShort === 'SAB' || dayShort === 'DOM') {
-          dayBtn.disabled = true;
-          dayBtn.classList.remove('btn-primary');
-          dayBtn.classList.add('btn-secondary');
-        }
-  
-        const dateNormalized = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-        if (dateNormalized < todayNormalized) {
-          dayBtn.disabled = true;
-          dayBtn.classList.remove('btn-primary');
-          dayBtn.classList.add('btn-secondary');
-        }
-  
-        dayBtn.addEventListener('click', function () {
-          document.querySelectorAll('.day-btn').forEach(b => {
-            b.classList.remove('active', 'btn-primary');
-            if (b.disabled) b.classList.add('btn-secondary');
-          });
-          if (!this.disabled) {
-            this.classList.add('active', 'btn-primary');
-            this.classList.remove('btn-secondary');
-            // Filtrar los horarios según el día seleccionado en el contenedor activo
-            filterHorarios(this.dataset.day);
-            console.log('Día seleccionado: ', this.innerText);
-          }
-        });
-  
-        weekdatesContainer.appendChild(dayBtn);
-      });
-    }
-  
-    renderWeek(currentWeek, 'weekdays-current', 'weekdates-current');
-    renderWeek(nextWeek, 'weekdays-next', 'weekdates-next');
-  
-    // Función que filtra y muestra únicamente los horarios correspondientes al día seleccionado en el contenedor activo
-    function filterHorarios(selectedDay) {
-      const activePsicologo = document.querySelector('#horarioSection .psicologo:not([style*="display: none"])');
-      if (!activePsicologo) return;
-      activePsicologo.querySelectorAll('.horario-container').forEach(container => {
-        container.style.display = container.dataset.day === selectedDay ? 'block' : 'none';
-      });
-    }
-  
-    // Evento del modal para cargar el horario del psicólogo seleccionado
-    const horasModal = document.getElementById('horasModal');
-    horasModal.addEventListener('show.bs.modal', function (event) {
-      // Obtiene el botón que disparó el modal
-      const button = event.relatedTarget;
-      const psicologo = button.getAttribute('data-psicologo');
-  
-      // Oculta todos los contenedores de horarios
-      document.querySelectorAll('#horarioSection .psicologo').forEach(el => {
-        el.style.display = 'none';
-      });
-      // Muestra solo el contenedor del psicólogo seleccionado
-      const target = document.querySelector(`#horarioSection .psicologo[data-psicologo="${psicologo}"]`);
-      if (target) {
-        target.style.display = 'block';
-  
-        // Aplica la disponibilidad de días según el atributo data-dias-disponibles
-        const disponiblesData = target.dataset.diasDisponibles;
-        const availableDays = disponiblesData ? disponiblesData.split(',') : [];
-        document.querySelectorAll('.day-btn').forEach(btn => {
-          const fullDay = btn.dataset.day;
-          if (!availableDays.includes(fullDay)) {
-            btn.disabled = true;
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-secondary');
-          } else {
-            btn.disabled = false;
-            btn.classList.remove('btn-secondary');
-            btn.classList.add('btn-primary');
-          }
-        });
-        // (Opcional) Muestra los horarios del día actual
-        const todayDayName = fullDays[today.getDay()];
-        filterHorarios(todayDayName);
-      }
-    });
-  });
-  
-</script>
+  <!-- ==================== FIN MODAL ==================== -->
 
-
+</section>
 
 
 
@@ -1324,6 +939,7 @@
 <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
 
 <!-- Main JS File -->
+<script src="{% static 'js/logica.js' %}"></script>
 
 <script src="{% static 'js/main.js' %}"></script>
 

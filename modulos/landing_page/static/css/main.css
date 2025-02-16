@@ -10,6 +10,65 @@
 # Font & Color Variables
 # Help: https://bootstrapmade.com/color-system/
 --------------------------------------------------------------*/
+
+
+/* MIOS */
+.modal-step {
+  transition: all 0.3s ease;
+}
+
+/* Estilo para el contenedor de confirmación */
+.confirmation-details {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+/* Botones de horario */
+.time-btn {
+  background: white;
+  border: 2px solid #e84545;
+  color: #e84545;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.time-btn:hover {
+  background: #e84545;
+  color: white;
+}
+.time-btn.selected {
+  background: #e84545 !important;
+  color: white !important;
+  border-color: #e84545 !important;
+}
+
+
+
+ /* Personalización de los íconos de los controles */
+ .carousel-control-prev i.bi,
+ /* Apuntamos específicamente a los iconos de Bootstrap Icons */
+ .carousel-control-next i.bi {
+   display: inline-block;
+   /* Aseguramos que se muestren */
+   font-size: 2em;
+   /* Ajusta el tamaño */
+   color: black;
+   /* O cualquier color que contraste con tu fondo */
+ }
+
+ /* Opcional: Si quieres cambiar el color al pasar el ratón por encima */
+ .carousel-control-prev:hover i.bi,
+ .carousel-control-next:hover i.bi {
+   color: blue;
+   /* Ejemplo de color al hacer hover */
+ }
+
+ 
+
+
+
 /* Fonts */
 :root {
   --default-font: "Open Sans",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
