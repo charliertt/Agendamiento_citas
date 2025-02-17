@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita
 from datetime import timedelta, datetime
+from .forms import EstudianteForm
 from django.http import JsonResponse
 from datetime import timedelta
 import datetime  # Cambiamos esto para usar el módulo completo
@@ -64,7 +65,8 @@ def generar_intervalos(hora_inicio, hora_fin):
     return intervalos
 
 def index(request):
-    psicologos = Psicologo.objects.prefetch_related('horarios').all()  # prefetch de horarios
+    psicologos = Psicologo.objects.prefetch_related('horarios').all()
+    estudiante_form = EstudianteForm()  # Cambio de nombre
     psicologos_con_horarios = []
     for psicologo in psicologos:
         horarios_con_intervalos = []
@@ -84,9 +86,11 @@ def index(request):
         })
 
     context = {
-        'psicologos_con_horarios': psicologos_con_horarios
+        'psicologos_con_horarios': psicologos_con_horarios,
+        'estudiante_form': estudiante_form  # Actualización en el contexto
     }
     return render(request, 'index.html', context)
+
 
     
     

@@ -1,3 +1,4 @@
+{% load crispy_forms_tags %}
 <!-- ==================== MODAL DE HORARIOS ==================== -->
 <div class="modal fade" id="horasModal" tabindex="-1" aria-labelledby="horasModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -9,7 +10,7 @@
         </div>
         <!-- Cuerpo del Modal -->
         <div class="modal-body">
-            <h6 class="m-4">¿Qué día te acomoda?</h6>
+            <h6  id="selectDayTitle" class="m-4">¿Qué día te acomoda?</h6>
           <!-- Paso 1: Selección de horario -->
           <div id="step1" class="modal-step">
             <!-- Carrusel de Días -->
@@ -18,13 +19,13 @@
                 <!-- Semana actual -->
                 <div class="carousel-item active">
                   <div class="d-flex justify-content-center gap-5" id="weekdays-current"></div>
-                  <hr class="col-6 mx-auto">
+                  <hr class="col-8 mx-auto">
                   <div class="d-flex justify-content-center gap-4" id="weekdates-current"></div>
                 </div>
                 <!-- Semana siguiente -->
                 <div class="carousel-item">
                   <div class="d-flex justify-content-center gap-5" id="weekdays-next"></div>
-                  <hr class="col-6 mx-auto">
+                  <hr class="col-8 mx-auto">
                   <div class="d-flex justify-content-center gap-4" id="weekdates-next"></div>
                 </div>
               </div>
@@ -77,35 +78,43 @@
           <!-- Paso 2: Formulario de datos -->
           <div id="step2" class="modal-step" style="display: none;">
             <div class="mb-4">
-              <h5 class="text-muted mb-3">Confirmación de cita</h5>
+              <h5 class="text-muted mb-3 text-center">Confirmación de Cita</h5>
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                  <h4 class="mb-1" id="confirmation-psychologist">Carlos</h4>
-                  <span class="text-muted" id="confirmation-specialty">Pediatría</span>
+                  <h4><strong>Psicologo</strong></h4>
+                  <h4 class="mb-1" id="confirmation-psychologist"> </h4>
+                  <span class="text-muted" id="confirmation-specialty"></span>
                 </div>
                 <div class="text-end">
-                  <h5 class="mb-1" id="confirmation-date">Lunes 24 de febrero</h5>
-                  <span class="text-muted" id="confirmation-time">09:00</span>
+                  <h5 class="mb-1" id="confirmation-date"></h5>
+                  <span class="text-muted" id="confirmation-time"></span>
                 </div>
               </div>
-              <form id="appointmentForm">
-                <div class="mb-3">
-                  <label class="form-label">Nombre y apellidos</label>
-                  <input type="text" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Correo</label>
-                  <input type="email" class="form-control" value="nombre@mail.com" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Celular</label>
-                  <input type="tel" class="form-control" value="+57 9 1234 5986" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Comentarios - opcional</label>
-                  <textarea class="form-control" rows="3"></textarea>
+              <div>
+              <form id="EstudianteForm">
+                <div class="row row-bordered">
+                  {% for field in estudiante_form %}
+                      {% if field.name in "username,first_name,last_name,email" %}
+                          <div class="col-md-4">
+                              {{ field|as_crispy_field }}
+                          </div>
+                          {% elif field.name == "password1" %}
+                                <div class="col-md-6">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% elif field.name == "password2" %}
+                                <div class="col-md-6">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                      {% elif field.name in "tipo_identificacion,identificacion,eps,alergias,enfermedades" %}
+                          <div class="col-md-4">
+                              {{ field|as_crispy_field }}
+                          </div>
+                      {% endif %}
+                  {% endfor %}
                 </div>
               </form>
+            </div>
             </div>
           </div>
 

@@ -380,7 +380,7 @@
     {% for psicologo in psicologos %}
       <p>{{ psicologo.usuario.username }}</p>
     {% endfor %}
-    <p>Selecciona el psicólogo</p>
+    <h5>Selecciona el psicólogo</h5>
   </div>
 
   <!-- Tarjetas de Psicólogos -->
@@ -402,19 +402,19 @@
               <div class="ms-3">
                 <h5>{{ item.psicologo.usuario.username }}</h5>
                 <p class="mb-0">{{ item.psicologo.especializacion }}</p>
-                <p class="text-muted">$40.000 COP</p>
+                
               </div>
             </div>
 
             <!-- Modalidad y Duración -->
             <div class="d-flex justify-content-between mt-3">
               <div>
-                <p class="mb-0">Modalidad</p>
+                <p class="mb-0">{{ item.psicologo.usuario.username }}</p>
                 <p class="fw-bold">Presencial</p>
               </div>
               <div>
                 <p class="mb-0">Duración</p>
-                <p class="fw-bold">45 min</p>
+                <p class="fw-bold">60 min</p>
               </div>
             </div>
 
