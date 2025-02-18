@@ -59,9 +59,7 @@ class Estudiante(models.Model):
     def __str__(self):
         return self.usuario.username
     
-    
-   
-
+ 
 
 class Psicologo(models.Model):
     usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='psicologo')

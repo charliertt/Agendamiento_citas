@@ -368,280 +368,79 @@
   <!-- Features Section -->
   <!-- /Features Section -->
 
-  <style>
-    /* Personalización de los íconos de los controles */
-    .carousel-control-prev i.bi,
-    /* Apuntamos específicamente a los iconos de Bootstrap Icons */
-    .carousel-control-next i.bi {
-      display: inline-block;
-      /* Aseguramos que se muestren */
-      font-size: 2em;
-      /* Ajusta el tamaño */
-      color: black;
-      /* O cualquier color que contraste con tu fondo */
-    }
-
-    /* Opcional: Si quieres cambiar el color al pasar el ratón por encima */
-    .carousel-control-prev:hover i.bi,
-    .carousel-control-next:hover i.bi {
-      color: blue;
-      /* Ejemplo de color al hacer hover */
-    }
-  </style>
   <!-- Portfolio Section -->
-  <section id="portfolio" class="portfolio section">
-    <!-- Título de la Sección -->
-    <div class="container section-title" data-aos="fade-up">
 
-      <h2>Agenda tu Cita</h2>
-      {% for psicologo in psicologos %}
+
+  <!-- ==================== SECCIÓN DE AGENDA DE CITAS ==================== -->
+<section id="portfolio" class="portfolio section">
+
+  <!-- Título y selección de psicólogo -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Agenda tu Cita</h2>
+    {% for psicologo in psicologos %}
       <p>{{ psicologo.usuario.username }}</p>
+    {% endfor %}
+    <h5>Selecciona el psicólogo</h5>
+  </div>
+
+  <!-- Tarjetas de Psicólogos -->
+  <div class="container">
+    <div class="row">
+      {% for item in psicologos_con_horarios %}
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <!-- Información del Psicólogo -->
+            <div class="d-flex align-items-center">
+              <div class="psychologist-image">
+                {% if item.psicologo.usuario.imagen %}
+                  <img src="{{ item.psicologo.usuario.imagen.url }}" alt="Foto psicólogo" class="rounded-circle" width="60" height="60">
+                {% else %}
+                  <img src="{% static 'img/imagen.png' %}" alt="Foto psicólogo" class="rounded-circle" width="60" height="60">
+                {% endif %}
+              </div>
+              <div class="ms-3">
+                <h5>{{ item.psicologo.usuario.username }}</h5>
+                <p class="mb-0">{{ item.psicologo.especializacion }}</p>
+                
+              </div>
+            </div>
+
+            <!-- Modalidad y Duración -->
+            <div class="d-flex justify-content-between mt-3">
+              <div>
+                <p class="mb-0">{{ item.psicologo.usuario.username }}</p>
+                <p class="fw-bold">Presencial</p>
+              </div>
+              <div>
+                <p class="mb-0">Duración</p>
+                <p class="fw-bold">60 min</p>
+              </div>
+            </div>
+
+            <!-- Botón para ver horarios (abre el modal) -->
+            <div class="text-end">
+              <a href="#" 
+                 class="btn btn-primary" 
+                 data-bs-toggle="modal" 
+                 data-bs-target="#horasModal" 
+                 data-psicologo="{{ item.psicologo.usuario.username }}">
+                <i class="bi bi-calendar"></i> Ver horas
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
       {% endfor %}
-
-      <p>Selecciona una fecha disponible</p>
     </div>
+  </div>
+<!-- ==================== Modal de Horarios ==================== -->
 
-
-
-    <div class="container my-4">
-      <div class="card">
-        
-        <div class="card-body">
-          <!-- Carrusel de Días -->
-          <div id="daysCarousel" class="carousel slide" data-bs-ride="false">
-            <div class="carousel-inner">
-              <!-- Primer slide: semana actual -->
-              <div class="carousel-item active">
-                <!-- Contenedor para los nombres de días -->
-                <div class="d-flex justify-content-center gap-5" id="weekdays-current">
-                  <!-- Aquí se insertan dinámicamente los nombres (LUN, MAR, ...) -->
-                </div>
-                <hr class="col-6 mx-auto">
-                <!-- Contenedor para los botones de fecha -->
-                <div class="d-flex justify-content-center gap-4" id="weekdates-current">
-                  <!-- Aquí se insertan dinámicamente los botones de fecha -->
-                </div>
-              </div>
-
-              <!-- Segundo slide: semana siguiente -->
-              <div class="carousel-item">
-                <div class="d-flex justify-content-center gap-5" id="weekdays-next">
-                  <!-- Nombres de días -->
-                </div>
-                <hr class="col-6 mx-auto">
-                <div class="d-flex justify-content-center gap-4" id="weekdates-next">
-                  <!-- Botones de fecha -->
-                </div>
-              </div>
-            </div>
-            <!-- Controles del Carrusel -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#daysCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true" style="display: none;"></span>
-              <span class="visually-hidden">Anterior</span>
-              <i class="faq-toggle bi bi-chevron-left"></i>
-            </button>
-
-            <button class="carousel-control-next" type="button" data-bs-target="#daysCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true" style="display: none;"></span>
-              <span class="visually-hidden">Siguiente</span>
-              <i class="faq-toggle bi bi-chevron-right"></i>
-            </button>
-
-
-          </div>
-        </div>
-      </div>
-      <!----- DIV HORARIO-->
-      <div id="horarioSection" class="mt-4" style="display:none;">
-      <div class="mt-4">
-        <div class="mt-4 mb-4">
-          <h3 class="text-center"><strong>¿Qué hora?</strong></h3>
-          <p class="text-center">Duración: 30 minutos</p>
-        </div>
-      </div>
-
-        <div class="mt-4 row justify-content-center gap-0 mx-auto">
-          {% if psicologos_con_horarios %}
-          {% for psicologo_data in psicologos_con_horarios %}
-          <div class="psicologo" data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
-            <h3 class="text-left">Horarios de {{ psicologo_data.psicologo.usuario.username }}</h3>
-
-            <!-- Recorremos cada horario del psicólogo -->
-            {% for horario_data in psicologo_data.horarios_con_intervalos %}
-            <!-- Envolvemos cada bloque de horario en un contenedor con el atributo data-day -->
-            <div class="horario-container" data-day="{{ horario_data.horario.dia_semana }}">
-              <div class="mt-4 row justify-content-center gap-0 mx-auto">
-                <!-- Primera columna -->
-                <div class="col-2 text-center">
-                  {% for intervalo in horario_data.intervalos|slice:":3" %}
-                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                  {% endfor %}
-                </div>
-
-                <!-- Segunda columna -->
-                <div class="col-2 text-center">
-                  {% for intervalo in horario_data.intervalos|slice:"3:6" %}
-                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                  {% endfor %}
-                </div>
-
-                <!-- Tercera columna -->
-                <div class="col-2 text-center">
-                  {% for intervalo in horario_data.intervalos|slice:"6:9" %}
-                  <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-          {% endfor %}
-          {% else %}
-          <p class="text-center">No hay horarios disponibles para mostrar.</p>
-          {% endif %}
-        </div>
-      </div>
-
-
-
-
-
-  </section><!-- /Portfolio Section -->
-
-  <!-- Pricing Section -->
-
-  <script>
-    document.querySelectorAll('.day-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active', 'btn-primary'));
-        this.classList.add('active', 'btn-primary');
-        console.log('Día seleccionado: ', this.innerText);
-      });
-    });
-  </script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Arreglos para formatear días y meses
-    const daysShort = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
-    const monthsShort = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-    const fullDays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  {% include 'modal_cita.html' %}
   
-    // Fecha actual
-    const today = new Date();
-    const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  
-    // Obtener el lunes de la semana actual
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const currentMonday = new Date(today);
-    currentMonday.setDate(today.getDate() + mondayOffset);
-  
-    // Función para obtener un array de 7 días (lunes a domingo)
-    function getWeekDates(startDate) {
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(startDate);
-        d.setDate(d.getDate() + i);
-        days.push(d);
-      }
-      return days;
-    }
-  
-    const currentWeek = getWeekDates(currentMonday);
-    const nextMonday = new Date(currentMonday);
-    nextMonday.setDate(nextMonday.getDate() + 7);
-    const nextWeek = getWeekDates(nextMonday);
-  
-    // Función que inyecta en el DOM los días y fechas
-    function renderWeek(weekArray, weekdaysContainerId, weekdatesContainerId) {
-      const weekdaysContainer = document.getElementById(weekdaysContainerId);
-      const weekdatesContainer = document.getElementById(weekdatesContainerId);
-      if (!weekdaysContainer || !weekdatesContainer) return;
-  
-      weekdaysContainer.innerHTML = '';
-      weekdatesContainer.innerHTML = '';
-  
-      weekArray.forEach(dateObj => {
-        const dayShort = daysShort[dateObj.getDay()];
-        const fullDay = fullDays[dateObj.getDay()];
-        const dayNum = dateObj.getDate();
-        const monthName = monthsShort[dateObj.getMonth()];
-  
-        const daySpan = document.createElement('span');
-        daySpan.classList.add('text-center');
-        daySpan.textContent = dayShort;
-        weekdaysContainer.appendChild(daySpan);
-  
-        const dayBtn = document.createElement('button');
-        dayBtn.classList.add('day-btn', 'btn', 'btn-primary');
-        dayBtn.innerHTML = `${dayNum}<br>${monthName}`;
-        dayBtn.dataset.day = fullDay;
-  
-        if (dayShort === 'SAB' || dayShort === 'DOM') {
-          dayBtn.disabled = true;
-          dayBtn.classList.remove('btn-primary');
-          dayBtn.classList.add('btn-secondary');
-        }
-  
-        const dateNormalized = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-        if (dateNormalized < todayNormalized) {
-          dayBtn.disabled = true;
-          dayBtn.classList.remove('btn-primary');
-          dayBtn.classList.add('btn-secondary');
-        }
-  
-        dayBtn.addEventListener('click', function () {
-          document.querySelectorAll('.day-btn').forEach(b => {
-            b.classList.remove('active', 'btn-primary');
-            if (b.disabled) b.classList.add('btn-secondary');
-          });
-          if (!this.disabled) {
-            this.classList.add('active', 'btn-primary');
-            this.classList.remove('btn-secondary');
-            // Mostrar la sección de horarios
-            document.getElementById('horarioSection').style.display = 'block';
-            // Filtrar los horarios según el día seleccionado
-            filterHorarios(this.dataset.day);
-          }
-        });
-  
-        weekdatesContainer.appendChild(dayBtn);
-      });
-    }
-  
-    renderWeek(currentWeek, 'weekdays-current', 'weekdates-current');
-    renderWeek(nextWeek, 'weekdays-next', 'weekdates-next');
-  
-    // Aplicar disponibilidad (si aplica)
-    const psicologoElem = document.querySelector('.psicologo');
-    if (psicologoElem) {
-      const disponiblesData = psicologoElem.dataset.diasDisponibles;
-      const availableDays = disponiblesData ? disponiblesData.split(',') : [];
-      document.querySelectorAll('.day-btn').forEach(btn => {
-        const fullDay = btn.dataset.day;
-        if (!availableDays.includes(fullDay)) {
-          btn.disabled = true;
-          btn.classList.remove('btn-primary');
-          btn.classList.add('btn-secondary');
-        }
-      });
-    }
-  
-    // Función que filtra y muestra únicamente los horarios correspondientes al día seleccionado
-    function filterHorarios(selectedDay) {
-      document.querySelectorAll('.horario-container').forEach(container => {
-        container.style.display = container.dataset.day === selectedDay ? 'block' : 'none';
-      });
-    }
-  
-    // (Opcional) Mostrar horarios del día actual al cargar
-    const todayDayName = fullDays[today.getDay()];
-    filterHorarios(todayDayName);
-  });
-</script>
+  <!-- ==================== FIN MODAL ==================== -->
 
-
+</section>
 
 
 
@@ -1140,6 +939,7 @@
 <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
 
 <!-- Main JS File -->
+<script src="{% static 'js/logica.js' %}"></script>
 
 <script src="{% static 'js/main.js' %}"></script>
 
