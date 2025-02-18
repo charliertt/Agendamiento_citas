@@ -971,6 +971,11 @@ section,
   box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   transition: all 0.3s ease-out 0s;
+  flex: 1; /* Permite que todas las cajas se estiren para ocupar el mismo espacio */
+}
+
+.about .icon-boxes .col-md-6 {
+  display: flex; /* Activa Flexbox en cada columna */
 }
 
 .about .icon-box i {
@@ -1003,18 +1008,22 @@ section,
   color: var(--contrast-color);
 }
 
+/* Eliminar márgenes negativos */
 .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
 .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
-  margin-top: -40px;
+    margin-top: 0; /* Cambia a cero para evitar espacios desiguales */
 }
 
 @media (max-width: 768px) {
-
-  .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
-  .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
-    margin-top: 0;
-  }
+  
+    /* Mantener el comportamiento responsivo */
+    .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
+    .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
+        margin-top: 0; /* Asegúrate de que no haya márgenes negativos en pantallas pequeñas */
+    }
 }
+
+
 
 /*--------------------------------------------------------------
 # Stats Section
