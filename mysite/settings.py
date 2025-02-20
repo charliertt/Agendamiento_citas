@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+import locale
+
+# Configura el locale para fechas (LC_TIME) a español en Windows
+locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,8 +27,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-q_egfd9p#(7pjavlz$i!s7(p1=l1@ho%!mj7-qkyce3x2)h-c-'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER="puntomentalcosfacali@gmail.com"
+EMAIL_HOST_PASSWORD="vjvo yzmz zugz cmvy"
+
+# SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = []
 
@@ -113,7 +125,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-co'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
+
 
 USE_I18N = True
 

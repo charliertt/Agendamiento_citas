@@ -60,14 +60,14 @@ class Estudiante(models.Model):
         return self.usuario.username
     
  
-
 class Psicologo(models.Model):
-    usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='psicologo')
-    especializacion = models.CharField(max_length=200, blank=True, null=True)
+        usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='psicologo')
+        especializacion = models.CharField(max_length=200, blank=True, null=True)
     
-    def __str__(self):
+        def __str__(self):
             # Retorna el nombre de usuario o cualquier otro dato descriptivo
-        return f"{self.usuario.username} - {self.especializacion or 'Sin especialización'}"
+            return f"{self.usuario.username} - {self.especializacion or 'Sin especialización'}"
+
 
 
 class Administrativo(models.Model):
@@ -94,6 +94,7 @@ class Horario(models.Model):
     def __str__(self):
         return f"{self.psicologo.usuario.username} - {self.dia_semana}: {self.hora_inicio} a {self.hora_fin}"
     
+
 
 
 

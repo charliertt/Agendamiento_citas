@@ -3,6 +3,12 @@ from modulos.dashboard.models import UsuarioPersonalizado
 from django.contrib.auth.forms import UserCreationForm
 
 class EstudianteForm(UserCreationForm):
+    comentarios = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Comentarios adicionales (opcional)'}),
+        label='Comentarios adicionales (opcional)'
+    )
+
     class Meta:
         model = UsuarioPersonalizado
         fields = [

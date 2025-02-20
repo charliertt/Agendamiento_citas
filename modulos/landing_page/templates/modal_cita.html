@@ -5,11 +5,20 @@
       <div class="modal-content">
         <!-- Encabezado del Modal -->
         <div class="modal-header">
-          <h5 class="modal-title" id="dynamicModalTitle">Paso 1 de 2 - Selecciona el día y hora</h5>
+          <h5 class="modal-title" id="dynamicModalTitle"> Parte 1 </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <!-- Cuerpo del Modal -->
         <div class="modal-body">
+          <div class="ms-4 me-4">
+          <div id="titulo">
+            <h5 class="text-center mb-4">  Selecciona el día y hora </h5>
+          <div class="progress mb-4">
+            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+          </div>
             <h6  id="selectDayTitle" class="m-4">¿Qué día te acomoda?</h6>
           <!-- Paso 1: Selección de horario -->
           <div id="step1" class="modal-step">
@@ -28,7 +37,7 @@
                   <hr class="col-8 mx-auto">
                   <div class="d-flex justify-content-center gap-4" id="weekdates-next"></div>
                 </div>
-              </div>
+              </div> 
               <!-- Controles del Carrusel -->
               <button class="carousel-control-prev" type="button" data-bs-target="#daysCarousel" data-bs-slide="prev">
                 <i class="faq-toggle bi bi-chevron-left"></i>
@@ -40,10 +49,12 @@
 
             <!-- Sección de Horarios -->
              <div class="mx-auto">
+              
                     <div id="horarioSection" class="mt-4">
                     {% if psicologos_con_horarios %}
                         {% for psicologo_data in psicologos_con_horarios %}
                         <div class="psicologo" 
+                          data-psicologo-id="{{ psicologo_data.psicologo.id }}"
                             data-psicologo="{{ psicologo_data.psicologo.usuario.username }}" 
                             data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
                           
@@ -77,21 +88,53 @@
 
           <!-- Paso 2: Formulario de datos -->
           <div id="step2" class="modal-step" style="display: none;">
+
+
+           
             <div class="mb-4">
-              <h5 class="text-muted mb-3 text-center">Confirmación de Cita</h5>
-              <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                  <h4><strong>Psicologo</strong></h4>
-                  <h4 class="mb-1" id="confirmation-psychologist"> </h4>
-                  <span class="text-muted" id="confirmation-specialty"></span>
-                </div>
-                <div class="text-end">
-                  <h5 class="mb-1" id="confirmation-date"></h5>
-                  <span class="text-muted" id="confirmation-time"></span>
-                </div>
+              <h5 class="text-muted mb-4 text-center">🎯 Confirmación de Cita</h5>
+
+               
+
+            
+             
+              <!-- Card de información de la cita -->
+              <div class="card shadow-sm mb-4 w-75 mx-auto">
+                
+                <div class="mb-4">
+                    <div class="progress" id="progreso">
+                      <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+              
               </div>
-              <div>
-              <form id="EstudianteForm">
+                  <div class="card-body mt-4">
+                   
+                      <div class="d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center gap-3">
+                              <div class="bg-primary-subtle p-3 rounded-circle">
+                              
+                              </div>
+                              <div>
+                                  <h4 class="mb-1 fw-bold" id="confirmation-psychologist"></h4>
+                                  <span class="badge bg-info" id="confirmation-specialty"></span>
+                              </div>
+                          </div>
+                          <div class="text-end">
+                              <div class="mb-2">
+                                  <span class="badge bg-primary"><i class="bi bi-calendar-check me-2"></i><span id="confirmation-date"></span></span>
+                              </div>
+                              <div>
+                                  <span class="badge bg-warning text-dark"><i class="bi bi-clock me-2"></i><span id="confirmation-time"></span></span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="container">
+                <div class="ms-4 me-4">
+                  
+              <form id="appointmentForm"  method="POST" action="{% url 'agendar_cita' %}">
+                {% csrf_token %}
                 <div class="row row-bordered">
                   {% for field in estudiante_form %}
                       {% if field.name in "username,first_name,last_name,email" %}
@@ -106,6 +149,10 @@
                                 <div class="col-md-6">
                                     {{ field|as_crispy_field }}
                                 </div>
+                                {% elif field.name == "comentarios" %}
+                                <div class="col-md-12">
+                                    {{ field|as_crispy_field }}
+                                </div>
                       {% elif field.name in "tipo_identificacion,identificacion,eps,alergias,enfermedades" %}
                           <div class="col-md-4">
                               {{ field|as_crispy_field }}
@@ -113,10 +160,16 @@
                       {% endif %}
                   {% endfor %}
                 </div>
+                <input type="hidden" name="selected_date" id="hiddenDateField">
+                <input type="hidden" name="selected_time" id="hiddenTimeField">
+                <input type="hidden" name="psicologo_nombre" id="hiddenPsicologoField">
+                <input type="hidden" name="psicologo_id" id="hiddenPsicologoFieldID">
               </form>
             </div>
             </div>
           </div>
+          </div>
+          
 
           <!-- Confirmación final -->
           <div id="confirmation" class="modal-step text-center" style="display: none;">
@@ -124,14 +177,15 @@
               <i class="bi bi-check-circle-fill text-success fs-1"></i>
               <h3 class="mt-3">¡Cita agendada!</h3>
               <div class="confirmation-details mt-4">
-                <h5 class="mb-2" id="final-psychologist">Carlos - Pediatría</h5>
-                <p class="text-muted" id="final-datetime">Lunes 24 de febrero a las 09:00</p>
+                <h5 class="mb-2" id="final-psychologist"></h5>
+                <p class="text-muted" id="final-datetime"></p>
                 <p class="text-muted">
                   Se ha enviado un correo de confirmación a:<br>
                   <strong id="final-email">nombre@mail.com</strong>
                 </p>
               </div>
             </div>
+            
           </div>
 
         </div>
