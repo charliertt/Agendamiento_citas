@@ -62,7 +62,8 @@ urlpatterns = [
     path('agendar-cita/', landing_views.agendar_cita, name='agendar_cita'),
     path('horarios-disponibles/', landing_views.obtener_horarios_disponibles, name='horarios_disponibles'),
 
-     
+    #procesar_contacto
+    path('procesar_contacto/', landing_views.procesar_contacto, name='procesar_contacto')
 
 ]
 

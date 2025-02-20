@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita, Estudiante, UsuarioPersonalizado
+from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita, Estudiante, UsuarioPersonalizado, Contacto
 from datetime import timedelta, datetime
-from .forms import EstudianteForm
+from .forms import EstudianteForm, ContactoForm
 from django.http import JsonResponse
 from datetime import timedelta
 from django.utils import timezone
@@ -69,32 +69,6 @@ def generar_intervalos(hora_inicio, hora_fin):
 
     return intervalos
 
-def index(request):
-    psicologos = Psicologo.objects.prefetch_related('horarios').all()
-    estudiante_form = EstudianteForm()  # Cambio de nombre
-    psicologos_con_horarios = []
-    for psicologo in psicologos:
-        horarios_con_intervalos = []
-        dias_disponibles = set()
-        for horario in psicologo.horarios.all():
-            if horario.disponible:
-                dias_disponibles.add(horario.dia_semana)
-                intervalos = generar_intervalos(horario.hora_inicio, horario.hora_fin)
-                horarios_con_intervalos.append({
-                    'horario': horario,
-                    'intervalos': intervalos
-                })
-        psicologos_con_horarios.append({
-            'psicologo': psicologo,
-            'horarios_con_intervalos': horarios_con_intervalos,
-            'dias_disponibles': list(dias_disponibles)  # Ej: ['Miércoles', 'Viernes']
-        })
-
-    context = {
-        'psicologos_con_horarios': psicologos_con_horarios,
-        'estudiante_form': estudiante_form  # Actualización en el contexto
-    }
-    return render(request, 'index.html', context)
 
 
     
@@ -109,6 +83,45 @@ def obtener_horarios_disponibles(request):
     horarios_json = [{'hora_inicio': str(h.hora_inicio), 'hora_fin': str(h.hora_fin)} for h in horarios]
     
     return JsonResponse({'horarios': horarios_json})
+
+def index(request):
+    psicologos = Psicologo.objects.prefetch_related('horarios').all()
+    estudiante_form = EstudianteForm()
+    contact_form=ContactoForm()
+    psicologos_con_horarios = []
+    for psicologo in psicologos:
+        horarios_con_intervalos = []
+        dias_disponibles = set()
+        for horario in psicologo.horarios.all():
+            if horario.disponible:
+                dias_disponibles.add(horario.dia_semana)
+                print(">>> Generando intervalos para:", horario.dia_semana, 
+                      "hora_inicio =", horario.hora_inicio, 
+                      "hora_fin =", horario.hora_fin)
+                
+                intervalos = generar_intervalos(horario.hora_inicio, horario.hora_fin)
+                print(">>> Intervalos obtenidos:", intervalos)
+                
+                horarios_con_intervalos.append({
+                    'horario': horario,
+                    'intervalos': intervalos
+                })
+        psicologos_con_horarios.append({
+            'psicologo': psicologo,
+            'horarios_con_intervalos': horarios_con_intervalos,
+            'dias_disponibles': list(dias_disponibles),
+    
+        })
+
+    context = {
+        'psicologos_con_horarios': psicologos_con_horarios,
+        'estudiante_form': estudiante_form,
+        "contact_form": contact_form
+    }
+    return render(request, 'index.html', context)
+
+
+
 
 
 def agendar_cita(request):
@@ -216,4 +229,50 @@ def agendar_cita(request):
         }
         return JsonResponse(response_data)
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
+
+
+
+def procesar_contacto(request):
+    if request.method == 'POST':
+        contact_form = ContactoForm(request.POST)
+        if contact_form.is_valid():
+            # Extraer datos del formulario
+            nombre = contact_form.cleaned_data.get('nombre')
+            email = contact_form.cleaned_data.get('email')
+            deseo = contact_form.cleaned_data.get('deseo')
+            mensaje = contact_form.cleaned_data.get('mensaje')
+
+            # Contexto para renderizar el template del correo
+            context = {
+                'nombre': nombre,
+                'email': email,
+                'deseo': deseo,
+                'mensaje': mensaje,
+            }
+
+            # Asunto y direcciones
+            subject = f"Nuevo mensaje de contacto: {deseo}"
+            from_email = "puntomentalcosfacali@gmail.com"  # O settings.DEFAULT_FROM_EMAIL
+            recipient_list = [email]  # Asegúrate de tener configurado DEFAULT_FROM_EMAIL
+            
+
+            # Renderizar el contenido HTML usando el template 'emails/contacto_email.html'
+            html_content = render_to_string('contacto_email.html', context)
+            # También se puede definir una versión en texto plano
+            text_content = f"Nombre: {nombre}\nEmail: {email}\nTipo de solicitud: {deseo}\nMensaje:\n{mensaje}"
+
+            # Crear el mensaje y adjuntar la versión HTML
+            msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+
+            # Opcional: guardar el formulario en la base de datos
+            contact_form.save()
+
+            # Redireccionar a una página de éxito o mostrar un mensaje
+            return redirect('index')  # Asegúrate de tener configurada esta URL
+    else:
+        contact_form = ContactoForm()
+
+    return render(request, 'index.html', {'contact_form': contact_form})
 

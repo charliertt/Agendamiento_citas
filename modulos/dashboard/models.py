@@ -187,6 +187,22 @@ class Preguntas(models.Model):
         return f'{self.pregunta} - {"Verdadero" if self.respuesta else "Falso"}'
 
 
-    
+class Contacto(models.Model):
+    # Opciones para el campo "deseo"
+    TIPO_OPCIONES = (
+        ('queja', 'Queja'),
+        ('reclamo', 'Reclamo'),
+        ('peticion', 'Petición'),
+    )
+
+    nombre = models.CharField(max_length=100, verbose_name="Nombre")
+    email = models.EmailField(verbose_name="Correo electrónico")
+    deseo = models.CharField(max_length=10, choices=TIPO_OPCIONES, verbose_name="Tipo de solicitud")
+    mensaje = models.TextField(verbose_name="Mensaje")
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de creación")
+
+    def __str__(self):
+        return f"{self.nombre} - {self.get_deseo_display()}"
+        
 
 

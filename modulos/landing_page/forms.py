@@ -1,5 +1,5 @@
 from django import forms
-from modulos.dashboard.models import UsuarioPersonalizado
+from modulos.dashboard.models import UsuarioPersonalizado, Contacto
 from django.contrib.auth.forms import UserCreationForm
 
 class EstudianteForm(UserCreationForm):
@@ -37,3 +37,13 @@ class EstudianteForm(UserCreationForm):
             user.save()
         return user
 
+class ContactoForm(forms.ModelForm):
+    class Meta:
+        model = Contacto
+        fields = ['nombre', 'email', 'deseo', 'mensaje']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingresa tu nombre'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingresa tu correo'}),
+            'deseo': forms.Select(choices=Contacto.TIPO_OPCIONES, attrs={'class': 'form-control'}),
+            'mensaje': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Escribe tu mensaje aquí', 'rows': 4}),
+        }
