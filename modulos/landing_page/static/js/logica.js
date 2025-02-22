@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Actualiza el título del modal según el paso actual */
   function updateModalTitle(step) {
     const titles = {
-      1: 'Paso 1 de 2 - Selecciona el día y hora',
+      1: 'Paso 1 de 2 ',
       2: 'Paso 2 de 2 - Ingresa los datos',
-      3: 'Confirmación de cita'
+      3: 'Confirmación de Cita'
     };
     document.getElementById('dynamicModalTitle').textContent = titles[step];
   }
@@ -41,8 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('step1').style.display = 'none';
       document.getElementById('step2').style.display = 'block';
       document.getElementById('selectDayTitle').style.display = 'none';
+      document.getElementById('titulo').style.display = 'none';
 
-      // Actualiza los datos de confirmación usando la información seleccionada
+      // Actualiza los datos de confirmación en step2
       document.getElementById('confirmation-psychologist').textContent = selectedPsychologist;
       document.getElementById('confirmation-specialty').textContent = selectedSpecialty;
       const formattedConfirmationDate = selectedDateTime.dateObject.toLocaleDateString('es-ES', {
@@ -55,10 +56,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
       currentStep = 2;
     } else if (currentStep === 2) {
-      if (document.getElementById('appointmentForm').checkValidity()) {
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('confirmation').style.display = 'block';
-        currentStep = 3;
+      const form = document.getElementById('appointmentForm');
+      if (form.checkValidity()) {
+        // Prepara los datos y actualiza los campos hidden
+        if (selectedDateTime.dateObject) {
+          // Formateamos la fecha en formato local YYYY-MM-DD
+          const day = selectedDateTime.dateObject.getDate().toString().padStart(2, '0');
+          const month = (selectedDateTime.dateObject.getMonth() + 1).toString().padStart(2, '0');
+          const year = selectedDateTime.dateObject.getFullYear();
+          document.getElementById('hiddenDateField').value = `${year}-${month}-${day}`;
+          document.getElementById('hiddenTimeField').value = selectedDateTime.time;
+        }
+
+        document.getElementById('hiddenPsicologoField').value = selectedPsychologist;
+        document.getElementById('hiddenPsicologoFieldID').value = selectedPsycholoid;
+
+        // Envía el formulario vía AJAX
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Actualiza la sección final del modal con los datos de confirmación
+            document.getElementById('final-psychologist').textContent = data.psychologist;
+            document.getElementById('final-datetime').textContent = data.datetime;
+            document.getElementById('final-email').textContent = data.email;
+
+            // Oculta el step2 y muestra la confirmación final
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('confirmation').style.display = 'block';
+            currentStep = 3;
+            updateModalTitle(currentStep);
+            updateButtons(currentStep);
+          } else {
+            console.error('Error al agendar la cita:', data.error);
+            console.log('Detalles del error:', data.errors);
+            alert('Error al agendar la cita: ' + data.error);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Error en el servidor.');
+        });
       } else {
         alert('Por favor completa todos los campos requeridos');
         return;
@@ -90,14 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Evento para la selección de un horario */
   document.addEventListener('click', function (event) {
     if (event.target.classList.contains('time-btn')) {
-      // Remueve selección previa y agrega la actual
+      // Remueve la selección previa y agrega la actual
       document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('selected'));
       event.target.classList.add('selected');
 
       const selectedDayBtn = document.querySelector('.day-btn.active');
       if (!selectedDayBtn) return;
 
-      const parts = selectedDayBtn.dataset.date.split('-'); // ["2025", "02", "18"]
+      // Obtiene la fecha a partir del dataset, pero parseando manualmente
+      const parts = selectedDayBtn.dataset.date.split('-'); // Ejemplo: ["2025", "02", "18"]
+      // Creamos la fecha en hora local (sin shift UTC) // <-- Cambio
       const date = new Date(parts[0], parts[1] - 1, parts[2]);
 
       const options = { weekday: 'long', day: 'numeric', month: 'long' };
@@ -112,6 +159,20 @@ document.addEventListener('DOMContentLoaded', () => {
         dateObject: date,
         time: formattedTime
       };
+
+      // Actualiza los campos hidden utilizando el formato local YYYY-MM-DD
+      if (selectedDateTime.dateObject) {
+        const day = selectedDateTime.dateObject.getDate().toString().padStart(2, '0');
+        const month = (selectedDateTime.dateObject.getMonth() + 1).toString().padStart(2, '0');
+        const year = selectedDateTime.dateObject.getFullYear();
+        document.getElementById('hiddenDateField').value = `${year}-${month}-${day}`;
+        document.getElementById('hiddenTimeField').value = selectedDateTime.time;
+      }
+    }
+
+    // Actualiza el campo hidden del psicólogo usando selectedPsychologist
+    if (selectedPsychologist) {
+      document.getElementById('hiddenPsicologoField').value = selectedPsychologist;
     }
   });
 
@@ -169,12 +230,20 @@ document.addEventListener('DOMContentLoaded', () => {
       dayBtn.classList.add('day-btn', 'btn', 'btn-primary');
       dayBtn.innerHTML = `${dayNum}<br>${monthName}`;
       dayBtn.dataset.day = fullDay;
-      dayBtn.dataset.date = dateObj.toISOString().split('T')[0];
+
+      // Asignamos la fecha en formato YYYY-MM-DD al dataset
+      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+      const year = dateObj.getFullYear();
+      dayBtn.dataset.date = `${year}-${month}-${day}`;
 
       dayBtn.addEventListener('click', function () {
         document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active', 'btn-primary'));
         this.classList.add('active', 'btn-primary');
-        filterHorarios(this.dataset.day);
+        // Depuración: mostrar valores al hacer clic en el botón
+        console.log("Día seleccionado:", this.dataset.day, "Fecha:", this.dataset.date);
+        // Se pasan ambos valores: el nombre del día y la fecha completa
+        filterHorarios(this.dataset.day, this.dataset.date);
       });
 
       weekdatesContainer.appendChild(dayBtn);
@@ -184,12 +253,53 @@ document.addEventListener('DOMContentLoaded', () => {
   renderWeek(currentWeek, 'weekdays-current', 'weekdates-current');
   renderWeek(nextWeek, 'weekdays-next', 'weekdates-next');
 
-  /* Filtra y muestra únicamente los horarios del día seleccionado */
-  function filterHorarios(selectedDay) {
+  /* Filtra y muestra únicamente los horarios del día seleccionado,
+     y si es el día actual oculta las horas que ya pasaron */
+  function filterHorarios(selectedDay, selectedDateString) {
+    console.log("Filtrando horarios para:", selectedDay, selectedDateString);
     const activePsicologo = document.querySelector('#horarioSection .psicologo:not([style*="display: none"])');
     if (!activePsicologo) return;
+
     activePsicologo.querySelectorAll('.horario-container').forEach(container => {
+      // Muestra el contenedor si coincide con el día seleccionado
       container.style.display = container.dataset.day === selectedDay ? 'block' : 'none';
+      console.log("Contenedor para", container.dataset.day, "display:", container.style.display);
+
+      // Si el contenedor se muestra y el día seleccionado es hoy, filtramos las horas pasadas
+      if (container.style.display === 'block') {
+        // Parse manual de selectedDateString // <-- Cambio
+        const [year, month, day] = selectedDateString.split('-');
+        const selectedDate = new Date(year, month - 1, day);
+        const today = new Date();
+
+        console.log("Comparando fechas: hoy =", today.toDateString(), "vs seleccionado =", selectedDate.toDateString());
+        if (today.toDateString() === selectedDate.toDateString()) {
+          container.querySelectorAll('.time-btn').forEach(timeBtn => {
+            const timeText = timeBtn.textContent.trim();
+            const [hour, minute] = timeText.split(':');
+            const buttonTime = new Date(
+              selectedDate.getFullYear(),
+              selectedDate.getMonth(),
+              selectedDate.getDate(),
+              parseInt(hour, 10),
+              parseInt(minute, 10)
+            );
+            console.log("Evaluando hora:", timeText, "ButtonTime:", buttonTime, "Current:", today);
+            if (buttonTime < today) {
+              timeBtn.style.display = 'none';
+              console.log("Ocultando hora", timeText);
+            } else {
+              timeBtn.style.display = 'inline-block';
+              console.log("Mostrando hora", timeText);
+            }
+          });
+        } else {
+          // Para días futuros o distintos a hoy, se muestran todos los botones
+          container.querySelectorAll('.time-btn').forEach(timeBtn => {
+            timeBtn.style.display = 'inline-block';
+          });
+        }
+      }
     });
   }
 
@@ -211,6 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Captura la información del botón que abrió el modal
     const button = event.relatedTarget;
     selectedPsychologist = button.getAttribute('data-psicologo');
+    selectedPsycholoid = button.getAttribute('data-psicologo-id');
+    console.log("Psicólogo seleccionado (ID):", selectedPsycholoid);
     selectedSpecialty = button.getAttribute('data-especialidad') || '';
 
     // Actualiza la sección de horarios para el psicólogo seleccionado
@@ -222,19 +334,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (target) {
       target.style.display = 'block';
       const availableDays = target.dataset.diasDisponibles.split(',');
+      console.log("Días disponibles:", availableDays);
+
       const today = new Date();
       document.querySelectorAll('.day-btn').forEach(btn => {
-        const buttonDate = new Date(btn.dataset.date);
+        // Parse manual del dataset.date para crear la fecha local // <-- Cambio
+        const [y, m, d] = btn.dataset.date.split('-');
+        const buttonDate = new Date(y, m - 1, d);
+
         const isAvailable = availableDays.includes(btn.dataset.day);
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
         const isNotPast = buttonDate >= todayStart;
+
+        // Logs para depurar cada botón
+        console.log("Botón:", btn.dataset.date, "Día:", btn.dataset.day);
+        console.log("  isAvailable:", isAvailable, "isNotPast:", isNotPast, "ButtonDate:", buttonDate, "TodayStart:", todayStart);
+
         btn.disabled = !(isAvailable && isNotPast);
         btn.classList.toggle('btn-primary', isAvailable && isNotPast);
         btn.classList.toggle('btn-secondary', !(isAvailable && isNotPast));
       });
+
+      // Armar la fecha "YYYY-MM-DD" de hoy manualmente
       const todayName = fullDays[today.getDay()];
-      filterHorarios(todayName);
+      const todayString = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, '0'),
+        String(today.getDate()).padStart(2, '0')
+      ].join('-');
+
+      console.log("Llamando a filterHorarios para hoy:", todayName, todayString);
+      filterHorarios(todayName, todayString);
     }
   });
 });

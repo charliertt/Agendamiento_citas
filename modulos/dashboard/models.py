@@ -60,14 +60,14 @@ class Estudiante(models.Model):
         return self.usuario.username
     
  
-
 class Psicologo(models.Model):
-    usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='psicologo')
-    especializacion = models.CharField(max_length=200, blank=True, null=True)
+        usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='psicologo')
+        especializacion = models.CharField(max_length=200, blank=True, null=True)
     
-    def __str__(self):
+        def __str__(self):
             # Retorna el nombre de usuario o cualquier otro dato descriptivo
-        return f"{self.usuario.username} - {self.especializacion or 'Sin especialización'}"
+            return f"{self.usuario.username} - {self.especializacion or 'Sin especialización'}"
+
 
 
 class Administrativo(models.Model):
@@ -94,6 +94,7 @@ class Horario(models.Model):
     def __str__(self):
         return f"{self.psicologo.usuario.username} - {self.dia_semana}: {self.hora_inicio} a {self.hora_fin}"
     
+
 
 
 
@@ -186,6 +187,22 @@ class Preguntas(models.Model):
         return f'{self.pregunta} - {"Verdadero" if self.respuesta else "Falso"}'
 
 
-    
+class Contacto(models.Model):
+    # Opciones para el campo "deseo"
+    TIPO_OPCIONES = (
+        ('queja', 'Queja'),
+        ('reclamo', 'Reclamo'),
+        ('peticion', 'Petición'),
+    )
+
+    nombre = models.CharField(max_length=100, verbose_name="Nombre")
+    email = models.EmailField(verbose_name="Correo electrónico")
+    deseo = models.CharField(max_length=10, choices=TIPO_OPCIONES, verbose_name="Tipo de solicitud")
+    mensaje = models.TextField(verbose_name="Mensaje")
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de creación")
+
+    def __str__(self):
+        return f"{self.nombre} - {self.get_deseo_display()}"
+        
 
 

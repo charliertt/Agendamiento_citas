@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmación de Cita</title>
+  <style>
+    .container {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      color: #333;
+      line-height: 1.6;
+    }
+    .header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .body {
+      padding: 20px;
+    }
+    .icon {
+      color: #d32f2f;
+      margin-right: 8px;
+    }
+    .important {
+      color: #d32f2f;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8f8f8;
+      border-left: 4px solid #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>❤ Hola {{ nombre_paciente }},</h2>
+      <p>Esta es una confirmación de tu cita de DDDGD conmigo.</p>
+    </div>
+
+    <div class="body">
+      <p>
+        <span class="icon">🗓</span><strong>¿Cuándo?</strong><br>
+        <strong>{{ fecha_cita }} - {{ hora_cita }} (Hora de Bogotá)</strong>
+      </p>
+
+      <p>
+        <span class="icon">📍</span><strong>¿Dónde?</strong><br>
+        <strong>{{ direccion }}</strong>
+      </p>
+
+      <div class="important">
+        ❗ <strong>IMPORTANTE:</strong> Si quieres modificar tu cita,
+        <a href="{{ enlace_modificar }}" style="color: #d32f2f; text-decoration: none;">haz click aquí</a>
+        con al menos 24 horas de anticipación.
+      </div>
+
+      <p>📩 Ante cualquier duda o emergencia responde este correo.</p>
+      
+      <p>Atentamente,<br>
+      <strong>❤ {{ nombre_psicologo }}</strong></p>
+    </div>
+  </div>
+</body>
+</html>

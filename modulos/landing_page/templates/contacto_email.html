@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Mensaje de Contacto</title>
+</head>
+<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f6f6f6;">
+  <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <!-- Encabezado -->
+    <div style="padding: 25px; background: #e74c3c; color: white;">
+      <h2 style="margin: 0; font-size: 24px;">📬 Nuevo Mensaje Recibido</h2>
+      <p style="margin: 10px 0 0; font-size: 14px;">Formulario de contacto - Prioridad: Alta</p>
+    </div>
+    
+    <!-- Cuerpo -->
+    <div style="padding: 25px; color: #333333;">
+      <!-- Datos del remitente -->
+      <div style="margin-bottom: 20px;">
+        <h3 style="margin: 0 0 15px; color: #e74c3c; font-size: 18px;">📋 Información del contacto</h3>
+        <p style="margin: 8px 0;">
+          <strong>Nombre:</strong><br>
+          {{ nombre }}
+        </p>
+        <p style="margin: 8px 0;">
+          <strong>Email:</strong><br>
+          <a href="mailto:{{ email }}" style="color: #e74c3c; text-decoration: none;">{{ email }}</a>
+        </p>
+        <p style="margin: 8px 0;">
+          <strong>Tipo de solicitud:</strong><br>
+          {{ deseo }}
+        </p>
+      </div>
+
+      <!-- Mensaje -->
+      <div style="margin: 25px 0; border-top: 2px solid #eeeeee; padding-top: 20px;">
+        <h3 style="margin: 0 0 15px; color: #e74c3c; font-size: 18px;">📝 Mensaje</h3>
+        <div style="background: #f8f8f8; padding: 15px; border-radius: 4px; line-height: 1.6;">
+          {{ mensaje|linebreaksbr }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie -->
+    <div style="padding: 20px; background: #f8f8f8; border-top: 1px solid #eeeeee; text-align: center; font-size: 12px; color: #666666;">
+      <p style="margin: 5px 0;">Este mensaje fue generado automáticamente</p>
+      <p style="margin: 5px 0;">❤  2025 PuntoMental</p>
+    </div>
+  </div>
+</body>
+</html>
