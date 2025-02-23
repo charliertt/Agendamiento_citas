@@ -162,9 +162,6 @@ class CitaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Si se está editando una instancia existente, formatear la fecha para el input datetime-local
         if self.instance and self.instance.pk and self.instance.fecha_hora:
-<<<<<<< HEAD
-            self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
-=======
             self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
 
 
@@ -192,4 +189,3 @@ class EstudianteForm(UserCreationForm):
         if commit:
             user.save()
         return user
->>>>>>> d2d4302458e350eceb4484bc638c70d3f16e9517

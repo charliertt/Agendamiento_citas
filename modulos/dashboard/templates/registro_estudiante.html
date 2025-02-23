@@ -9,14 +9,15 @@
 	<div class="page">
 		<div class="container">
 			<div class="col-xl-9 mx-auto ">
-			<h1 class="card-title text-center mt-4">Registrate</h1>
 
-			<div class="text-center " style="height: 400px;">
+			<div class="text-center " style="height: 100px;">
 
 
 				<img src="{% static 'img/lg.png' %}" class="h-100" alt="">
 
 			</div>
+			<h1 class="h2 text-center text-center mt-4">Registrate</h1>
+
 
 			{% if form.errors %}
 			<div class="alert alert-danger alert-dismissible mb-2" role="alert">
@@ -45,7 +46,7 @@
 						{% csrf_token %}
 			  <div class="row row-bordered h-50">
 				{% for field in estudiante_form %}
-				<div class="col-md-6">
+				<div class="col-md-4">
 				  {{ field|as_crispy_field }}
 				</div>
 				{% endfor %}
