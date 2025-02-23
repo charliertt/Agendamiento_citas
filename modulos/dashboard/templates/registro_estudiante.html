@@ -4,12 +4,12 @@
 
 {% block content %}
 
-<body class=" d-flex flex-column">
+<body class="bg-white d-flex flex-column">
 	<script src="./dist/js/demo-theme.min.js?1738096682"></script>
 	<div class="page">
 		<div class="container">
-			<div class="col-xl-8 mx-auto">
-			<h2 class="card-title text-center">Create new account</h2>
+			<div class="col-xl-9 mx-auto ">
+			<h1 class="card-title text-center mt-4">Registrate</h1>
 
 			<div class="text-center " style="height: 400px;">
 
@@ -43,7 +43,7 @@
 				
 					<div class="">
 						{% csrf_token %}
-			  <div class="row row-bordered h-75">
+			  <div class="row row-bordered h-50">
 				{% for field in estudiante_form %}
 				<div class="col-md-6">
 				  {{ field|as_crispy_field }}
@@ -54,7 +54,7 @@
 				
 					
 					</div>
-					<div class="form-footer">
+					<div class="form-footer ms-4 me-4">
 						<button type="submit" class="btn btn-primary w-100">Create new account</button>
 					</div>
 				</div>

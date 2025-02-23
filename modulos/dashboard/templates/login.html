@@ -2,10 +2,11 @@
 {% load static %}
 
 {% block content %}
-<body class=" d-flex flex-column">
+<body class="bg-white d-flex flex-column">
 <script src="./dist/js/demo-theme.min.js?1738096682"></script>
 <div class="page">
 	<div class="container container-tight py-4">
+		<h2 class="h2 text-center mb-4">Inicia sesi&oacute;n</h2>
 		<div class="text-center mb-2 " style="height: 350px;" >
 
 
@@ -34,7 +35,6 @@
 			</div>
 			{% endif %}
 			
-		<h2 class="h2 text-center mb-4">Inicia sesi&oacute;n</h2>
 		<form action="/login/" method="post" autocomplete="off" novalidate>
 			{% csrf_token %}
 
@@ -59,7 +59,7 @@
 	</span>
 </div>
 	</div>
-	<div class="mb-2">
+	<div class="">
 		<label class="form-check">
 			<input type="checkbox" class="form-check-input"/>
 			<span class="form-check-label">Recu&eacute;rdame en este dispositivo</span>
