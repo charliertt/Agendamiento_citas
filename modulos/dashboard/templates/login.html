@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <!--
 * Tabler - Premium and Open Source dashboard template with responsive and high quality UI.
@@ -72,11 +73,98 @@
 	<div class="col-12 col-lg-6 col-xl-8 d-none d-lg-block">
 		<!-- Photo -->
 <div class="bg-cover h-100 min-vh-100" style="background-image: url({% static 'img/autoestima.png' %})"></div>
+=======
+{% extends "layout/base_usuario.html" %}
+{% load static %}
+
+{% block content %}
+<body class="bg-white d-flex flex-column">
+<script src="./dist/js/demo-theme.min.js?1738096682"></script>
+<div class="page">
+	<div class="container container-tight py-4">
+		<h2 class="h2 text-center mb-4">Inicia sesi&oacute;n</h2>
+		<div class="text-center mb-2 " style="height: 350px;" >
+
+
+		<img src="{% static 'img/lg.png' %}" class="h-100" alt="">
+
+		</div>
+<div class="card card-md">
+	<div class="card-body">
+
+		{% if form.errors %}
+			<div class="alert alert-danger alert-dismissible mb-2" role="alert">
+			  <div>
+				<h4 class="alert-title">Se han encontrado errores</h4>
+				<div class="text-secondary">
+				  {% for field in form %}
+				  {% if field.errors %}
+				  <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
+				  {% endif %}
+				  {% endfor %}
+				  {% if form.non_field_errors %}
+				  <p>{{ form.non_field_errors|join:", " }}</p>
+				  {% endif %}
+				</div>
+			  </div>
+			  <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+			</div>
+			{% endif %}
+			
+		<form action="/login/" method="post" autocomplete="off" novalidate>
+			{% csrf_token %}
+
+	<div class="mb-3">
+		<label for="email" class="form-label">Correo electr&oacute;nico</label>
+		<input type="email" id="email" name="username" class="form-control" placeholder="tu@correo.com" autocomplete="off" required>
+	</div>
+	<div class="mb-2">
+		<label class="form-label">
+			Contrase&ntilde;a
+			<span class="form-label-description">
+					<a href="./forgot-password.html">I forgot password</a>
+				</span>
+		</label>
+		<div class="input-group input-group-flat">
+			<input type="password" id="password" name="password" class="form-control" placeholder="Tu contrase&ntilde;a" autocomplete="off" required>
+	<span class="input-group-text">
+		<a href="#" class="link-secondary" title="Show password" data-bs-toggle="tooltip">
+	<!-- Download SVG icon from http://tabler.io/icons/icon/eye -->
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+</a>
+	</span>
+</div>
+	</div>
+	<div class="">
+		<label class="form-check">
+			<input type="checkbox" class="form-check-input"/>
+			<span class="form-check-label">Recu&eacute;rdame en este dispositivo</span>
+		</label>
+	</div>
+	<div class="form-footer">
+		<button type="submit" class="btn btn-primary w-100">Iniciar sesi&oacute;n</button>
+	</div>
+</form>
+	</div>
+	<div class="hr-text">o</div>
+	<div class="card-body">
+		<div class="row">
+		
+</div>
+<div class="text-center text-secondary mt-3">
+	&iquest;No tienes cuenta a&uacute;n? <a href="{% url 'registro_estudiante' %}" tabindex="-1">Reg&iacute;strate</a>
+</div>
+>>>>>>> d2d4302458e350eceb4484bc638c70d3f16e9517
 	</div>
 </div>
 	<!-- Libs JS -->
 <!-- Tabler Core -->
+<<<<<<< HEAD
 <script src="./dist/js/tabler.min.js?1738096682" defer></script>
 <script src="./dist/js/demo.min.js?1738096682" defer></script>
 </body>
+=======
+</body>
+{% endblock %}
+>>>>>>> d2d4302458e350eceb4484bc638c70d3f16e9517
 </html>

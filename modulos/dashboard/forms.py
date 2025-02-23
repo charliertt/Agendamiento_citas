@@ -162,4 +162,34 @@ class CitaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Si se está editando una instancia existente, formatear la fecha para el input datetime-local
         if self.instance and self.instance.pk and self.instance.fecha_hora:
+<<<<<<< HEAD
             self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
+=======
+            self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
+
+
+class EstudianteForm(UserCreationForm):
+    class Meta:
+        model = UsuarioPersonalizado
+        fields = [
+            'username', 'first_name', 'last_name', 'email',
+            'tipo_identificacion', 'identificacion'
+        ]
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'tipo_identificacion': forms.Select(attrs={'class': 'form-control'}),
+            'identificacion': forms.TextInput(attrs={'class': 'form-control'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.rol = 'estudiante'  # Set rol to 'estudiante'
+        if commit:
+            user.save()
+        return user
+>>>>>>> d2d4302458e350eceb4484bc638c70d3f16e9517

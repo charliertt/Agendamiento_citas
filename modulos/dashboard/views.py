@@ -3,7 +3,11 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante
+<<<<<<< HEAD
 from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm
+=======
+from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm
+>>>>>>> d2d4302458e350eceb4484bc638c70d3f16e9517
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login
 
@@ -137,7 +141,16 @@ def login_vista(request):
 
     return render(request, "login.html", {"form": form})
     
+<<<<<<< HEAD
     
+=======
+#registro_estudiante
+
+def registro_estudiante(request):
+    estudiante_form = EstudianteForm()
+    return render(request, 'registro_estudiante.html',
+                  {'estudiante_form': estudiante_form})
+>>>>>>> d2d4302458e350eceb4484bc638c70d3f16e9517
     
 
 #horarios

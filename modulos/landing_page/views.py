@@ -70,10 +70,6 @@ def generar_intervalos(hora_inicio, hora_fin):
     return intervalos
 
 
-
-    
-    
-
 def obtener_horarios_disponibles(request):
     psicologo_id = request.GET.get('psicologo_id')
     dia = request.GET.get('dia')

@@ -1030,11 +1030,6 @@ section,
   box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   transition: all 0.3s ease-out 0s;
-  flex: 1; /* Permite que todas las cajas se estiren para ocupar el mismo espacio */
-}
-
-.about .icon-boxes .col-md-6 {
-  display: flex; /* Activa Flexbox en cada columna */
 }
 
 .about .icon-box i {
@@ -1067,22 +1062,18 @@ section,
   color: var(--contrast-color);
 }
 
-/* Eliminar márgenes negativos */
 .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
 .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
-    margin-top: 0; /* Cambia a cero para evitar espacios desiguales */
+  margin-top: -40px;
 }
 
 @media (max-width: 768px) {
-  
-    /* Mantener el comportamiento responsivo */
-    .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
-    .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
-        margin-top: 0; /* Asegúrate de que no haya márgenes negativos en pantallas pequeñas */
-    }
+
+  .about .icon-boxes .col-md-6:nth-child(2) .icon-box,
+  .about .icon-boxes .col-md-6:nth-child(4) .icon-box {
+    margin-top: 0;
+  }
 }
-
-
 
 /*--------------------------------------------------------------
 # Stats Section
@@ -2778,9 +2769,7 @@ section,
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
-.starter-section {
-  /* Add your styles here */
-}
+
 
 /*--------------------------------------------------------------
 # Widgets
