@@ -1,0 +1,29 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="modal-editar-pregunta-{{ pregunta.id_pregunta }}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Pregunta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'crear_editar_pregunta' pregunta.id_pregunta %}" id="form-pregunta">
+
+          {% csrf_token %}
+          <div class="row row-bordered">
+            {% for field in pregunta.form_editar %}
+              <div class="col-md-12">
+                {{ field|as_crispy_field }}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,183 @@
+{% extends "base_dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+	<div class="page-wrapper">
+<!-- Page header -->
+<div class="page-header d-print-none">
+	<div class="container-xl">
+		<div class="row g-2 align-items-center">
+			<div class="col">
+				<h2 class="page-title">
+					Datatables
+				</h2>
+
+
+
+				<a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modal-horario">
+					+
+			   </a>
+			   
+
+			      {% include 'formularios/crear_horario.html' %}
+			
+
+				  {% include 'layout/mensajes.html' %}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+		<!-- Page body -->
+		<div class="page-body">
+			<div class="container-xl">
+				
+			
+				
+				
+<div class="card mt-2">
+	<div class="card-body p-0">
+
+
+		
+		
+
+		
+		<div id="table-default" class="table-responsive">
+			
+			<table id="usuariosTable" class="display">
+				<thead>
+					<tr>
+						<th>Psicólogo</th>
+						<th>Día de la Semana</th>
+						<th>Hora de Inicio</th>
+						<th>Hora de Fin</th>
+						<th>Disponible</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for horario in horarios %}
+					<tr>
+						<td>{{ horario.psicologo.usuario.username }}</td>
+						<td>{{ horario.dia_semana }}</td>
+						<td>{{ horario.hora_inicio }}</td>
+						<td>{{ horario.hora_fin }}</td>
+						<td>
+							{% if horario.disponible %}
+								<span class="d-inline-flex align-items-center bg-success text-white px-2 py-1 rounded">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-check">
+										<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+										<path d="M5 12l5 5l10 -10" />
+									</svg>
+									
+								</span>
+							{% else %}
+								<span class="d-inline-flex align-items-center bg-danger text-white px-2 py-1 rounded">
+									<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+									
+								</span>
+							{% endif %}
+						</td>
+						<td>
+							<div class="d-flex gap-1 align-items-center">
+
+								
+
+								<a href="#" class="btn btn-warning btn" 
+								data-bs-toggle="modal" 
+								data-bs-target="#modal-editar-horario-{{ horario.id }}" 
+								data-horario-id="{{ horario.id }}">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-bolt">
+								  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+								  <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+								  <path d="M13.5 6.5l4 4" />
+								  <path d="M19 16l-2 3h4l-2 3" />
+								</svg>
+							 </a>
+						 
+
+										
+
+							 
+										<a href="#" class="btn btn-danger btn" 
+										data-bs-toggle="modal" 
+										data-bs-target="#modal-eliminar-horario-{{ horario.id }}">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
+										  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+										  <path d="M4 7l16 0" />
+										  <path d="M10 11l0 6" />
+										  <path d="M14 11l0 6" />
+										  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+										  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+										</svg>
+									 </a>
+
+							
+							</div>
+						</td>
+					</tr>
+					{% endfor %}
+					{% for horario in horarios %}
+					{% include 'formularios/editar_horario.html' with horario=horario %}
+					{% include 'formularios/eliminar_horario.html' with horario=horario %}
+				  {% endfor %}
+				</tbody>
+
+				
+
+
+<!-- Script para auto-abrir el modal cuando hay horario -->
+
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+		<footer class="footer footer-transparent d-print-none">
+	<div class="container-xl">
+		<div class="row text-center align-items-center flex-row-reverse">
+			<div class="col-lg-auto ms-lg-auto">
+				
+			</div>
+			<div class="col-12 col-lg-auto mt-3 mt-lg-0">
+				
+			</div>
+		</div>
+	</div>
+</footer>
+	</div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar DataTables
+        const table = new DataTable('#usuariosTable', {
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+            },
+           
+        });
+
+       
+
+		
+	
+    });
+
+    
+</script>
+	<!-- Libs JS -->
+
+</body>
+{% endblock %}
+
+</html>

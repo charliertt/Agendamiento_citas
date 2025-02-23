@@ -1,0 +1,187 @@
+{% extends "base_dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+	<div class="page-wrapper">
+<!-- Page header -->
+<div class="page-header d-print-none">
+	<div class="container-xl">
+		<div class="row g-2 align-items-center">
+			<div class="col">
+				<h2 class="page-title">
+					Datatables
+				</h2>
+				
+				{% include 'layout/mensajes.html' %}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+		<!-- Page body -->
+		<div class="page-body">
+			<div class="container-xl">
+				<div class="d-flex justify-content-between">
+					<select id="filtroRol" class="form-select w-25">
+						<option value="">Todos</option>
+						<option value="estudiante">Estudiantes</option>
+						<option value="psicologo">Psicólogos</option>
+						<option value="administrativo">Administrativos</option>
+					</select>
+	
+					
+					<a href="#" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modal-usuario">
+						 +
+					</a>
+					  {% include 'formularios/crear_usuario.html' %}
+					
+						
+					
+	
+
+				</div>
+			
+				
+				
+<div class="card mt-2">
+	<div class="card-body p-0">
+		
+
+		
+		<div id="table-default" class="table-responsive">
+			
+			<table id="usuariosTable" class="display">
+				<thead>
+					<tr>
+						<th>Usuario</th>
+						<th>Identificación</th>  <!-- Columna combinada -->
+						<th>Nombre</th>
+						<th>Apellido</th>
+						<th>Rol</th>
+						<th>Email</th>
+						<th>Imagen</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for usuario in usuarios %}
+					<tr>
+						<td>{{ usuario.username }}</td>
+						<td>
+							{% if usuario.tipo_identificacion %}
+								{{ usuario.get_tipo_identificacion_display }}: {{ usuario.identificacion }}
+							{% else %}
+								{{ usuario.identificacion }}  <!-- Para roles que no tienen tipo_identificacion -->
+							{% endif %}
+						</td>
+						<td>{{ usuario.first_name }}</td>
+						<td>{{ usuario.last_name }}</td>
+						<td>
+							{% if usuario.rol == 'estudiante' %}
+								<span class="badge badge-outline text-blue bg-blue-100">{{ usuario.get_rol_display }}</span>
+							{% elif usuario.rol == 'psicologo' %}
+								<span class="badge badge-outline text-green bg-green-100">{{ usuario.get_rol_display }}</span>
+							{% elif usuario.rol == 'administrativo' %}
+								<span class="badge badge-outline text-yellow bg-yellow-100">{{ usuario.get_rol_display }}</span>
+							{% endif %}
+						</td>
+						<td>{{ usuario.email }}</td>
+						<td>
+							{% if usuario.imagen %}
+							<span class="avatar" style="background-image: url({{ usuario.imagen.url }})"></span>
+							{% else %}
+							<span class="avatar" style="background-image: url({% static 'img/imagen.png' %})"></span>
+							{% endif %}
+													</td>
+						<td>
+							<div class="d-flex gap-1 align-items-center">
+								<a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-warning btn" 
+								data-bs-toggle="modal" data-bs-target="#modal-usuario-{{ usuario.id }}" 
+								data-usuario-id="{{ usuario.id }}">
+
+
+								<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-bolt"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M19 16l-2 3h4l-2 3" /></svg>
+									
+
+
+
+								</a>
+								{% include 'formularios/editar_usuario.html' %}
+
+								<a href="{% url 'eliminar_usuario' usuario.id %}" class="btn btn-danger btn" data-bs-toggle="modal" data-bs-target="#modalEliminar-{{ usuario.id }}">
+
+
+
+									<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+								</a>
+								
+								
+								  
+								{% include 'formularios/eliminar_usuario.html' %}
+							</div>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+		<footer class="footer footer-transparent d-print-none">
+	<div class="container-xl">
+		<div class="row text-center align-items-center flex-row-reverse">
+			<div class="col-lg-auto ms-lg-auto">
+				
+			</div>
+			<div class="col-12 col-lg-auto mt-3 mt-lg-0">
+				
+			</div>
+		</div>
+	</div>
+</footer>
+	</div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar DataTables
+        const table = new DataTable('#usuariosTable', {
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+            },
+            columnDefs: [
+                { orderable: false, targets: [7] } // Deshabilitar ordenamiento en la columna de acciones
+            ]
+        });
+
+        // Manejar el filtrado por rol
+        const filtroRol = document.getElementById('filtroRol');
+        filtroRol.addEventListener('change', function () {
+            const rol = this.value;
+            table.column(4).search(rol).draw(); // Filtrar por la columna de rol (índice 4)
+        });
+
+
+		//formulario:
+
+		
+	
+    });
+
+    
+</script>
+	<!-- Libs JS -->
+
+</body>
+{% endblock %}
+
+</html>

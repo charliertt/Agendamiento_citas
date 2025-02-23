@@ -1,0 +1,72 @@
+{% extends "layout/base_usuario.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<body class=" d-flex flex-column">
+	<script src="./dist/js/demo-theme.min.js?1738096682"></script>
+	<div class="page">
+		<div class="container">
+			<div class="col-xl-8 mx-auto">
+			<h2 class="card-title text-center">Create new account</h2>
+
+			<div class="text-center " style="height: 400px;">
+
+
+				<img src="{% static 'img/lg.png' %}" class="h-100" alt="">
+
+			</div>
+
+			{% if form.errors %}
+			<div class="alert alert-danger alert-dismissible mb-2" role="alert">
+			  <div>
+				<h4 class="alert-title">Se han encontrado errores</h4>
+				<div class="text-secondary">
+				  {% for field in form %}
+				  {% if field.errors %}
+				  <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
+				  {% endif %}
+				  {% endfor %}
+				  {% if form.non_field_errors %}
+				  <p>{{ form.non_field_errors|join:", " }}</p>
+				  {% endif %}
+				</div>
+			  </div>
+			  <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+			</div>
+			{% endif %}
+			
+			<form class="card card-md" action="./" method="get" autocomplete="off" novalidate>
+				<div class="card-body">
+
+				
+					<div class="">
+						{% csrf_token %}
+			  <div class="row row-bordered h-75">
+				{% for field in estudiante_form %}
+				<div class="col-md-6">
+				  {{ field|as_crispy_field }}
+				</div>
+				{% endfor %}
+			  </div>
+					</div>
+				
+					
+					</div>
+					<div class="form-footer">
+						<button type="submit" class="btn btn-primary w-100">Create new account</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</div>
+</div>
+
+
+</body>
+
+{% endblock %}
+
+</html>
