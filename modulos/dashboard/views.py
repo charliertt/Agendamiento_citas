@@ -5,11 +5,33 @@ from django.contrib import messages
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante
 from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.contrib.auth import authenticate, login,  get_user_model
 
 # Create your views here.
 def dashboard(request): 
     return render(request, 'dashboard.html')
+
+
+
+
+def verificar_email(request):
+    email = request.GET.get('email', '')
+    User = get_user_model()
+    existe = User.objects.filter(email=email).exists()
+    return JsonResponse({'existe': existe})
+
+
+def verificar_username(request):
+    username = request.GET.get('username', '')
+    User = get_user_model()
+    exists = User.objects.filter(username=username).exists()
+    return JsonResponse({'exists': exists})
+
+def verificar_identificacion(request):
+    identificacion = request.GET.get('identificacion', '')
+    exists = UsuarioPersonalizado.objects.filter(identificacion=identificacion).exists()
+    return JsonResponse({'exists': exists})
 
 def usuarios(request):
     usuarios_list = list(UsuarioPersonalizado.objects.all())
@@ -139,10 +161,22 @@ def login_vista(request):
     
 #registro_estudiante
 
+
+    
+
 def registro_estudiante(request):
-    estudiante_form = EstudianteForm()
-    return render(request, 'registro_estudiante.html',
-                  {'estudiante_form': estudiante_form})
+    if request.method == 'POST':
+        estudiante_form = EstudianteForm(request.POST)
+        if estudiante_form.is_valid():
+            estudiante_form.save()
+            # Redirigir o mostrar mensaje de éxito
+            return redirect('dashboard')
+    else:
+        estudiante_form = EstudianteForm()
+    
+    return render(request, 'registro_estudiante.html', {
+        'estudiante_form': estudiante_form
+    })
     
 
 #horarios

@@ -4,67 +4,228 @@
 
 {% block content %}
 
-<body class="bg-white d-flex flex-column">
-	<script src="./dist/js/demo-theme.min.js?1738096682"></script>
-	<div class="page">
+<body class="bg-white d-flex flex-column min-vh-100">
+	<div class="page d-flex justify-content-center align-items-center flex-grow-1">
 		<div class="container">
-			<div class="col-xl-9 mx-auto ">
+			<div class="col-xl-4 mx-auto">
 
-			<div class="text-center " style="height: 100px;">
+				<div class="text-center mt-4 mb-4">
+					<img src="{% static 'img/lg.png' %}" style="max-height: 150px;" alt="">
 
+				</div>
 
-				<img src="{% static 'img/lg.png' %}" class="h-100" alt="">
+				<h1 class="h2 text-center">Regístrate</h1>
+
+				{% if form.errors %}
+				<div class="alert alert-danger alert-dismissible mb-2" role="alert">
+					<div>
+						<h4 class="alert-title">Se han encontrado errores</h4>
+						<div class="text-secondary">
+							{% for field in form %}
+							{% if field.errors %}
+							<p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
+							{% endif %}
+							{% endfor %}
+							{% if form.non_field_errors %}
+							<p>{{ form.non_field_errors|join:", " }}</p>
+							{% endif %}
+						</div>
+					</div>
+					<a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+				</div>
+				{% endif %}
+
+				<form id="registroForm" action="{% url 'registro_estudiante' %}" method="post" autocomplete="off"
+					novalidate>
+					{% csrf_token %}
+
+					<!-- Paso 1: Email -->
+					<div id="paso1" class="mt-4 mb-3">
+						<h3 class="mt-3 mb-3">Paso 1: Ingresa tu correo electrónico</h3>
+						<div>
+							<label for="{{ estudiante_form.email.id_for_label }}">Correo electrónico</label>
+							{{ estudiante_form.email }}
+							<span id="emailError" style="color:red; display:none;">Email inválido o ya
+								registrado.</span>
+						</div>
+						<button type="button" id="btnSiguiente1" class="btn btn-primary mt-4 w-100">Siguiente</button>
+					</div>
+
+					<!-- Paso 2: Datos personales -->
+					<div id="paso2" style="display:none;" class="mt-4 mb-3">
+						<h3 class="mt-3 mb-3">Paso 2: Completa tus datos</h3>
+						<div>
+							<label for="{{ estudiante_form.username.id_for_label }}">Usuario</label>
+							{{ estudiante_form.username }}
+							<span id="usernameError" style="color:red; display:none;"></span>
+
+							<label for="{{ estudiante_form.first_name.id_for_label }}">Nombre</label>
+							{{ estudiante_form.first_name }}
+
+							<label for="{{ estudiante_form.last_name.id_for_label }}">Apellido</label>
+							{{ estudiante_form.last_name }}
+
+							<label for="{{ estudiante_form.tipo_identificacion.id_for_label }}">Tipo de
+								identificación</label>
+							{{ estudiante_form.tipo_identificacion }}
+
+							<label for="{{ estudiante_form.identificacion.id_for_label }}">Identificación</label>
+							{{ estudiante_form.identificacion }}
+							<span id="identificacionError" style="color:red; display:none;"></span>
+						</div>
+						<button type="button" id="btnSiguiente2" class="btn btn-primary mt-4">Siguiente</button>
+					</div>
+
+					<!-- Paso 3: Contraseña -->
+					<div id="paso3" style="display:{% if estudiante_form.password2.errors %}block{% else %}none{% endif %};" class="mt-4 mb-3">
+						<h3 class="mt-3 mb-3">Paso 3: Configura tu contraseña</h3>
+						<div style="display: flex; gap: 1rem; align-items: flex-start;">
+						  <div>
+							<label for="{{ estudiante_form.password1.id_for_label }}">Contraseña</label>
+							{{ estudiante_form.password1 }}
+						  </div>
+						  <div>
+							<label for="{{ estudiante_form.password2.id_for_label }}">Confirmar Contraseña</label>
+							{{ estudiante_form.password2 }}
+							{% if estudiante_form.password2.errors %}
+							  <div class="text-danger">{{ estudiante_form.password2.errors|join:", " }}</div>
+							{% endif %}
+						  </div>
+						</div>
+						<button type="submit" class="btn btn-primary mt-4">Crear cuenta</button>
+					  </div>
+				</form>
 
 			</div>
-			<h1 class="h2 text-center text-center mt-4">Registrate</h1>
-
-
-			{% if form.errors %}
-			<div class="alert alert-danger alert-dismissible mb-2" role="alert">
-			  <div>
-				<h4 class="alert-title">Se han encontrado errores</h4>
-				<div class="text-secondary">
-				  {% for field in form %}
-				  {% if field.errors %}
-				  <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
-				  {% endif %}
-				  {% endfor %}
-				  {% if form.non_field_errors %}
-				  <p>{{ form.non_field_errors|join:", " }}</p>
-				  {% endif %}
-				</div>
-			  </div>
-			  <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-			</div>
-			{% endif %}
-			
-			<form class="card card-md" action="./" method="get" autocomplete="off" novalidate>
-				<div class="card-body">
-
-				
-					<div class="">
-						{% csrf_token %}
-			  <div class="row row-bordered h-50">
-				{% for field in estudiante_form %}
-				<div class="col-md-4">
-				  {{ field|as_crispy_field }}
-				</div>
-				{% endfor %}
-			  </div>
-					</div>
-				
-					
-					</div>
-					<div class="form-footer ms-4 me-4">
-						<button type="submit" class="btn btn-primary w-100">Create new account</button>
-					</div>
-				</div>
-			</form>
-			
 		</div>
 	</div>
-</div>
+</body>
 
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const btnSiguiente1 = document.getElementById('btnSiguiente1');
+		const btnSiguiente2 = document.getElementById('btnSiguiente2');
+		const paso1 = document.getElementById('paso1');
+		const paso2 = document.getElementById('paso2');
+		const paso3 = document.getElementById('paso3');
+
+		// Paso 1: Email
+		const emailInput = document.getElementById('id_email'); // Django usualmente pone id="id_email"
+		const emailError = document.getElementById('emailError');
+
+		// Paso 2: Username e Identificación
+		const usernameInput = document.getElementById('id_username');
+		const identificacionInput = document.getElementById('id_identificacion');
+		const usernameError = document.getElementById('usernameError');
+		const identificacionError = document.getElementById('identificacionError');
+
+		// Validar email y pasar al Paso 2
+		btnSiguiente1.addEventListener('click', function () {
+			const emailVal = emailInput.value.trim();
+			if (!validarEmail(emailVal)) {
+				emailError.textContent = "Formato de correo inválido.";
+				emailError.style.display = "inline";
+				return;
+			}
+
+			// Verificar vía AJAX si el email ya existe
+			fetch("{% url 'verificar_email' %}?email=" + encodeURIComponent(emailVal))
+				.then(response => response.json())
+				.then(data => {
+					if (data.existe) {
+						emailError.textContent = "Este email ya está en uso.";
+						emailError.style.display = "inline";
+					} else {
+						emailError.style.display = "none";
+						paso1.style.display = "none";
+						paso2.style.display = "block";
+					}
+				})
+				.catch(error => {
+					console.error('Error al verificar email:', error);
+				});
+		});
+
+		// Validar datos del Paso 2 y pasar al Paso 3
+		btnSiguiente2.addEventListener('click', function () {
+			// Limpiar mensajes de error previos
+			usernameError.style.display = "none";
+			identificacionError.style.display = "none";
+			
+			// Obtener los valores de los campos obligatorios
+			const usernameVal = usernameInput.value.trim();
+			const firstNameInput = document.getElementById('id_first_name');
+			const lastNameInput = document.getElementById('id_last_name');
+			const firstNameVal = firstNameInput ? firstNameInput.value.trim() : "";
+			const lastNameVal = lastNameInput ? lastNameInput.value.trim() : "";
+			const identificacionVal = identificacionInput.value.trim();
+
+			// Validar campos requeridos
+			if (usernameVal === "") {
+				usernameError.textContent = "El usuario es requerido.";
+				usernameError.style.display = "inline";
+				return;
+			}
+			if (firstNameVal === "") {
+				alert("El nombre es requerido.");
+				return;
+			}
+			if (lastNameVal === "") {
+				alert("El apellido es requerido.");
+				return;
+			}
+			if (identificacionVal === "") {
+				identificacionError.textContent = "La identificación es requerida.";
+				identificacionError.style.display = "inline";
+				return;
+			}
+
+			// Validar que la identificación solo contenga dígitos
+			const regexIdentificacion = /^\d+$/;
+			if (!regexIdentificacion.test(identificacionVal)) {
+				identificacionError.textContent = "La identificación debe contener solo números.";
+				identificacionError.style.display = "inline";
+				return;
+			}
+
+			// Verificar vía AJAX si el username ya existe
+			fetch("{% url 'verificar_username' %}?username=" + encodeURIComponent(usernameVal))
+				.then(response => response.json())
+				.then(data => {
+					if (data.exists) {
+						usernameError.textContent = "El usuario ya existe.";
+						usernameError.style.display = "inline";
+					} else {
+						// Si el username es válido, verificar que la identificación no esté registrada
+						fetch("{% url 'verificar_identificacion' %}?identificacion=" + encodeURIComponent(identificacionVal))
+							.then(response => response.json())
+							.then(dataIdent => {
+								if (dataIdent.exists) {
+									identificacionError.textContent = "La identificación ya está registrada.";
+									identificacionError.style.display = "inline";
+								} else {
+									// Todas las validaciones pasaron, avanzar al Paso 3
+									paso2.style.display = "none";
+									paso3.style.display = "block";
+								}
+							})
+							.catch(error => {
+								console.error('Error al verificar identificación:', error);
+							});
+					}
+				})
+				.catch(error => {
+					console.error('Error al verificar username:', error);
+				});
+		});
+
+		function validarEmail(email) {
+			const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			return re.test(email.toLowerCase());
+		}
+	});
+</script>
 
 </body>
 

@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import RegexValidator
 from django.contrib.auth.forms import UserCreationForm
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita
 from django.core.exceptions import ObjectDoesNotExist
@@ -166,16 +167,23 @@ class CitaForm(forms.ModelForm):
 
 
 class EstudianteForm(UserCreationForm):
+    last_name = forms.CharField(
+        validators=[RegexValidator(
+            regex=r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$',
+            message='El apellido solo debe contener letras.'
+        )],
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
     class Meta:
         model = UsuarioPersonalizado
         fields = [
             'username', 'first_name', 'last_name', 'email',
-            'tipo_identificacion', 'identificacion'
+            'tipo_identificacion', 'identificacion', 'password1', 'password2'
         ]
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'tipo_identificacion': forms.Select(attrs={'class': 'form-control'}),
             'identificacion': forms.TextInput(attrs={'class': 'form-control'}),
@@ -183,9 +191,22 @@ class EstudianteForm(UserCreationForm):
             'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Las contraseñas no coinciden.")
+        return password2
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Forzar que los campos de contraseña tengan la clase 'form-control'
+        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.rol = 'estudiante'  # Set rol to 'estudiante'
+        user.rol = 'estudiante'
         if commit:
             user.save()
         return user
