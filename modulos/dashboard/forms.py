@@ -209,4 +209,6 @@ class EstudianteForm(UserCreationForm):
         user.rol = 'estudiante'
         if commit:
             user.save()
+            from modulos.dashboard.models import Estudiante  
+            Estudiante.objects.create(usuario=user)
         return user

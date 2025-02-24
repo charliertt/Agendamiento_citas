@@ -21,7 +21,10 @@ class EstudianteForm(UserCreationForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'tipo_identificacion': forms.Select(attrs={'class': 'form-control'}),
+            'tipo_identificacion': forms.Select(attrs={
+                'class': 'form-control',
+                'required': 'required'  # Agregar atributo required
+            }),
             'identificacion': forms.TextInput(attrs={'class': 'form-control'}),
             'eps': forms.TextInput(attrs={'class': 'form-control'}),
             'alergias': forms.TextInput(attrs={'class': 'form-control'}),
