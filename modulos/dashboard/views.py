@@ -1,12 +1,16 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante
-from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto
+from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login,  get_user_model
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives
 
 # Create your views here.
 def dashboard(request): 
@@ -347,6 +351,40 @@ def eliminar_pregunta(request, pregunta_id):
     return render(request, 'preguntas_tabla.html', {'pregunta': pregunta})
 
 
+#buzon:
+def lista_contactos(request):
+    contactos = Contacto.objects.all()
+    return render(request, 'lista_contactos.html', {'contactos': contactos})
+
+
+def responder_contacto(request, contacto_id):
+    contacto = get_object_or_404(Contacto, id=contacto_id)
+    
+    if request.method == "POST":
+        form = RespuestaForm(request.POST)
+        if form.is_valid():
+            respuesta = form.cleaned_data.get('respuesta')
+            
+            # Preparar el contenido del correo de respuesta
+            subject = f"Respuesta a tu {contacto.get_deseo_display()}"
+            text_content = respuesta
+            html_content = f"<p>{respuesta}</p>"
+            from_email = settings.DEFAULT_FROM_EMAIL  # Asegúrate de tenerlo configurado en settings.py
+            recipient_list = [contacto.email]
+            
+            # Enviar el correo
+            msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            
+            # Eliminar el contacto tras enviar la respuesta
+            contacto.delete()
+            messages.success(request, "La respuesta ha sido enviada y el contacto eliminado.")
+            return redirect('lista_contactos')
+    else:
+        form = RespuestaForm()
+    
+    return render(request, 'responder_contacto.html', {'contacto': contacto, 'form': form})
 #citas:
 class CitaListView(ListView):
     model = Cita

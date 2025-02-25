@@ -212,3 +212,11 @@ class EstudianteForm(UserCreationForm):
             from modulos.dashboard.models import Estudiante  
             Estudiante.objects.create(usuario=user)
         return user
+
+
+class RespuestaForm(forms.Form):
+    respuesta = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 5, 'cols': 40}),
+        label="Respuesta"
+    )
+    

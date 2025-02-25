@@ -49,7 +49,8 @@ urlpatterns = [
     path('verificar_username/', dashboard_views.verificar_username, name='verificar_username'),
     path('verificar_identificacion/', dashboard_views.verificar_identificacion, name='verificar_identificacion'),
 
-    
+    #peticiones, quejas y sugerencias:
+    path('lista_contactos/', dashboard_views.lista_contactos, name='lista_contactos'),
 
     #horarios
     path('horarios/',  dashboard_views.horarios, name='horarios'),  
@@ -65,8 +66,10 @@ urlpatterns = [
     path('citas/', dashboard_views.CitaListView.as_view(), name='citas'),
     path('citas/editar/<int:pk>/', dashboard_views.CitaUpdateView.as_view(), name='cita_update'),
     path('citas/eliminar/<int:pk>/', dashboard_views.CitaDeleteView.as_view(), name='cita_delete'),
+    
     #__________________________________citas_fronted______________________________________________
     
+
     # Ruta para obtener horarios en la API
    
     path('agendar-cita/', landing_views.agendar_cita, name='agendar_cita'),
