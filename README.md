@@ -1,5 +1,5 @@
 # Agendamiento_citas
-Programa para agendamiento de citas psicológicas usando Django 
+Programa para agendamiento de citas psicológicas usando Django. Tanto parte del cliente como parte administrativa 
 
 ![image](https://github.com/user-attachments/assets/dd17ce0f-1ecd-4651-8f7d-9e6ac1b90c4c)
 
