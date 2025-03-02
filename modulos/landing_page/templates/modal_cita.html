@@ -1,0 +1,222 @@
+{% load crispy_forms_tags %}
+<!-- ==================== MODAL DE HORARIOS ==================== -->
+<div class="modal fade" id="horasModal" tabindex="-1" aria-labelledby="horasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Encabezado del Modal -->
+        <div class="modal-header">
+          <h5 class="modal-title" id="dynamicModalTitle"> Parte 1 </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <!-- Cuerpo del Modal -->
+        <div class="modal-body">
+          <div class="ms-4 me-4">
+          <div id="titulo">
+        
+            <p class="text-center">1 de 2</p>
+          <div class="progress mb-4" id="">
+            <div class="progress-bar bg-danger" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+          </div>
+            <h6  id="selectDayTitle" class="m-4">¿Qué día te acomoda?</h6>
+          <!-- Paso 1: Selección de horario -->
+          <div id="step1" class="modal-step">
+            <!-- Carrusel de Días -->
+            <div id="daysCarousel" class="carousel slide" data-bs-ride="false">
+              <div class="carousel-inner">
+                <!-- Semana actual -->
+                <div class="carousel-item active">
+                  <div class="d-flex justify-content-center gap-5" id="weekdays-current"></div>
+                  <hr class="col-8 mx-auto">
+                  <div class="d-flex justify-content-center gap-4" id="weekdates-current"></div>
+                </div>
+                <!-- Semana siguiente -->
+                <div class="carousel-item">
+                  <div class="d-flex justify-content-center gap-5" id="weekdays-next"></div>
+                  <hr class="col-8 mx-auto">
+                  <div class="d-flex justify-content-center gap-4" id="weekdates-next"></div>
+                </div>
+              </div> 
+              <!-- Controles del Carrusel -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#daysCarousel" data-bs-slide="prev">
+                <i class="faq-toggle bi bi-chevron-left"></i>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#daysCarousel" data-bs-slide="next">
+                <i class="faq-toggle bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+            <!-- Sección de Horarios -->
+             <div class="mx-auto">
+              
+                    <div id="horarioSection" class="mt-4">
+                    {% if psicologos_con_horarios %}
+                        {% for psicologo_data in psicologos_con_horarios %}
+                        <div class="psicologo" 
+                          data-psicologo-id="{{ psicologo_data.psicologo.id }}"
+                            data-psicologo="{{ psicologo_data.psicologo.usuario.username }}" 
+                            data-dias-disponibles="{{ psicologo_data.dias_disponibles|join:',' }}">
+                          
+                            {% for horario_data in psicologo_data.horarios_con_intervalos %}
+                            <div class="horario-container" data-day="{{ horario_data.horario.dia_semana }}">
+                                <div class="mt-4 row justify-content-center gap-1 mx-auto">
+                                <h6 class="m-4">¿A qué hora?</h6>
+
+                                {% for intervalo in horario_data.intervalos %}
+                                    <div class="col-4 text-center">
+                                    <button class="time-btn mb-3 w-100">{{ intervalo|time:"h:i A" }}</button>
+                                    </div>
+                                {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center">No hay horarios disponibles</p>
+                    {% endif %}
+                
+                  </div>
+                </div>
+
+            <!-- Visualización de horario seleccionado -->
+            <div id="selectedTimeDisplay" class="text-center mt-4" style="display: none;">
+              <p class="fw-bold">Cita seleccionada:</p>
+              <p id="selectedDateTimeText" class="text-muted"></p>
+            </div>
+          </div>
+
+
+          <!-- Paso 2 verificar Email-->
+
+
+          
+
+          <div id="step2A" style="display: none;">
+            <label for="emailInput">Ingresa tu correo:</label>
+            <div class="d-flex align-items-center">
+                <input type="email" class="form-control me-2" id="emailInput" name="email" required>
+                <button type="button" class="btn btn-primary" id="verifyEmailBtn">Verificar</button>
+            </div>
+          </div>
+
+          <!-- Paso 2: Formulario de datos -->
+          <div id="step2" class="modal-step" style="display: none;">
+
+
+           
+            <div class="mb-4">
+              <p class="text-center">2 de 2</p>
+              <div class="progress mb-4 w-75 mx-auto" id="progreso">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+
+            
+             
+              <!-- Card de información de la cita -->
+              <div class="card shadow-sm mb-4 w-75 mx-auto">
+                
+                <div class="mb-4">
+                    
+              
+              </div>
+                  <div class="card-body mt-4">
+                   
+                      <div class="d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center gap-3">
+                              <div class="bg-primary-subtle p-3 rounded-circle">
+                              
+                              </div>
+                              <div>
+                                  <h4 class="mb-1 fw-bold" id="confirmation-psychologist"></h4>
+                                  <span class="badge bg-info" id="confirmation-specialty"></span>
+                              </div>
+                          </div>
+                          <div class="text-end">
+                              <div class="mb-2">
+                                  <span class="badge bg-danger"><i class="bi bi-calendar-check me-2"></i><span id="confirmation-date"></span></span>
+                              </div>
+                              <div>
+                                  <span class="badge bg-dark text-white"><i class="bi bi-clock me-2"></i><span id="confirmation-time"></span></span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="container">
+                <div class="ms-4 me-4">
+                  
+                  <form id="appointmentForm" method="POST" action="{% url 'agendar_cita' %}">
+                    {% csrf_token %}
+                    <div class="row row-bordered">
+                      {% for field in estudiante_form %}
+                        {% if field.name in "username,first_name,last_name,email" %}
+                          <div class="col-md-4">
+                            {{ field|as_crispy_field }}
+                          </div>
+                        {% elif field.name == "comentarios" %}
+                          <div class="col-md-12">
+                            {{ field|as_crispy_field }}
+                          </div>
+                        {% elif field.name in "tipo_identificacion,identificacion,eps,alergias,enfermedades" %}
+                          <div class="col-md-4">
+                            {{ field|as_crispy_field }}
+                          </div>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  
+                    <!-- Agrupar campos de contraseña en un contenedor común -->
+                    <div id="passwordFields" class="row row-bordered">
+                      {% for field in estudiante_form %}
+                        {% if field.name in "password1,password2" %}
+                          <div class="col-md-12">
+                            {{ field|as_crispy_field }}
+                          </div>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    
+                    <input type="hidden" name="selected_date" id="hiddenDateField">
+                    <input type="hidden" name="selected_time" id="hiddenTimeField">
+                    <input type="hidden" name="psicologo_nombre" id="hiddenPsicologoField">
+                    <input type="hidden" name="psicologo_id" id="hiddenPsicologoFieldID">
+                  </form>
+                  
+            </div>
+            </div>
+          </div>
+          </div>
+          
+
+          <!-- Confirmación final -->
+          <div id="confirmation" class="modal-step text-center" style="display: none;">
+            <div class="mb-4">
+              <i class="bi bi-check-circle-fill text-success fs-1"></i>
+              <h3 class="mt-3">¡Cita agendada!</h3>
+              <div class="confirmation-details mt-4">
+                <h5 class="mb-2" id="final-psychologist"></h5>
+                <p class="text-muted" id="final-datetime"></p>
+                <p class="text-muted">
+                  Se ha enviado un correo de confirmación a:<br>
+                  <strong id="final-email">nombre@mail.com</strong>
+                </p>
+              </div>
+            </div>
+            
+          </div>
+
+        </div>
+        <!-- Pie del Modal -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary float-start" id="backButton" style="display: none;" onclick="previousStep()">   <i class="faq-toggle bi bi-chevron-left"></i>  </button>
+          <button type="button" class="btn btn-primary" id="mainActionButton" onclick="nextStep()">Confirmar Horario</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  

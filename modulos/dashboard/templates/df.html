@@ -1,0 +1,79 @@
+{% extends "layout/base_usuario.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<body>
+	<script src="{% static 'js/demo-theme.min.js' %}?1738096682"></script>
+	
+	<div class="container">
+	  <div class="row justify-content-center">
+		<div class="col-12 col-lg-12 col-xl-10 border-top-wide border-primary">
+		  <div class="container">
+			<h1 class="h3 text-center mb-3 mt-4">
+			  Registrate 
+			</h1>
+			<div class="text-center mb-4">
+			 
+				<img src="{% static 'img/lg.png' %}" height="20px" alt="">
+			
+			</div>
+			{% if form.errors %}
+			<div class="alert alert-danger alert-dismissible" role="alert">
+			  <div>
+				<h4 class="alert-title">Se han encontrado errores</h4>
+				<div class="text-secondary">
+				  {% for field in form %}
+				  {% if field.errors %}
+				  <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
+				  {% endif %}
+				  {% endfor %}
+				  {% if form.non_field_errors %}
+				  <p>{{ form.non_field_errors|join:", " }}</p>
+				  {% endif %}
+				</div>
+			  </div>
+			  <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+			</div>
+			{% endif %}
+			
+			<form action="/login/" method="post" autocomplete="off" novalidate>
+			  {% csrf_token %}
+			  <div class="row row-bordered">
+				{% for field in estudiante_form %}
+				{% if field.name in "username,first_name,last_name,email" %}
+				<div class="col-md-4">
+				  {{ field|as_crispy_field }}
+				</div>
+				{% elif field.name == "password1" %}
+				<div class="col-md-6">
+				  {{ field|as_crispy_field }}
+				</div>
+				{% elif field.name == "password2" %}
+				<div class="col-md-6">
+				  {{ field|as_crispy_field }}
+				</div>
+				{% elif field.name == "comentarios" %}
+				<div class="col-md-12">
+				  {{ field|as_crispy_field }}
+				</div>
+				{% elif field.name in "tipo_identificacion,identificacion,eps,alergias,enfermedades" %}
+				<div class="col-md-4">
+				  {{ field|as_crispy_field }}
+				</div>
+				{% endif %}
+				{% endfor %}
+			  </div>
+			</form>
+			<button class=""></button>
+			<div class="text-center text-secondary mt-3">
+			  &iquest;No tienes cuenta a&uacute;n? <a href="{% url 'registro_estudiante' %}" tabindex="-1">Reg&iacute;strate</a>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </body>
+  
+	{% endblock %}

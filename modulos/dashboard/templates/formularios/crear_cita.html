@@ -1,0 +1,33 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="modal-crear-cita" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Cita</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'crear_cita' %}" id="form-cita">
+          {% csrf_token %}
+          <div class="row row-bordered">
+            {% for field in form %}
+              <div class="col-md-6">
+                {{ field|as_crispy_field }}
+                {% if field.name == "fecha_hora" %}
+                  <small class="form-text text-muted">
+                    Formato AAAA-MM-DD HH:MM (24 horas)
+                  </small>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

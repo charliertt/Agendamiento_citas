@@ -1,0 +1,285 @@
+{% extends "layout/base_usuario.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<body class="bg-white d-flex flex-column min-vh-100">
+    <div class="page d-flex justify-content-center align-items-center flex-grow-1">
+        <div class="container">
+            <div class="col-xl-4 mx-auto">
+
+                <div class="text-center mt-4 mb-4">
+                    <img src="{% static 'img/lg.png' %}" style="max-height: 150px;" alt="">
+
+                </div>
+
+                <h1 class="h2 text-center">Regístrate</h1>
+
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible mb-2" role="alert">
+                    <div>
+                        <h4 class="alert-title">Se han encontrado errores</h4>
+                        <div class="text-secondary">
+                            {% for field in form %}
+                            {% if field.errors %}
+                            <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
+                            {% endif %}
+                            {% endfor %}
+                            {% if form.non_field_errors %}
+                            <p>{{ form.non_field_errors|join:", " }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                </div>
+                {% endif %}
+                <form id="registroForm" action="{% url 'registro_estudiante' %}" method="post" autocomplete="off" novalidate>
+                    {% csrf_token %}
+              
+                    <!-- Campo oculto para el paso (opcional si decides usar el valor del botón) -->
+                    <input type="hidden" name="step" id="id_step" value="{{ step }}">
+              
+                    <!-- ===================================== -->
+                    <!-- PASO 1: Email -->
+                    <!-- ===================================== -->
+                    <div id="paso1" style="display: {% if step == 1 %}block{% else %}none{% endif %};">
+                      <h3>Paso 1: Ingresa tu correo electrónico</h3>
+                      <div>
+                        <label for="{{ estudiante_form.email.id_for_label }}">Correo electrónico</label>
+                        {{ estudiante_form.email }}
+                        <span id="emailError" style="color:red; display:none;"></span>
+                        {% if estudiante_form.email.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.email.errors|join:", " }}
+                          </div>
+                        {% endif %}
+                      </div>
+                      <!-- Botón: usar type="button" para evitar envío automático -->
+                      <button type="button" id="btnSiguiente1" class="btn btn-dark mt-4 w-100">Siguiente</button>
+                    </div>
+              
+                    <!-- ===================================== -->
+                    <!-- PASO 2: Datos personales -->
+                    <!-- ===================================== -->
+                    <div id="paso2" style="display: {% if step == 2 %}block{% else %}none{% endif %};">
+                      <h3>Paso 2: Completa tus datos</h3>
+                      <div>
+                        <label for="{{ estudiante_form.username.id_for_label }}">Usuario</label>
+                        {{ estudiante_form.username }}
+                        <span id="usernameError" style="color:red; display:none;"></span>
+                        {% if estudiante_form.username.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.username.errors|join:", " }}
+                          </div>
+                        {% endif %}
+              
+                        <label for="{{ estudiante_form.first_name.id_for_label }}">Nombre</label>
+                        {{ estudiante_form.first_name }}
+                        {% if estudiante_form.first_name.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.first_name.errors|join:", " }}
+                          </div>
+                        {% endif %}
+              
+                        <label for="{{ estudiante_form.last_name.id_for_label }}">Apellido</label>
+                        {{ estudiante_form.last_name }}
+                        {% if estudiante_form.last_name.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.last_name.errors|join:", " }}
+                          </div>
+                        {% endif %}
+              
+                        <label for="{{ estudiante_form.tipo_identificacion.id_for_label }}">Tipo de identificación</label>
+                        {{ estudiante_form.tipo_identificacion }}
+                        {% if estudiante_form.tipo_identificacion.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.tipo_identificacion.errors|join:", " }}
+                          </div>
+                        {% endif %}
+              
+                        <label for="{{ estudiante_form.identificacion.id_for_label }}">Identificación</label>
+                        {{ estudiante_form.identificacion }}
+                        <span id="identificacionError" style="color:red; display:none;"></span>
+                        {% if estudiante_form.identificacion.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.identificacion.errors|join:", " }}
+                          </div>
+                        {% endif %}
+                      </div>
+                      <!-- Botón: usar type="button" -->
+                      <button type="button" id="btnSiguiente2" class="btn btn-dark mt-4 w-100">Siguiente</button>
+                    </div>
+              
+                    <!-- ===================================== -->
+                    <!-- PASO 3: Contraseña -->
+                    <!-- ===================================== -->
+                    <div id="paso3" style="display: {% if step == 3 %}block{% else %}none{% endif %};">
+                      <h3>Paso 3: Configura tu contraseña</h3>
+                      <div>
+                        <label for="{{ estudiante_form.password1.id_for_label }}">Contraseña</label>
+                        {{ estudiante_form.password1 }}
+                        {% if estudiante_form.password1.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.password1.errors|join:", " }}
+                          </div>
+                        {% endif %}
+                      </div>
+                      <div>
+                        <label for="{{ estudiante_form.password2.id_for_label }}">Confirmar Contraseña</label>
+                        {{ estudiante_form.password2 }}
+                        {% if estudiante_form.password2.errors %}
+                          <div style="color:red;">
+                            {{ estudiante_form.password2.errors|join:", " }}
+                          </div>
+                        {% endif %}
+                      </div>
+                      <!-- Botón final de envío -->
+                      <button type="submit" class="btn btn-dark mt-4 w-100">Crear cuenta</button>
+                    </div>
+                  </form>
+            
+                
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('registroForm');
+    const stepInput = document.getElementById('id_step');
+
+    // Botones de "Siguiente"
+    const btnSiguiente1 = document.getElementById('btnSiguiente1');
+    const btnSiguiente2 = document.getElementById('btnSiguiente2');
+
+    // Campos
+    const emailInput = document.getElementById('id_email');
+    const usernameInput = document.getElementById('id_username');
+    const identificacionInput = document.getElementById('id_identificacion');
+
+    // Errores en pantalla
+    const emailError = document.getElementById('emailError');
+    const usernameError = document.getElementById('usernameError');
+    const identificacionError = document.getElementById('identificacionError');
+
+    // Manejar Enter para evitar envíos accidentales
+    document.querySelectorAll('input, select').forEach(el => {
+      el.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // =====================================
+    // Paso 1: Validación de email con AJAX
+    // =====================================
+    btnSiguiente1.addEventListener('click', function () {
+      // Limpia mensaje de error anterior
+      emailError.style.display = 'none';
+
+      const emailVal = emailInput.value.trim();
+      if (!validarEmail(emailVal)) {
+        emailError.textContent = "Formato de correo inválido.";
+        emailError.style.display = "inline";
+        return;
+      }
+
+      // Verificar vía AJAX si el email ya existe
+      fetch("{% url 'verificar_email' %}?email=" + encodeURIComponent(emailVal))
+        .then(response => response.json())
+        .then(data => {
+          if (data.existe) {
+            emailError.textContent = "Este email ya está en uso.";
+            emailError.style.display = "inline";
+          } else {
+            // Todo OK: asignamos step=2 y enviamos el formulario
+            stepInput.value = "2";
+            form.submit();
+          }
+        })
+        .catch(error => {
+          console.error('Error al verificar email:', error);
+        });
+    });
+
+    // =====================================
+    // Paso 2: Validación de usuario e identificación
+    // =====================================
+    btnSiguiente2.addEventListener('click', function () {
+      // Limpia mensajes de error previos
+      usernameError.style.display = "none";
+      identificacionError.style.display = "none";
+
+      const usernameVal = usernameInput.value.trim();
+      const identificacionVal = identificacionInput.value.trim();
+
+      if (!usernameVal) {
+        usernameError.textContent = "El usuario es requerido.";
+        usernameError.style.display = "inline";
+        return;
+      }
+      if (!identificacionVal) {
+        identificacionError.textContent = "La identificación es requerida.";
+        identificacionError.style.display = "inline";
+        return;
+      }
+
+      // Validar que la identificación solo contenga dígitos
+      const regexIdentificacion = /^\d+$/;
+      if (!regexIdentificacion.test(identificacionVal)) {
+        identificacionError.textContent = "La identificación debe contener solo números.";
+        identificacionError.style.display = "inline";
+        return;
+      }
+
+      // Verificar vía AJAX si el username ya existe
+      fetch("{% url 'verificar_username' %}?username=" + encodeURIComponent(usernameVal))
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            usernameError.textContent = "El usuario ya existe.";
+            usernameError.style.display = "inline";
+          } else {
+            // Verificar vía AJAX si la identificación ya está registrada
+            fetch("{% url 'verificar_identificacion' %}?identificacion=" + encodeURIComponent(identificacionVal))
+              .then(response => response.json())
+              .then(dataIdent => {
+                if (dataIdent.exists) {
+                  identificacionError.textContent = "La identificación ya está registrada.";
+                  identificacionError.style.display = "inline";
+                } else {
+                  // Todo OK: asignamos step=3 y enviamos el formulario
+                  stepInput.value = "3";
+                  form.submit();
+                }
+              })
+              .catch(error => {
+                console.error('Error al verificar identificación:', error);
+              });
+          }
+        })
+        .catch(error => {
+          console.error('Error al verificar username:', error);
+        });
+    });
+
+    // =====================================
+    // Función auxiliar: validar email
+    // =====================================
+    function validarEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email.toLowerCase());
+    }
+  });
+</script>
+    
+
+</body>
+
+{% endblock %}
+
+</html>
