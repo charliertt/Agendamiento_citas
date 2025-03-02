@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="post" action="{% url 'crear_cita' %}" id="form-cita">
+        <form method="post" action="{{ form_action }}" id="form-cita">
           {% csrf_token %}
           <div class="row row-bordered">
             {% for field in form %}
@@ -30,4 +30,3 @@
     </div>
   </div>
 </div>
-

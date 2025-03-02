@@ -1,37 +1,50 @@
 from django.conf import settings
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.urls import reverse_lazy
+from django.urls import reverse
+
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto
 from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login,  get_user_model
+from django.contrib.auth import authenticate, login,  get_user_model, logout
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required(login_url='login')
 def dashboard(request):
-    user = request.user 
-    horarios = Horario.objects.all().order_by('dia_semana', 'hora_inicio')
-    contactos = Contacto.objects.all()  
-    preguntas = Preguntas.objects.all()  
-    citas = Cita.objects.all()
+    if request.method == 'POST':
+        form = CitaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "¡Cita creada correctamente!")
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Hubo un error al crear la cita. Verifica los datos ingresados.")
+    else:
+        form = CitaForm()
+
+    user = request.user
     context = {
-        'user': user, 
+        'user': user,
         'num_estudiantes': Estudiante.objects.count(),
         'num_citas_agendadas': Cita.objects.filter(estado='agendada').count(),
         'num_contactos': Contacto.objects.count(),
         'num_preguntas': Preguntas.objects.count(),
-        'horarios': horarios,  
-        'contactos': contactos,  
-        'preguntas': preguntas,  
-        'citas': citas,  
+        'horarios': Horario.objects.all().order_by('dia_semana', 'hora_inicio'),
+        'contactos': Contacto.objects.all(),
+        'preguntas': Preguntas.objects.all(),
+        'citas': Cita.objects.all(),
+        'usuarios': UsuarioPersonalizado.objects.all(),
+        'form': form,
+        'dashboard_url': reverse('dashboard'), 
     }
     return render(request, 'dashboard.html', context)
-
 
 
 
@@ -178,6 +191,14 @@ def login_vista(request):
         form = EmailAuthenticationForm()
 
     return render(request, "login.html", {"form": form})
+
+
+def logout_vista(request):
+    # Finaliza la sesión del usuario
+    logout(request)
+    print("El usuario ha cerrado sesión")
+    
+    return redirect('login')
     
 #registro_estudiante
 
@@ -449,8 +470,9 @@ class CitaListView(ListView):
         # Para cada cita en la lista, asignamos un formulario de edición
         for cita in context['citas']:
             cita.form_editar = CitaForm(instance=cita)
+        # Agregar la URL para crear cita
+        context['crear_cita_url'] = reverse('crear_cita')
         return context
-    
 
 
 class CitaUpdateView(UpdateView):

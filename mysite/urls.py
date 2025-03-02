@@ -40,7 +40,7 @@ urlpatterns = [
     
     #auenticacion
     path('login/', dashboard_views.login_vista, name="login"),
-    # path('logout/', dashboard_views.logout_vista, name="logout"),
+    path('logout/', dashboard_views.logout_vista, name="logout"),
 
     #validaciones formulario de estudiante
 	path('registro_estudiante/', dashboard_views.registro_estudiante, name="registro_estudiante"),

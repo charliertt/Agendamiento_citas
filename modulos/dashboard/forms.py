@@ -1,9 +1,8 @@
 from django import forms
 from django.core.validators import RegexValidator
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.forms import AuthenticationForm
 
 
 class UsuarioPersonalizadoCreationForm(UserCreationForm):
@@ -36,6 +35,12 @@ class UsuarioPersonalizadoCreationForm(UserCreationForm):
             'alergias': forms.TextInput(attrs={'class': 'form-control'}),
             'enfermedades': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Establecer valores por defecto para los selects
+        self.fields['tipo_identificacion'].initial = 'cedula'
+        self.fields['rol'].initial = 'estudiante'
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -74,13 +79,18 @@ class UsuarioPersonalizadoEditForm(forms.ModelForm):
         fields = [
             'username', 'first_name', 'last_name', 'email',
             'tipo_identificacion', 'identificacion',
-            'eps', 'alergias', 'enfermedades',  
+            'eps', 'alergias', 'enfermedades',
             'imagen', 'rol', 'especializacion',
         ]
-        # ... widgets y demás código ...
+        # Puedes agregar aquí los widgets y demás configuraciones
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Asignar valores por defecto en caso de que la instancia no tenga asignado el campo
+        if not self.instance.tipo_identificacion:
+            self.fields['tipo_identificacion'].initial = 'cedula'
+        if not self.instance.rol:
+            self.fields['rol'].initial = 'estudiante'
         # Verificar si existe psicólogo sin usar la relación inversa
         if self.instance.pk:
             psicologo = Psicologo.objects.filter(usuario=self.instance).first()
@@ -97,21 +107,17 @@ class UsuarioPersonalizadoEditForm(forms.ModelForm):
         return cleaned_data
 
 
-
 class EmailAuthenticationForm(AuthenticationForm):
     # Sobreescribimos el campo username para que sea de tipo EmailField y se muestre como "Correo Electrónico"
     username = forms.EmailField(label="Correo Electrónico", max_length=254)
 
-    
 
-    
 class HorarioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-    
         self.is_edit = kwargs.pop('is_edit', False)
         super().__init__(*args, **kwargs)
-        
-        
+        # Establecer 'Lunes' como valor por defecto para el select de día de la semana
+        self.fields['dia_semana'].initial = 'Lunes'
     
     class Meta:
         model = Horario
@@ -124,8 +130,13 @@ class HorarioForm(forms.ModelForm):
             'disponible': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
 
-    
+
 class PreguntasForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Establecer 'ANS' (Ansiedad) como valor por defecto
+        self.fields['categoria'].initial = 'ANS'
+    
     class Meta:
         model = Preguntas
         fields = ['categoria', 'pregunta', 'respuesta']
@@ -161,6 +172,9 @@ class CitaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Para una instancia nueva, asignar el estado por defecto 'agendada'
+        if not self.instance.pk:
+            self.fields['estado'].initial = 'agendada'
         # Si se está editando una instancia existente, formatear la fecha para el input datetime-local
         if self.instance and self.instance.pk and self.instance.fecha_hora:
             self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
@@ -191,18 +205,20 @@ class EstudianteForm(UserCreationForm):
             'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Forzar que los campos de contraseña tengan la clase 'form-control'
+        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+        # Establecer 'cedula' como valor por defecto para tipo_identificacion
+        self.fields['tipo_identificacion'].initial = 'cedula'
+
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Las contraseñas no coinciden.")
         return password2
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Forzar que los campos de contraseña tengan la clase 'form-control'
-        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -219,4 +235,3 @@ class RespuestaForm(forms.Form):
         widget=forms.Textarea(attrs={'rows': 5, 'cols': 40}),
         label="Respuesta"
     )
-    

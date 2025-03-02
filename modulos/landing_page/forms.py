@@ -34,6 +34,11 @@ class EstudianteForm(UserCreationForm):
         # Si se pasa 'usuario_existente' como True, se omiten los campos de contraseña.
         usuario_existente = kwargs.pop('usuario_existente', False)
         super().__init__(*args, **kwargs)
+        
+        # Establecer valor por defecto para el select 'tipo_identificacion'
+        # Asumimos que 'cedula' es el valor deseado por defecto
+        self.fields['tipo_identificacion'].initial = 'cedula'
+        
         if usuario_existente:
             self.fields.pop('password1', None)
             self.fields.pop('password2', None)
@@ -56,3 +61,9 @@ class ContactoForm(forms.ModelForm):
             'deseo': forms.Select(choices=Contacto.TIPO_OPCIONES, attrs={'class': 'form-control'}),
             'mensaje': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Escribe tu mensaje aquí', 'rows': 4}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['deseo'].required = True
+        # Establecer el valor por defecto para 'deseo' (ej.: 'peticion')
+        self.fields['deseo'].initial = 'peticion'

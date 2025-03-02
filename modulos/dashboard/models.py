@@ -203,7 +203,12 @@ class Contacto(models.Model):
 
     nombre = models.CharField(max_length=100, verbose_name="Nombre")
     email = models.EmailField(verbose_name="Correo electrónico")
-    deseo = models.CharField(max_length=10, choices=TIPO_OPCIONES, verbose_name="Tipo de solicitud")
+    deseo = models.CharField(
+        max_length=10,
+        choices=TIPO_OPCIONES,
+        default='peticion',  # Valor por defecto
+        verbose_name="Tipo de solicitud"
+    )
     mensaje = models.TextField(verbose_name="Mensaje")
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de creación")
     estado = models.CharField(max_length=10, choices=ESTADO_OPCIONES, default='pendiente', verbose_name="Estado")
