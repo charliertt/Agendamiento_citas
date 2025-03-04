@@ -78,10 +78,30 @@
 							+
 						  </button>
 						</td>
-						<td>{{ contacto.estado }}</td>
+						<td>   {% if contacto.estado == 'pendiente' %}
+							<span class="badge badge-outline text-warning bg-warning-100">
+							  {{ contacto.get_estado_display }}
+							</span>
+						  {% elif contacto.estado == 'resuelto' %}
+							<span class="badge badge-outline text-success bg-success-100">
+							  {{ contacto.get_estado_display }}
+							</span>
+						  {% endif %}</td>
 
 						<td>{{ contacto.email }}</td>
-						<td>{{ contacto.deseo }}</td>
+						<td>{% if contacto.deseo == 'queja' %}
+							<span class="badge badge-outline text-danger bg-danger-100">
+							  {{ contacto.get_deseo_display }}
+							</span>
+						  {% elif contacto.deseo == 'reclamo' %}
+							<span class="badge badge-outline text-info bg-info-100">
+							  {{ contacto.get_deseo_display }}
+							</span>
+						  {% elif contacto.deseo == 'peticion' %}
+							<span class="badge badge-outline text-primary bg-primary-100">
+							  {{ contacto.get_deseo_display }}
+							</span>
+						  {% endif %}</td>
 						<td>
 						  <div class="btn-list d-flex justify-content-center gap-2">
 							<a href="#" data-bs-toggle="modal" data-bs-target="#modal-responder-contacto-{{ contacto.id }}">
