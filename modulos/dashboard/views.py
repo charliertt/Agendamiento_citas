@@ -2,7 +2,6 @@ from django.conf import settings
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.urls import reverse_lazy
 from django.urls import reverse
-
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto
@@ -14,6 +13,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.decorators import login_required
+from django.core.serializers import serialize
 
 # Create your views here.
 @login_required(login_url='login')
@@ -28,6 +28,33 @@ def dashboard(request):
             messages.error(request, "Hubo un error al crear la cita. Verifica los datos ingresados.")
     else:
         form = CitaForm()
+    
+    citas = Cita.objects.all().values(
+        'id',
+        'fecha_hora',  # Nombre correcto del campo
+        'estado',
+        'asunto',      # Campo correcto en lugar de "motivo"
+       'estudiante__usuario__first_name',  # Nombre
+        'estudiante__usuario__last_name' 
+    )
+    citas_list = list(citas)
+    
+    # Convertir datetime a string ISO
+    for cita in citas_list:
+        cita['nombre_completo'] = f"{cita['estudiante__usuario__first_name']} {cita['estudiante__usuario__last_name']}"
+        del cita['estudiante__usuario__first_name']  # Limpiar campos innecesarios
+        del cita['estudiante__usuario__last_name']
+
+    contactos = Contacto.objects.all().values(
+        'nombre', 
+        'deseo', 
+        'fecha_creacion'
+    )
+    contactos_list = list(contactos)
+    
+    # Convertir datetime a string ISO
+    for contacto in contactos_list:
+        contacto['fecha_creacion'] = contacto['fecha_creacion'].isoformat()
 
     user = request.user
     context = {
@@ -42,7 +69,11 @@ def dashboard(request):
         'citas': Cita.objects.all(),
         'usuarios': UsuarioPersonalizado.objects.all(),
         'form': form,
-        'dashboard_url': reverse('dashboard'), 
+        'dashboard_url': reverse('dashboard'),
+        'contactos_json': contactos_list,
+         'citas_json': citas_list  
+        
+        
     }
     return render(request, 'dashboard.html', context)
 
@@ -87,15 +118,6 @@ def usuarios(request):
         'form': creation_form,  # Formulario de creación
     })
     
-
-    
-    
-
-
-    
-
-
-
 
 
 def crear_usuario(request):
@@ -168,6 +190,13 @@ def eliminar_usuario(request, usuario_id):
     return render(request, 'usuarios.html', {'usuario': usuario})
 
 
+#perfil
+def perfil(request):
+    context = {'usuario': request.user}
+    
+    
+
+    return render(request, 'perfil.html', context)
 #login:
 
 def login_vista(request):

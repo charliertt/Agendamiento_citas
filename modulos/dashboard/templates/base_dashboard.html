@@ -17,6 +17,8 @@
 <link href="{% static 'css/demo.min.css' %}" rel="stylesheet"/>
 <link href="{% static 'css/datatables.css' %}" rel="stylesheet"/>
 <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet"/>
+<link href="^{% static 'css/main.css' %}" rel="stylesheet"/>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -160,7 +162,7 @@
 			</div>
 		</a>
 		<div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-			<a href="./profile.html" class="dropdown-item">Perfil</a>
+			<a href="/perfil" class="dropdown-item">Perfil</a>
 			<a href="#" class="dropdown-item">Reseñas</a>
 			<div class="dropdown-divider"></div>
 			<a href="./settings.html" class="dropdown-item">Configuración</a>
@@ -490,3 +492,4 @@
 <script src="{% static 'js/demo.min.js' %}?1738096685" defer></script>
 <script src="{% static 'js/datatables.min.js' %}?1738096685" defer></script>
 <script src="{% static 'js/datatables.js' %}?1738096685" defer></script>
+<script src='fullcalendar/dist/index.global.js'></script>

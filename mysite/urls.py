@@ -37,7 +37,7 @@ urlpatterns = [
     path('crear_usuario/', dashboard_views.crear_usuario, name="crear_usuario"),
     path('editar_usuario/<int:usuario_id>/', dashboard_views.editar_usuario, name="editar_usuario"),
     path('eliminar_usuario/<int:usuario_id>/', dashboard_views.eliminar_usuario, name="eliminar_usuario"),
-    
+    path('perfil/', dashboard_views.perfil, name="perfil"),
     #auenticacion
     path('login/', dashboard_views.login_vista, name="login"),
     path('logout/', dashboard_views.logout_vista, name="logout"),
