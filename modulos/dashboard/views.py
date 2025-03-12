@@ -1,9 +1,12 @@
+import pytz
+from django.utils import timezone
 from django.conf import settings
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.urls import reverse_lazy
 from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
+
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto
 from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,9 +18,11 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
 
+
 # Create your views here.
 @login_required(login_url='login')
 def dashboard(request):
+    
     if request.method == 'POST':
         form = CitaForm(request.POST)
         if form.is_valid():
@@ -30,26 +35,34 @@ def dashboard(request):
         form = CitaForm()
     
     citas = Cita.objects.all().values(
-        'id',
-        'fecha_hora',  # Nombre correcto del campo
-        'estado',
-        'asunto',      # Campo correcto en lugar de "motivo"
-       'estudiante__usuario__first_name',  # Nombre
-        'estudiante__usuario__last_name' 
+    'id',
+    'fecha_hora',
+    'estado',
+    'asunto',
+    'estudiante__usuario__first_name',
+    'estudiante__usuario__last_name'
     )
     citas_list = list(citas)
-    
-    # Convertir datetime a string ISO
-    for cita in citas_list:
-        cita['nombre_completo'] = f"{cita['estudiante__usuario__first_name']} {cita['estudiante__usuario__last_name']}"
-        del cita['estudiante__usuario__first_name']  # Limpiar campos innecesarios
-        del cita['estudiante__usuario__last_name']
+    bogota_tz = pytz.timezone('America/Bogota')
 
-    contactos = Contacto.objects.all().values(
-        'nombre', 
-        'deseo', 
-        'fecha_creacion'
-    )
+
+    for cita in citas_list:
+        # Convertir datetime a la zona horaria de Bogotá
+        fecha_hora_utc = cita['fecha_hora']
+        if timezone.is_naive(fecha_hora_utc):
+            fecha_hora_utc = timezone.make_aware(fecha_hora_utc)
+            
+        fecha_hora_bogota = fecha_hora_utc.astimezone(bogota_tz)
+        cita['nombre_completo'] = f"{cita.pop('estudiante__usuario__first_name')} {cita.pop('estudiante__usuario__last_name')}"
+        cita['fecha_hora'] = fecha_hora_bogota.isoformat()
+
+    # Convertir fecha_hora a string ISO con zona horaria
+    
+        contactos = Contacto.objects.all().values(
+            'nombre', 
+            'deseo', 
+            'fecha_creacion'
+        )
     contactos_list = list(contactos)
     
     # Convertir datetime a string ISO
@@ -75,6 +88,7 @@ def dashboard(request):
         
         
     }
+    
     return render(request, 'dashboard.html', context)
 
 
@@ -475,10 +489,17 @@ def responder_contacto(request, contacto_id):
 class CitaCreateView(CreateView):
     model = Cita
     form_class = CitaForm
-    template_name = "citas.html"  # Puedes reutilizar la plantilla o crear una específica para crear
+    template_name = "citas.html"
     success_url = reverse_lazy("citas")
 
     def form_valid(self, form):
+        # Obtén el valor de la fecha/hora ingresado en el formulario
+        fecha_hora = form.instance.fecha_hora
+        # Si la fecha/hora es naive (sin información de zona horaria), la hacemos "aware"
+        if fecha_hora and timezone.is_naive(fecha_hora):
+            # Esto utiliza la zona horaria configurada en settings (America/Bogota)
+            form.instance.fecha_hora = timezone.make_aware(fecha_hora, timezone.get_current_timezone())
+        
         messages.success(self.request, "¡Cita creada correctamente!")
         return super().form_valid(form)
 

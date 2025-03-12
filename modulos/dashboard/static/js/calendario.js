@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         slotDuration: '01:00',
         themeSystem: 'bootstrap5',
         locale: 'es',
-        timeZone: 'UTC',
+        timeZone: 'America/Bogota',
         firstDay: 1,
         headerToolbar: {
             left: 'prev,next today',
@@ -63,17 +63,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const citasCalendar = new FullCalendar.Calendar(calendarCitasEl, {
         locale: 'es',
-        timeZone: 'UTC',
+        timeZone: 'America/Bogota',
         firstDay: 1,
         initialView: 'timeGridWeek',
         headerToolbar: {
-            left: 'prev,next today',
+            left: 'prev,next Hoy',
             center: 'title',
             right: 'timeGridWeek,timeGridDay,listWeek'
         },
         events: citasData.map(cita => ({
             title: `${cita.asunto} - ${cita.nombre_completo}`,
             start: cita.fecha_hora,
+            
             color: getCitaColor(cita.estado),
             extendedProps: {
                 estado: cita.estado.toLowerCase() 
@@ -131,10 +132,11 @@ function getColorByType(tipo) {
 // Funciones para Citas
 function renderCitaContent(eventInfo) {
     const [asunto, estudiante] = eventInfo.event.title.split('-').map(s => s.trim());
+    const borderColor = getCitaBorderColor(eventInfo.event.extendedProps.estado);
     
     return {
         html: `
-           <div class="cita-event p-1">
+           <div class="cita-event p-1" style="border: 2px solid ${borderColor};">
                 <div class="d-flex flex-column gap-1">
                     <div class="event-header">
                         <div class="estudiante-text text-muted">
@@ -157,18 +159,18 @@ function renderCitaContent(eventInfo) {
 
 function getCitaColor(estado) {
     switch(estado) {
-        case 'agendada': return '#e67f60';
-        case 'cancelada': return '#dc3545';
-        case 'completada': return '#6c757d';
+        case 'agendada': return 'transparent';
+        case 'cancelada': return 'transparent';
+        case 'completada': return 'transparent';
         default: return '#17a2b8';
     }
 }
 
 function getEstadoBadgeClass(estado) {
     return {
-        'agendada': 'bg-success',
-        'cancelada': 'bg-danger',
-        'completada': 'bg-secondary'
+        'agendada': 'badge badge-outline text-orange',  
+        'cancelada': 'badge badge-outline text-red',
+        'completada': 'badge badge-outline text-green'
     }[estado] || 'bg-warning text-dark';
 }
 
@@ -179,4 +181,14 @@ function formatDate(date) {
         month: 'short',
         year: 'numeric'
     });
+}
+
+
+function getCitaBorderColor(estado) {
+    switch(estado) {
+        case 'agendada': return '#e67f60';
+        case 'cancelada': return '#dc3545';
+        case 'completada': return '#17a2b8'; // o el color que prefieras
+        default: return '#17a2b8';
+    }
 }

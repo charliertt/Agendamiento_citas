@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 class UsuarioPersonalizado(AbstractUser):
     TIPOS_IDENTIFICACION = [
@@ -99,6 +100,7 @@ class Horario(models.Model):
 
 
 class Cita(models.Model):
+    
     ESTADOS = [
         ('agendada', 'Agendada'),
         ('cancelada', 'Cancelada'),
@@ -147,9 +149,10 @@ class Cita(models.Model):
     )
 
     def __str__(self):
+        local_fecha_hora = timezone.localtime(self.fecha_hora)
         return (
             f"Cita #{self.id} - {self.estudiante.usuario.username} "  # Accedemos al username a través de la relación Estudiante → UsuarioPersonalizado
-            f"con {self.psicologo.usuario.username} - {self.fecha_hora.strftime('%d/%m/%Y %H:%M')}"
+            f"con {self.psicologo.usuario.username} - {local_fecha_hora.strftime('%d/%m/%Y %H:%M')}"
         )
 
     
