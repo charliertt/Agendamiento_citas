@@ -19,42 +19,72 @@ def blog(request):
     return render(request, 'blog.html')
 
 def preguntas(request):
+    # Obtenemos todas las preguntas ordenadas
+    preguntas_list = list(Preguntas.objects.all().order_by('id_pregunta'))
+    total = len(preguntas_list)
     
-    preguntas = Preguntas.objects.all()
-    return render(request, 'preguntas.html', {'preguntas': preguntas})
+    # Recuperamos el índice de la pregunta actual (inicializamos en 0 si no existe)
+    current_index = request.session.get('current_index', 0)
+
+    # Si se contestaron todas, mostramos la vista de resultados
+    if current_index >= total:
+        respuestas_correctas = request.session.get('respuestas_correctas', 0)
+        porcentaje = (respuestas_correctas / total) * 100 if total > 0 else 0
+
+        # Opcional: limpiar la sesión para iniciar de nuevo el quiz
+        request.session['current_index'] = 0
+        request.session['respuestas_correctas'] = 0
+
+        return render(request, 'resultados.html', {
+            'respuestas_correctas': respuestas_correctas,
+            'total_preguntas': total,
+            'porcentaje': porcentaje
+        })
+
+    # Seleccionamos la pregunta actual
+    pregunta_actual = preguntas_list[current_index]
+
+    return render(request, 'preguntas.html', {
+        'pregunta': pregunta_actual,
+        'current_index': current_index,
+        'total': total
+    })
 
 
 
 def validar_pregunta(request):
     if request.method == 'POST':
-        preguntas = Preguntas.objects.all()
-        respuestas_correctas = 0
-        total_preguntas = preguntas.count()
+        preguntas_list = list(Preguntas.objects.all().order_by('id_pregunta'))
+        total = len(preguntas_list)
 
-        for pregunta in preguntas:
-            respuesta_usuario = request.POST.get(f"respuesta_{pregunta.id_pregunta}")
+        # Recuperamos el índice actual y la cantidad de respuestas correctas desde la sesión
+        current_index = request.session.get('current_index', 0)
+        respuestas_correctas = request.session.get('respuestas_correctas', 0)
+
+        # Obtenemos la pregunta actual
+        if current_index < total:
+            pregunta_actual = preguntas_list[current_index]
+            # El nombre del input se genera con el id de la pregunta, por ejemplo: respuesta_1, respuesta_2, etc.
+            respuesta_usuario = request.POST.get(f"respuesta_{pregunta_actual.id_pregunta}")
 
             if respuesta_usuario:
-                if respuesta_usuario == 'True' and pregunta.respuesta:
+                # Comparamos la respuesta enviada con la respuesta correcta almacenada en la pregunta
+                if respuesta_usuario == 'True' and pregunta_actual.respuesta:
                     respuestas_correctas += 1
-                elif respuesta_usuario == 'False' and not pregunta.respuesta:
+                elif respuesta_usuario == 'False' and not pregunta_actual.respuesta:
                     respuestas_correctas += 1
 
-        # Calculamos el porcentaje de respuestas correctas
-        porcentaje = (respuestas_correctas / total_preguntas) * 100
+        # Actualizamos la sesión: aumentamos el índice y guardamos la cantidad de respuestas correctas
+        request.session['current_index'] = current_index + 1
+        request.session['respuestas_correctas'] = respuestas_correctas
 
-        # Mostrar los resultados en la consola (para depuración)
-        print(f"respuestas correctas: {respuestas_correctas}")
-        print(f"total preguntas: {total_preguntas}")
-        print(f"porcentaje: {porcentaje}")
-
-        return render(request, 'preguntas.html', {'preguntas': preguntas, 
-                                                  'respuestas_correctas': respuestas_correctas, 
-                                                  'total_preguntas': total_preguntas, 
-                                                  'porcentaje': porcentaje})  
-    else:
-        return redirect('preguntas')  
+    return redirect('preguntas')  
     
+
+
+def resultados(request):
+    
+    return render(request, 'resultados.html')
     
     
 

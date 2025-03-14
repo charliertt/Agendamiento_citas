@@ -35,61 +35,47 @@
     </div><!-- End Page Title -->
 
     <!-- Blog Posts Section -->
-    <section id="blog-posts" class="blog-posts section">
-
+    <section id="pregunta" class="pregunta section">
       <div class="container">
-        <form method="post" action="{% url 'validar_pregunta' %}">
-          {% csrf_token %}
-          
-          <div class="row gy-4">
-            {% for pregunta in preguntas %}
-              <div class="col-lg-6">
-                <article>
-          
-                  <div class="post-img">
-                    <img src="assets/img/blog/blog-1.jpg" alt="" class="img-fluid">
-                  </div>
-          
-                  <p class="post-category">Categoría: {{ pregunta.categoria }}</p>
-          
-                  <h2 class="title">
-                    <a href="blog-details.html">{{ pregunta.pregunta }}</a>
-                  </h2>
-          
-                  <div class="row">
-                    <div class="col-lg-6">
-                      <div class="card" style="width: 18rem; background-color: #0d6efd; color: white;">
-                        <div class="card-body">
-                          <label>
-                            <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="False">
-                            Falso
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-          
-                    <div class="col-lg-6">
-                      <div class="card" style="width: 18rem; background-color: #e84545; color: white;">
-                        <div class="card-body">
-                          <label>
-                            <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="True">
-                            Verdadero
-                          </label>
-                        </div>
-                      </div>
+        {% if pregunta %}
+          <form method="post" action="{% url 'validar_pregunta' %}">
+            {% csrf_token %}
+            <div class="card mb-4">
+              <div class="card-body">
+                <p class="post-category">Categoría: {{ pregunta.categoria }}</p>
+                <h2 class="title">{{ pregunta.pregunta }}</h2>
+    
+                <div class="d-flex justify-content-around mt-3">
+                  <div class="card" style="width: 18rem; background-color: #0d6efd; color: white;">
+                    <div class="card-body">
+                      <label>
+                        <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="False" required>
+                        Falso
+                      </label>
                     </div>
                   </div>
-          
-                </article>
+                  <div class="card" style="width: 18rem; background-color: #e84545; color: white;">
+                    <div class="card-body">
+                      <label>
+                        <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="True" required>
+                        Verdadero
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
-            {% endfor %}
-          </div>
-          
-          <div class="d-flex justify-content-center mt-4">
-            <button type="submit" class="btn btn-primary w-50">Enviar</button>
-          </div>
-        
-        </form>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+              <button type="submit" class="btn btn-primary">Siguiente</button>
+            </div>
+            <p>Pregunta {{ current_index|add:1 }} de {{ total }}</p>
+          </form>
+        {% else %}
+          <p>No hay más preguntas.</p>
+        {% endif %}
+      </div>
+    </section>
+    
 
         {% if respuestas_correctas is not none %}
             <script>
@@ -132,11 +118,7 @@
 
             </article>
           </div> -->
-
-        </div>
-      </div>
-
-    </section><!-- /Blog Posts Section -->
+<!-- /Blog Posts Section -->
 
     <!-- Blog Pagination Section -->
     

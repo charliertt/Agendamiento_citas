@@ -1,0 +1,10 @@
+<section id="resultados" class="resultados section">
+    <div class="container text-center">
+      <h2>Resultados</h2>
+      <p>Respuestas correctas: {{ respuestas_correctas }} de {{ total_preguntas }}</p>
+      <p>Porcentaje: {{ porcentaje }}%</p>
+      <!-- Puedes agregar un botón para reiniciar o redirigir a otra página -->
+      <a href="{% url 'preguntas' %}" class="btn btn-primary">Reiniciar</a>
+    </div>
+  </section>
+  

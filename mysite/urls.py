@@ -26,7 +26,7 @@ urlpatterns = [
     path('', landing_views.index, name="index"),
     path('index/', landing_views.index, name="index"),  
     path('blog/', landing_views.blog, name="blog"),     
-    path('preguntas/', landing_views.preguntas, name="preguntas"),
+    
     path('validar_pregunta/', landing_views.validar_pregunta, name='validar_pregunta'),
     
     # Dashboard
@@ -81,9 +81,15 @@ urlpatterns = [
     path('horarios-disponibles/', landing_views.obtener_horarios_disponibles, name='horarios_disponibles'),
 
     #procesar_contacto
-    path('procesar_contacto/', landing_views.procesar_contacto, name='procesar_contacto')
+    path('procesar_contacto/', landing_views.procesar_contacto, name='procesar_contacto'),
+	
+    #__________________________________preguntas______________________________________________
+    path('preguntas/', landing_views.preguntas, name="preguntas"),
+    path('resultados/', landing_views.resultados, name="resultados"),
 
 ]
+
+
 
 if settings.DEBUG:
     	urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
