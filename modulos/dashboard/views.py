@@ -20,7 +20,7 @@ from django.core.serializers import serialize
 
 
 # Create your views here.
-@login_required(login_url='login')
+@login_required(login_url='/login')
 def dashboard(request):
     
     if request.method == 'POST':
@@ -214,26 +214,22 @@ def perfil(request):
 #login:
 
 def login_vista(request):
+    # Capturamos el parámetro 'next' tanto en GET como en POST
+    next_url = request.GET.get('next') or request.POST.get('next') or '/dashboard/'
+    
     if request.method == "POST":
-        print("POST request received")
-        print(f"Request Data: {request.POST}")
         form = EmailAuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
-            print("Form is valid")
             user = form.get_user()
-            print(f"Authenticated User: {user}")
             login(request, user)
-            print(f"User {user} logged in")
-            return redirect('dashboard')
+            # Redirige a la URL indicada en 'next'
+            return redirect(next_url)
         else:
-            print("Form is invalid")
-            print(f"Form Errors: {form.errors}")
             messages.error(request, "El email o la contraseña son incorrectos")
     else: 
-        print("GET request received")
         form = EmailAuthenticationForm()
 
-    return render(request, "login.html", {"form": form})
+    return render(request, "login.html", {"form": form, "next": next_url})
 
 
 def logout_vista(request):

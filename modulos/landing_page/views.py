@@ -10,6 +10,7 @@ import pytz
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -17,21 +18,20 @@ from django.utils.html import strip_tags
 def blog(request):
     
     return render(request, 'blog.html')
-
 def preguntas(request):
-    # Obtenemos todas las preguntas ordenadas
+    if not request.user.is_authenticated:
+        # Redirige al login, incluyendo la URL actual en el parámetro next
+        return redirect(f'/login/?next={request.path}')
+    
+    # Resto de la lógica para mostrar preguntas
     preguntas_list = list(Preguntas.objects.all().order_by('id_pregunta'))
     total = len(preguntas_list)
-    
-    # Recuperamos el índice de la pregunta actual (inicializamos en 0 si no existe)
     current_index = request.session.get('current_index', 0)
 
-    # Si se contestaron todas, mostramos la vista de resultados
     if current_index >= total:
         respuestas_correctas = request.session.get('respuestas_correctas', 0)
         porcentaje = (respuestas_correctas / total) * 100 if total > 0 else 0
 
-        # Opcional: limpiar la sesión para iniciar de nuevo el quiz
         request.session['current_index'] = 0
         request.session['respuestas_correctas'] = 0
 
@@ -41,7 +41,6 @@ def preguntas(request):
             'porcentaje': porcentaje
         })
 
-    # Seleccionamos la pregunta actual
     pregunta_actual = preguntas_list[current_index]
 
     return render(request, 'preguntas.html', {
@@ -49,6 +48,7 @@ def preguntas(request):
         'current_index': current_index,
         'total': total
     })
+
 
 
 
@@ -83,6 +83,7 @@ def validar_pregunta(request):
 
 
 def resultados(request):
+    
     
     return render(request, 'resultados.html')
     

@@ -38,6 +38,7 @@
 			
 		<form action="/login/" method="post" autocomplete="off" novalidate>
 			{% csrf_token %}
+			<input type="hidden" name="next" value="{{ next }}">
 
 	<div class="mb-3">
 		<label for="email" class="form-label">Correo electr&oacute;nico</label>
