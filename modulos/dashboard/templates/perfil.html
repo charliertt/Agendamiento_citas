@@ -37,132 +37,110 @@
 				  </div>
 				</div>
 			  </div>
-			  <div class="col-12 col-md-9 d-flex flex-column">
-				<div class="card-body">
-				  <h2 class="mb-4">My Account</h2>
-				  <h3 class="card-title">Profile Details</h3>
-				  <div class="row align-items-center">
-					<div class="col-auto">
-					  {% if usuario.imagen %}
-						<span class="avatar avatar-xl" style="background-image: url({{ usuario.imagen.url }})"></span>
-					  {% else %}
-						<span class="avatar avatar-xl" style="background-image: url('/static/avatars/default.jpg')"></span>
-					  {% endif %}
+	
+					<!-- Contenido principal del formulario -->
+					<div class="col-12 col-md-9 d-flex flex-column">
+						{% include 'layout/mensajes.html' %} 
+						<form method="post" action="{% url 'editar_perfil' %}" enctype="multipart/form-data">
+							{% csrf_token %}
+							<div class="card-body">
+								<h2 class="mb-4">Mi Cuenta</h2>
+								<h3 class="card-title">Detalles de perfil</h3>
+								<div class="row align-items-center">
+									<div class="col-auto">
+										{% if usuario.imagen %}
+											<span class="avatar avatar-xl" style="background-image: url({{ usuario.imagen.url }})"></span>
+										{% else %}
+											<span class="avatar avatar-xl" style="background-image: url('/static/avatars/default.jpg')"></span>
+										{% endif %}
+									</div>
+									<div class="col-auto">
+										<input type="file" name="imagen" accept="image/*" class="form-control">
+									</div>
+									<div class="col-auto">
+										<button type="button" class="btn btn-ghost-danger btn-3" onclick="document.querySelector('input[name=imagen]').value = '';">
+											Eliminar avatar
+										</button>
+									</div>
+								</div>
+	
+								<h3 class="card-title mt-4">Información Personal</h3>
+								<div class="row g-3">
+									<div class="col-md">
+										<div class="form-label">Nombre de usuario</div>
+										<input type="text" class="form-control" value="{{ usuario.username }}" readonly>
+									</div>
+									<div class="col-md">
+										<div class="form-label">Nombre</div>
+										<input type="text" class="form-control" name="first_name" value="{{ usuario.first_name }}">
+									</div>
+									<div class="col-md">
+										<div class="form-label">Apellido</div>
+										<input type="text" class="form-control" name="last_name" value="{{ usuario.last_name }}">
+									</div>
+								</div>
+	
+								<div class="row g-3 mt-3">
+									<div class="col-md-6">
+										<div class="form-label">Tipo de Identificación</div>
+										<select class="form-control" name="tipo_identificacion">
+											{% for tipo, nombre in usuario.TIPOS_IDENTIFICACION %}
+												<option value="{{ tipo }}" {% if usuario.tipo_identificacion == tipo %}selected{% endif %}>{{ nombre }}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="col-md-6">
+										<div class="form-label">Identificación</div>
+										<input type="text" class="form-control" name="identificacion" value="{{ usuario.identificacion }}">
+									</div>
+								</div>
+	
+								<!-- Campos específicos de psicólogo -->
+								{% if usuario.rol == 'psicologo' and usuario.psicologo %}
+								<div class="row g-3 mt-3">
+									<div class="col-md">
+										<div class="form-label">Especialización</div>
+										<input type="text" class="form-control" name="especializacion" value="{{ usuario.psicologo.especializacion }}">
+									</div>
+								</div>
+								{% endif %}
+	
+								<!-- Resto de campos (EPS, alergias, enfermedades) -->
+								<div class="row g-3 mt-3">
+									<div class="col-md">
+										<div class="form-label">EPS</div>
+										<input type="text" class="form-control" name="eps" value="{{ usuario.eps }}">
+									</div>
+									<div class="col-md">
+										<div class="form-label">Alergias</div>
+										<input type="text" class="form-control" name="alergias" value="{{ usuario.alergias }}">
+									</div>
+									<div class="col-md">
+										<div class="form-label">Enfermedades</div>
+										<input type="text" class="form-control" name="enfermedades" value="{{ usuario.enfermedades }}">
+									</div>
+								</div>
+	
+								<!-- Sección de email y contraseña (se mantiene similar) -->
+							</div>
+	
+							<div class="card-footer bg-transparent mt-auto">
+								<div class="btn-list justify-content-end">
+									<a href="{% url 'perfil' %}" class="btn btn-1">
+										Cancelar
+									</a>
+									<button type="submit" class="btn btn-primary btn-2">
+										Guardar Cambios
+									</button>
+								</div>
+							</div>
+						</form>
 					</div>
-					<div class="col-auto">
-					  <a href="" class="btn btn-1">
-						Change avatar
-					  </a>
-					</div>
-					<div class="col-auto">
-					  <a href="" class="btn btn-ghost-danger btn-3">
-						Delete avatar
-					  </a>
-					</div>
-				  </div>
-	  
-				  <h3 class="card-title mt-4">Personal Information</h3>
-				  <div class="row g-3">
-					<div class="col-md">
-					  <div class="form-label">Username</div>
-					  <input type="text" class="form-control" value="{{ usuario.username }}" readonly>
-					</div>
-					<div class="col-md">
-					  <div class="form-label">First Name</div>
-					  <input type="text" class="form-control" value="{{ usuario.first_name }}">
-					</div>
-					<div class="col-md">
-					  <div class="form-label">Last Name</div>
-					  <input type="text" class="form-control" value="{{ usuario.last_name }}">
-					</div>
-				  </div>
-				  <div class="row g-3 mt-3">
-					<div class="col-md">
-					  <div class="form-label">Tipo de Identificación</div>
-					  <input type="text" class="form-control" value="{{ usuario.tipo_identificacion }}">
-					</div>
-					<div class="col-md">
-					  <div class="form-label">Identificación</div>
-					  <input type="text" class="form-control" value="{{ usuario.identificacion }}">
-					</div>
-					<div class="col-md">
-					  <div class="form-label">Rol</div>
-					  <input type="text" class="form-control" value="{{ usuario.rol }}" readonly>
-					</div>
-				  </div>
-				  <div class="row g-3 mt-3">
-					{% if usuario.rol == 'psicologo' %}
-					<div class="col-md">
-					  <div class="form-label">Especialización</div>
-					  <!-- Se asume que el usuario tiene una relación OneToOne con Psicologo -->
-					  <input type="text" class="form-control" value="{{ usuario.psicologo.especializacion }}">
-					</div>
-					{% endif %}
-					<div class="col-md">
-					  <div class="form-label">EPS</div>
-					  <input type="text" class="form-control" value="{{ usuario.eps }}">
-					</div>
-					<div class="col-md">
-					  <div class="form-label">Alergias</div>
-					  <input type="text" class="form-control" value="{{ usuario.alergias }}">
-					</div>
-					<div class="col-md">
-					  <div class="form-label">Enfermedades</div>
-					  <input type="text" class="form-control" value="{{ usuario.enfermedades }}">
-					</div>
-				  </div>
-	  
-				  <h3 class="card-title mt-4">Email</h3>
-				  <p class="card-subtitle">This contact will be shown to others publicly, so choose it carefully.</p>
-				  <div>
-					<div class="row g-2">
-					  <div class="col-auto">
-						<input type="text" class="form-control w-auto" value="{{ usuario.email }}">
-					  </div>
-					  <div class="col-auto">
-						<a href="" class="btn btn-1">
-						  Change
-						</a>
-					  </div>
-					</div>
-				  </div>
-	  
-				  <h3 class="card-title mt-4">Password</h3>
-				  <p class="card-subtitle">You can set a permanent password if you don't want to use temporary login codes.</p>
-				  <div>
-					<a href="" class="btn btn-1">
-					  Set new password
-					</a>
-				  </div>
-	  
-				  <h3 class="card-title mt-4">Public profile</h3>
-				  <p class="card-subtitle">Making your profile public means that anyone on the network will be able to find you.</p>
-				  <div>
-					<label class="form-check form-switch form-switch-lg">
-					  <!-- Suponiendo que 'is_public' sea un atributo booleano del usuario -->
-					  <input class="form-check-input" type="checkbox" {% if usuario.is_public %}checked{% endif %}>
-					  <span class="form-check-label form-check-label-on">You're currently visible</span>
-					  <span class="form-check-label form-check-label-off">You're currently invisible</span>
-					</label>
-				  </div>
 				</div>
-				<div class="card-footer bg-transparent mt-auto">
-				  <div class="btn-list justify-content-end">
-					<a href="" class="btn btn-1">
-					  Cancel
-					</a>
-					<a href="" class="btn btn-primary btn-2">
-					  Submit
-					</a>
-				  </div>
-				</div>
-			  </div>
 			</div>
-		  </div>
 		</div>
-	  </div>
-	  
-	<footer class="footer footer-transparent d-print-none">
+	</div>
+		<footer class="footer footer-transparent d-print-none">
 		<div class="container-xl">
 			<div class="row text-center align-items-center flex-row-reverse">
 				<div class="col-lg-auto ms-lg-auto">

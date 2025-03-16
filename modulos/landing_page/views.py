@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render, redirect
-from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita, Estudiante, UsuarioPersonalizado, Contacto
+from modulos.dashboard.models import Preguntas, Horario, Psicologo, Cita, Estudiante, UsuarioPersonalizado, Contacto, Respuesta
 from datetime import timedelta, datetime
 from .forms import EstudianteForm, ContactoForm
 from django.http import JsonResponse
@@ -20,10 +20,8 @@ def blog(request):
     return render(request, 'blog.html')
 def preguntas(request):
     if not request.user.is_authenticated:
-        # Redirige al login, incluyendo la URL actual en el parámetro next
         return redirect(f'/login/?next={request.path}')
     
-    # Resto de la lógica para mostrar preguntas
     preguntas_list = list(Preguntas.objects.all().order_by('id_pregunta'))
     total = len(preguntas_list)
     current_index = request.session.get('current_index', 0)
@@ -32,6 +30,31 @@ def preguntas(request):
         respuestas_correctas = request.session.get('respuestas_correctas', 0)
         porcentaje = (respuestas_correctas / total) * 100 if total > 0 else 0
 
+        # Mapear el porcentaje a una calificación de 1 a 5 y asignar la nota correspondiente
+        if porcentaje >= 90:
+            nota = "Excelente"
+            calificacion = 5
+        elif porcentaje >= 70:
+            nota = "Muy Bien"
+            calificacion = 4
+        elif porcentaje >= 50:
+            nota = "Regular"
+            calificacion = 3
+        elif porcentaje >= 30:
+            nota = "Necesita mejorar"
+            calificacion = 2
+        else:
+            nota = "Insuficiente"
+            calificacion = 1
+
+        # Guarda la respuesta en el modelo Respuesta
+        Respuesta.objects.create(
+            usuario=request.user,
+            calificacion=calificacion,
+            nota=nota
+        )
+
+        # Reinicia el contador de sesión para un nuevo intento
         request.session['current_index'] = 0
         request.session['respuestas_correctas'] = 0
 
@@ -42,7 +65,6 @@ def preguntas(request):
         })
 
     pregunta_actual = preguntas_list[current_index]
-
     return render(request, 'preguntas.html', {
         'pregunta': pregunta_actual,
         'current_index': current_index,

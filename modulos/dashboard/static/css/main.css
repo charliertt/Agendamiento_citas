@@ -1,38 +1,19 @@
-/* Contenedores principales */
-#calendar, #calendar_citas {
-    height: 800px;  /* 80px más grande que antes */
-    min-height: 90vh; /* Ocupa 90% del alto visible */
-    width: 95%;
-    margin: 25px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+/* Aumentar altura de filas */
+.fc-daygrid-day-frame {
+    min-height: 150px !important;
+    padding: 5px !important;
 }
 
-/* Cabecera más prominente */
-.fc-header-toolbar {
-    margin-bottom: 1.5rem !important;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-/* Celdas más grandes */
-.fc-timegrid-slot {
-    height: 60px !important; /* 50% más alto que el default */
-}
-
-/* Eventos más espaciosos */
-.fc-event {
-    min-height: 60px !important;
-    margin: 4px 0 !important;
+/* Estilo para eventos */
+.contacto-event {
     padding: 8px !important;
+    margin: 2px !important;
+    line-height: 1.3 !important;
+    overflow: hidden !important;
 }
 
-.estudiante-text {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #ffffff !important;
-    text-transform: capitalize;
+/* Tamaño de texto */
+.fc-daygrid-day-number {
+    font-size: 1.2em !important;
+    padding: 3px !important;
 }

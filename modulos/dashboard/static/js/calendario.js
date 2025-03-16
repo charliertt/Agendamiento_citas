@@ -3,14 +3,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const commonConfig = {
         expandRows: true,
-        dayMinWidth: 150,
-        eventMinHeight: 70,
+        dayMinWidth: 220,
+        eventMinHeight: 110,
         slotMinTime: '08:00',
         slotMaxTime: '20:00',
         slotDuration: '01:00',
         themeSystem: 'bootstrap5',
         locale: 'es',
         timeZone: 'America/Bogota',
+        dayHeaderFormat: { weekday: 'short', day: 'numeric' },
+        fixedWeekCount: false,
         firstDay: 1,
         headerToolbar: {
             left: 'prev,next today',
@@ -32,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const contactosCalendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'es',
-        timeZone: 'UTC',
+        timeZone: 'America/Bogota', // Cambiado de 'UTC' a 'America/Bogota'
         firstDay: 1,
         headerToolbar: {
             left: 'prev,next today',
@@ -46,16 +48,52 @@ document.addEventListener('DOMContentLoaded', function() {
             day: 'Día',
             list: 'Lista'
         },
-        events: contactosData.map(contacto => ({
-            title: `${contacto.nombre} - ${getDeseoDisplay(contacto.deseo)}`,
-            start: contacto.fecha_creacion,
-            color: getColorByType(contacto.deseo),
-            allDay: true
-        })),
-        themeSystem: 'bootstrap5',
-        eventContent: renderContactoContent // Nueva función de renderizado
+        events: contactosData.map(contacto => {
+            // Paso 1: Capturar la fecha original del backend
+            const fechaOriginal = contacto.fecha_creacion;
+            
+            // Paso 2: Eliminar la parte horaria (si existe)
+            const fechaSolo = fechaOriginal.includes('T') 
+                ? fechaOriginal.split('T')[0] 
+                : fechaOriginal.split(' ')[0]; // Soporta formatos "YYYY-MM-DD HH:mm:ss"
+
+            // Paso 3: Forzar la fecha en zona horaria de Bogotá
+            const fechaBogota = new Date(
+                fechaOriginal.replace('T', ' ') + ' UTC' // Fuerza a JS a interpretar la fecha como UTC
+            );
+            fechaBogota.setHours(12)
+
+            
+            // Depuración
+            console.log('[Contactos] Procesando:', {
+                id: contacto.id,
+                fecha_original: fechaOriginal,
+                fecha_solo: fechaSolo,
+                fechaBogota: fechaBogota.toISOString()
+            });
+
+            return {
+                title: `${contacto.nombre} - ${getDeseoDisplay(contacto.deseo)}`,
+                start: fechaBogota, // Usar Date ajustado
+                color: getColorByType(contacto.deseo),
+                allDay: true
+            };
+        }),
+        eventDidMount: function(info) { // Depuración de renderizado
+            console.log('[Contactos] Evento renderizado:', {
+                title: info.event.title,
+                start: info.event.start.toISOString(),
+                start_local: info.event.start.toLocaleString('es-CO', {
+                    timeZone: 'America/Bogota'
+                })
+            });
+        }
     });
     contactosCalendar.render();
+    
+
+    
+    
 
     // Calendario de Citas
     const citasData = JSON.parse(document.getElementById('citas-data').textContent);
@@ -104,8 +142,15 @@ function renderContactoContent(eventInfo) {
     return {
         html: `
             <div class="contacto-event">
-                <div class="fw-bold small">${eventInfo.event.title}</div>
-                <div class="text-muted x-small">${formatDate(eventInfo.event.start)}</div>
+                <div class="d-flex flex-column">
+                    <div class="fw-bold" style="font-size: 0.95em">
+                        ${nombre} - ${tipo}
+                    </div>
+                  
+                    <div class="text-primary" style="font-size: 0.75em">
+                        ${formatDate(eventInfo.event.start)}
+                    </div>
+                </div>
             </div>
         `
     };

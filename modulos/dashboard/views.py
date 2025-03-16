@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 import pytz
 from django.utils import timezone
 from django.conf import settings
@@ -6,7 +7,7 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
-
+from django.views.decorators.cache import never_cache
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto
 from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,6 +21,7 @@ from django.core.serializers import serialize
 
 
 # Create your views here.
+@never_cache
 @login_required(login_url='/login')
 def dashboard(request):
     
@@ -210,6 +212,61 @@ def perfil(request):
     
     
 
+    return render(request, 'perfil.html', context)
+
+
+@never_cache
+@login_required
+def editar_perfil(request):
+    usuario = request.user  # Obtiene el usuario actual
+    
+    if request.method == 'POST':
+        try:
+            # Actualizar campos básicos del usuario
+            usuario.first_name = request.POST.get('first_name', usuario.first_name)
+            usuario.last_name = request.POST.get('last_name', usuario.last_name)
+            usuario.tipo_identificacion = request.POST.get('tipo_identificacion')
+            usuario.identificacion = request.POST.get('identificacion')
+            usuario.eps = request.POST.get('eps', usuario.eps)
+            usuario.alergias = request.POST.get('alergias', usuario.alergias)
+            usuario.enfermedades = request.POST.get('enfermedades', usuario.enfermedades)
+            
+            # Manejo especial para el email (campo único)
+            nuevo_email = request.POST.get('email', usuario.email)
+            if nuevo_email != usuario.email:
+                if UsuarioPersonalizado.objects.filter(email=nuevo_email).exists():
+                    messages.error(request, 'Este correo electrónico ya está registrado')
+                    return redirect('editar_perfil')
+                usuario.email = nuevo_email
+            
+            # Manejo de la imagen de perfil
+            if 'imagen' in request.FILES:
+                usuario.imagen = request.FILES['imagen']
+            elif 'imagen-clear' in request.POST:  # Si el usuario quiere eliminar la imagen
+                usuario.imagen.delete(save=False)
+            
+            usuario.save()
+            
+            # Actualizar especialización para psicólogos
+            if usuario.rol == 'psicologo':
+                psicologo, created = Psicologo.objects.get_or_create(usuario=usuario)
+                psicologo.especializacion = request.POST.get('especializacion')
+                psicologo.save()
+            
+            messages.success(request, 'Perfil actualizado correctamente')
+            return redirect('perfil')
+        
+        except IntegrityError as e:
+            messages.error(request, 'Error de integridad: La identificación ya existe')
+            return redirect('editar_perfil')
+    
+    # Preparar contexto para el template
+    context = {
+        'usuario': usuario,
+        # Incluir instancia de psicólogo si existe
+        'psicologo': getattr(usuario, 'psicologo', None)
+    }
+    
     return render(request, 'perfil.html', context)
 #login:
 

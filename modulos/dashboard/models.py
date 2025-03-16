@@ -212,7 +212,7 @@ class Respuesta(models.Model):
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Respuesta de {self.usuario.username} a '{self.pregunta.pregunta}' (Calificación: {self.calificacion})"
+        return f"Respuesta de {self.usuario.username}  (Calificación: {self.calificacion})"
 
 class Contacto(models.Model):
     # Opciones para el campo "deseo"
