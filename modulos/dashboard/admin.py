@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import UsuarioPersonalizado, Preguntas, Psicologo, Estudiante, Administrativo, Horario, Cita, Contacto, Respuesta
+from .models import UsuarioPersonalizado, Preguntas, Psicologo, Estudiante, Administrativo, Horario, Cita, Contacto, Respuesta, Review
+
+
+
 # Register your models here.
 admin.site.register(Psicologo)
 admin.site.register(Estudiante)
@@ -10,3 +13,4 @@ admin.site.register(Horario)
 admin.site.register(Cita)
 admin.site.register(Contacto)
 admin.site.register(Respuesta)
+admin.site.register(Review)

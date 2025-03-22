@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sesión Completada</title>
+  <style>
+    /* Mismos estilos base */
+    .container { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6; }
+    .header { padding: 20px; border-bottom: 1px solid #eee; }
+    .body { padding: 20px; }
+    .icon { color: #d32f2f; margin-right: 8px; }
+    .important { color: #d32f2f; margin: 20px 0; padding: 15px; background-color: #f8f8f8; border-left: 4px solid #d32f2f; }
+    .btn-resena { 
+      background: #d32f2f; 
+      color: white!important; 
+      padding: 12px 25px; 
+      border-radius: 5px; 
+      text-decoration: none;
+      display: inline-block;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>¡Gracias por tu sesión, {{ nombre_paciente }}!</h2>
+      <p>Tu opinión es muy importante para nosotros 🌟</p>
+    </div>
+
+    <div class="body">
+      <p>
+        <span class="icon">📅</span><strong>Sesión del:</strong><br>
+        <strong>{{ fecha_cita }}</strong> con {{ nombre_psicologo }}
+      </p>
+
+      <div class="important">
+        <p>¿Cómo calificarías tu experiencia?</p>
+        <a href="{{ enlace_review }}" class="btn-resena">
+          Dar mi reseña ahora →
+        </a>
+        <p><small>Este enlace expira en 7 días</small></p>
+      </div>
+
+      <p>Atentamente,<br>
+      <strong>Equipo Punto Mental</strong></p>
+    </div>
+  </div>
+</body>
+</html>

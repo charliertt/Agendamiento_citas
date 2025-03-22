@@ -34,7 +34,7 @@ EMAIL_HOST="smtp.gmail.com"
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
 EMAIL_HOST_USER="puntomentalcosfacali@gmail.com"
-EMAIL_HOST_PASSWORD="vjvo yzmz zugz cmvy"
+EMAIL_HOST_PASSWORD="fowy djcy qezk eupd"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -44,16 +44,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'modulos.dashboard',
+    'modulos.landing_page',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'modulos.landing_page',
-    'modulos.dashboard',
-     'crispy_forms',
-     'crispy_bootstrap5',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [

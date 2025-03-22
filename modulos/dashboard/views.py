@@ -1,5 +1,9 @@
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
 from sqlite3 import IntegrityError
+from django.views.generic import TemplateView
 import pytz
+from django.template.loader import get_template
 from django.utils import timezone
 from django.conf import settings
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
@@ -8,8 +12,8 @@ from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto
-from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto, Review
+from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm, ReviewForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login,  get_user_model, logout
@@ -18,7 +22,10 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
-
+from itsdangerous import URLSafeSerializer, BadSignature
+from django.views.generic import FormView
+from django.contrib import messages
+from django.shortcuts import redirect
 
 # Create your views here.
 @never_cache
@@ -209,7 +216,7 @@ def eliminar_usuario(request, usuario_id):
 #perfil
 def perfil(request):
     context = {'usuario': request.user}
-    
+    print( "hola", get_template('registration/password_change.html').origin)
     
 
     return render(request, 'perfil.html', context)
@@ -218,35 +225,42 @@ def perfil(request):
 @never_cache
 @login_required
 def editar_perfil(request):
-    usuario = request.user  # Obtiene el usuario actual
+    usuario = request.user
     
     if request.method == 'POST':
         try:
-            # Actualizar campos básicos del usuario
+            # Obtener nuevos valores del formulario
+            nueva_identificacion = request.POST.get('identificacion')
+            nuevo_email = request.POST.get('email', usuario.email)
+
+            # Validar identificación única (excluyendo al usuario actual)
+            if nueva_identificacion != usuario.identificacion:
+                if UsuarioPersonalizado.objects.exclude(id=usuario.id).filter(identificacion=nueva_identificacion).exists():
+                    messages.error(request, 'Esta identificación ya está registrada por otro usuario')
+                    return redirect('editar_perfil')
+
+            # Validar email único (excluyendo al usuario actual)
+            if nuevo_email != usuario.email:
+                if UsuarioPersonalizado.objects.exclude(id=usuario.id).filter(email=nuevo_email).exists():
+                    messages.error(request, 'Este correo electrónico ya está registrado')
+                    return redirect('editar_perfil')
+
+            # Actualizar campos del usuario
             usuario.first_name = request.POST.get('first_name', usuario.first_name)
             usuario.last_name = request.POST.get('last_name', usuario.last_name)
             usuario.tipo_identificacion = request.POST.get('tipo_identificacion')
-            usuario.identificacion = request.POST.get('identificacion')
+            usuario.identificacion = nueva_identificacion  # Usamos el valor ya validado
             usuario.eps = request.POST.get('eps', usuario.eps)
             usuario.alergias = request.POST.get('alergias', usuario.alergias)
             usuario.enfermedades = request.POST.get('enfermedades', usuario.enfermedades)
-            
-            # Manejo especial para el email (campo único)
-            nuevo_email = request.POST.get('email', usuario.email)
-            if nuevo_email != usuario.email:
-                if UsuarioPersonalizado.objects.filter(email=nuevo_email).exists():
-                    messages.error(request, 'Este correo electrónico ya está registrado')
-                    return redirect('editar_perfil')
-                usuario.email = nuevo_email
-            
+            usuario.email = nuevo_email  # Usamos el valor ya validado
+
             # Manejo de la imagen de perfil
-            if 'imagen' in request.FILES:
-                usuario.imagen = request.FILES['imagen']
-            elif 'imagen-clear' in request.POST:  # Si el usuario quiere eliminar la imagen
-                usuario.imagen.delete(save=False)
+            if 'imagen-clear' in request.POST:
+                usuario.imagen.delete(save=True) 
             
             usuario.save()
-            
+
             # Actualizar especialización para psicólogos
             if usuario.rol == 'psicologo':
                 psicologo, created = Psicologo.objects.get_or_create(usuario=usuario)
@@ -257,13 +271,11 @@ def editar_perfil(request):
             return redirect('perfil')
         
         except IntegrityError as e:
-            messages.error(request, 'Error de integridad: La identificación ya existe')
+            messages.error(request, 'Error al guardar los cambios')
             return redirect('editar_perfil')
     
-    # Preparar contexto para el template
     context = {
         'usuario': usuario,
-        # Incluir instancia de psicólogo si existe
         'psicologo': getattr(usuario, 'psicologo', None)
     }
     
@@ -581,18 +593,117 @@ class CitaListView(ListView):
 class CitaUpdateView(UpdateView):
     model = Cita
     form_class = CitaForm
-    # Puedes utilizar una plantilla es pecífica para el formulario; si usas modales, quizás la plantilla sea idéntica a la que usas en el modal.
     template_name = "citas.html"  
     success_url = reverse_lazy("citas")
 
     def form_valid(self, form):
-        
-        messages.success(self.request, "¡Cita editada correctamente!")
-        return super().form_valid(form)
+        # Obtener instancia antes de guardar cambios
+        old_estado = self.get_object().estado
+        new_estado = form.cleaned_data.get('estado')
 
-    def form_invalid(self, form):
-        messages.error(self.request, "Hubo un error al editar la cita. Verifica los datos ingresados.")
-        return super().form_invalid(form)
+        response = super().form_valid(form)
+        
+        # Solo si cambió el estado
+        if old_estado != new_estado:
+            cita = self.object
+            
+            # Enviar correo de cancelación
+            if new_estado == 'cancelada':
+                self.enviar_correo_cancelacion(cita)
+                
+            # Enviar correo de completado con enlace
+            elif new_estado == 'completada':
+                self.enviar_correo_completada(cita)
+
+        messages.success(self.request, "¡Cita editada correctamente!")
+        return response
+
+    def enviar_correo_cancelacion(self, cita):
+        context = {
+            'nombre_paciente': cita.estudiante.usuario.first_name,
+            'nombre_psicologo': cita.psicologo.usuario.get_full_name(),
+            'fecha_cita': cita.fecha_hora.strftime('%d/%m/%Y'),
+            'hora_cita': cita.fecha_hora.strftime('%H:%M'),
+            'citas_url': self.request.build_absolute_uri(reverse('citas'))
+        }
+        
+        html_content = render_to_string('cita_cancelada.html', context)
+        
+        msg = EmailMultiAlternatives(
+            subject="Tu cita ha sido cancelada ❌",
+            body=html_content,  # Versión texto plano opcional
+            from_email='puntomentalcosfacali@gmail.com',
+            to=[cita.estudiante.usuario.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+    def enviar_correo_completada(self, cita):
+        serializer = URLSafeSerializer(settings.SECRET_KEY)
+        token = serializer.dumps(str(cita.id))
+        
+        context = {
+            'nombre_paciente': cita.estudiante.usuario.first_name,
+            'nombre_psicologo': cita.psicologo.usuario.get_full_name(),
+            'fecha_cita': cita.fecha_hora.strftime('%d/%m/%Y'),
+            'enlace_review': self.request.build_absolute_uri(
+                reverse('crear_review', kwargs={'token': token})
+            )
+        }
+        
+        html_content = render_to_string('cita_completada.html', context)
+        
+        msg = EmailMultiAlternatives(
+            subject="¡Califica tu sesión ⭐",
+            body=html_content,
+            from_email='puntomentalcosfacali@gmail.com',
+            to=[cita.estudiante.usuario.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        
+
+class CrearReviewView(FormView):
+    template_name = 'formularios/review_form.html'
+    form_class = ReviewForm  
+    success_url = reverse_lazy('gracias_review')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            serializer = URLSafeSerializer(settings.SECRET_KEY)
+            cita_id = serializer.loads(self.kwargs['token'])
+            cita = get_object_or_404(Cita, id=cita_id)
+            context['cita'] = cita
+            # Verificar si ya existe una reseña
+            if Review.objects.filter(cita=cita).exists():
+                context['error'] = "Ya has calificado esta sesión."
+        except BadSignature:
+            context['error'] = "Enlace inválido o expirado"
+        return context
+
+    def form_valid(self, form):
+        cita = self.get_context_data().get('cita')
+        
+        if not cita:
+            form.add_error(None, "Enlace inválido o expirado")
+            return self.form_invalid(form)
+        
+        try:
+            # Intentar crear la reseña
+            Review.objects.create(
+                cita=cita,
+                psicologo=cita.psicologo,
+                estudiante=cita.estudiante,
+                puntuacion=form.cleaned_data['puntuacion'],
+                comentario=form.cleaned_data['comentario']
+            )
+        except IntegrityError:
+            # Manejar error de unicidad
+            form.add_error(None, "Ya has calificado esta sesión.")
+            return self.form_invalid(form)
+        
+        return super().form_valid(form)
 
 class CitaDeleteView(DeleteView):
     model = Cita
@@ -605,5 +716,7 @@ class CitaDeleteView(DeleteView):
         print("Mensaje de eliminación añadido")  # Verifica esto en la consola
         return self.delete(request, *args, **kwargs)
     
-    
+
+class GraciasReviewView(TemplateView):
+    template_name = 'gracias_review.html'    
     

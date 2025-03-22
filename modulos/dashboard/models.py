@@ -5,6 +5,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+
+
+
+
 class UsuarioPersonalizado(AbstractUser):
     TIPOS_IDENTIFICACION = [
         ('cedula', 'Cédula'),
@@ -153,10 +157,20 @@ class Cita(models.Model):
         return (
             f"Cita #{self.id} - {self.estudiante.usuario.username} "  # Accedemos al username a través de la relación Estudiante → UsuarioPersonalizado
             f"con {self.psicologo.usuario.username} - {local_fecha_hora.strftime('%d/%m/%Y %H:%M')}"
+            
         )
+        
+
+# models.py
+class Review(models.Model):
+    cita = models.OneToOneField(Cita, on_delete=models.CASCADE)
+    psicologo = models.ForeignKey(Psicologo, on_delete=models.CASCADE)
+    estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE)
+    puntuacion = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
+    comentario = models.TextField(blank=True)
+    fecha = models.DateTimeField(auto_now_add=True)
 
     
-
 class Preguntas(models.Model):
     # Definición de las constantes para cada categoría
     ANSIEDAD   = 'ANS'
@@ -188,7 +202,6 @@ class Preguntas(models.Model):
 
     def __str__(self):
         return f'{self.pregunta} - {"Verdadero" if self.respuesta else "Falso"}'
-
 
 
 class Respuesta(models.Model):
@@ -242,6 +255,7 @@ class Contacto(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.get_deseo_display()}"
+
 
         
 

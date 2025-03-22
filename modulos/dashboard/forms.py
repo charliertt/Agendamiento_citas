@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -235,3 +235,27 @@ class RespuestaForm(forms.Form):
         widget=forms.Textarea(attrs={'rows': 5, 'cols': 40}),
         label="Respuesta"
     )
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['puntuacion', 'comentario']
+        widgets = {
+            'puntuacion': forms.Select(choices=[
+                (1, '★☆☆☆☆'), 
+                (2, '★★☆☆☆'),
+                (3, '★★★☆☆'),
+                (4, '★★★★☆'),
+                (5, '★★★★★')
+            ], attrs={'class': 'form-select'}),
+            'comentario': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Describe tu experiencia...'
+            }),
+        }
+        labels = {
+            'puntuacion': 'Calificación',
+            'comentario': 'Comentario (opcional)'
+        }
