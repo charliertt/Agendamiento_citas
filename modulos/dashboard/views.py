@@ -1,36 +1,54 @@
-from django.urls import reverse_lazy
-from django.contrib.messages.views import SuccessMessageMixin
-from sqlite3 import IntegrityError
-from django.views.generic import TemplateView
+# Bibliotecas estándar
 import pytz
-from django.template.loader import get_template
-from django.utils import timezone
+from sqlite3 import IntegrityError
+from itsdangerous import URLSafeSerializer, BadSignature
+
+# Importaciones de Django
 from django.conf import settings
-from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
-from django.urls import reverse_lazy
-from django.urls import reverse
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.mail import EmailMultiAlternatives
+from django.core.serializers import serialize
+from django.http import JsonResponse, Http404
+from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
+from django.template.loader import get_template, render_to_string
+from django.utils import timezone
+from django.utils.html import strip_tags
 from django.views.decorators.cache import never_cache
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, FormView
+from django.urls import reverse_lazy, reverse
+from django.db.models import Avg  
+
+# Importaciones de la aplicación
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Cita, Estudiante, Contacto, Review
 from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm, HorarioForm, PreguntasForm, EmailAuthenticationForm, CitaForm, EstudianteForm, RespuestaForm, ReviewForm
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
-from django.contrib.auth import authenticate, login,  get_user_model, logout
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.core.mail import EmailMultiAlternatives
-from django.contrib.auth.decorators import login_required
-from django.core.serializers import serialize
-from itsdangerous import URLSafeSerializer, BadSignature
-from django.views.generic import FormView
-from django.contrib import messages
-from django.shortcuts import redirect
+
 
 # Create your views here.
 @never_cache
 @login_required(login_url='/login')
 def dashboard(request):
+    notificaciones = Notificacion.objects.filter(
+        usuario=request.user,
+        leida=False
+    ).order_by('-fecha_creacion')[:5]
+    total_citas = Cita.objects.count()
+    citas_completadas = Cita.objects.filter(estado='completada').count()
+    conversion_rate = (citas_completadas / total_citas * 100) if total_citas > 0 else 0
+    
+    # Cálculo de reseñas
+    reseñas = Review.objects.all()
+    cantidad_reseñas = reseñas.count()
+    promedio_reseñas = reseñas.aggregate(Avg('puntuacion'))['puntuacion__avg'] or 0
+    porcentaje_satisfaccion = (promedio_reseñas / 5) * 100  # Convertir a porcentaje
+    
+    
+    # Cálculo de tendencia (ejemplo: cambio porcentual último mes)
+    # Necesitarías implementar lógica específica según tus datos históricos
+    porcentaje_cambio_citas = 7  # Ejemplo estático, reemplazar con cálculo real
     
     if request.method == 'POST':
         form = CitaForm(request.POST)
@@ -93,7 +111,14 @@ def dashboard(request):
         'form': form,
         'dashboard_url': reverse('dashboard'),
         'contactos_json': contactos_list,
-         'citas_json': citas_list  
+        'citas_json': citas_list,
+        'conversion_rate': conversion_rate,
+        'promedio_reseñas': promedio_reseñas,
+        'porcentaje_satisfaccion': porcentaje_satisfaccion,
+        'cantidad_reseñas': cantidad_reseñas,
+        'porcentaje_cambio_citas': porcentaje_cambio_citas,  
+        'notificaciones': notificaciones,
+        'contador_notificaciones': notificaciones.count(),
         
         
     }
@@ -589,6 +614,8 @@ class CitaListView(ListView):
         context['crear_cita_url'] = reverse('crear_cita')
         return context
 
+    
+
 
 class CitaUpdateView(UpdateView):
     model = Cita
@@ -640,7 +667,12 @@ class CitaUpdateView(UpdateView):
 
     def enviar_correo_completada(self, cita):
         serializer = URLSafeSerializer(settings.SECRET_KEY)
-        token = serializer.dumps(str(cita.id))
+        token = serializer.dumps(cita.id)
+
+        print(f"\n--- DEBUG GENERACIÓN TOKEN ---")
+        print(f"Cita ID: {cita.id} (tipo: {type(cita.id)})")
+        print(f"Token generado: {token}")
+
         
         context = {
             'nombre_paciente': cita.estudiante.usuario.first_name,
@@ -649,7 +681,7 @@ class CitaUpdateView(UpdateView):
             'enlace_review': self.request.build_absolute_uri(
                 reverse('crear_review', kwargs={'token': token})
             )
-        }
+            }
         
         html_content = render_to_string('cita_completada.html', context)
         
@@ -663,34 +695,70 @@ class CitaUpdateView(UpdateView):
         msg.send()
         
 
+
+def generar_token(cita_id):
+    serializer = URLSafeSerializer(settings.SECRET_KEY)
+    return serializer.dumps(cita_id)
+    
 class CrearReviewView(FormView):
     template_name = 'formularios/review_form.html'
     form_class = ReviewForm  
     success_url = reverse_lazy('gracias_review')
+    
+
+    def get_cita(self):
+        try:
+            token = self.kwargs['token']
+            print(f"\n--- DEBUG GET_CITA ---")
+            print(f"Token recibido: {token}")
+            
+            serializer = URLSafeSerializer(settings.SECRET_KEY)
+            cita_id = serializer.loads(token)
+            print(f"ID deserializado: {cita_id} (tipo: {type(cita_id)})")
+            
+            cita = Cita.objects.get(id=cita_id)
+            print(f"Cita encontrada: {cita}")
+            return cita
+            
+        except BadSignature as e:
+            print(f"Error BadSignature: {str(e)}")
+            return None
+        except Cita.DoesNotExist:
+            print(f"Error: Cita no existe en DB")
+            return None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            serializer = URLSafeSerializer(settings.SECRET_KEY)
-            cita_id = serializer.loads(self.kwargs['token'])
-            cita = get_object_or_404(Cita, id=cita_id)
-            context['cita'] = cita
-            # Verificar si ya existe una reseña
-            if Review.objects.filter(cita=cita).exists():
-                context['error'] = "Ya has calificado esta sesión."
-        except BadSignature:
+        context['token'] = self.kwargs['token']
+        cita = self.get_cita()
+        
+        if not cita:
             context['error'] = "Enlace inválido o expirado"
+            return context
+            
+        if Review.objects.filter(cita=cita).exists():
+            context['error'] = "Ya has calificado esta sesión."
+        else:
+            context['cita'] = cita
+            
         return context
 
     def form_valid(self, form):
-        cita = self.get_context_data().get('cita')
+        print("\n--- DEBUG FORM_VALID ---")
+        cita = self.get_cita()
         
         if not cita:
+            print("Error: Cita no existe en form_valid")
             form.add_error(None, "Enlace inválido o expirado")
+            return self.form_invalid(form)
+            
+        if Review.objects.filter(cita=cita).exists():
+            print("Error: Reseña ya existe")
+            form.add_error(None, "Ya has calificado esta sesión.")
             return self.form_invalid(form)
         
         try:
-            # Intentar crear la reseña
+            print("Intentando crear reseña...")
             Review.objects.create(
                 cita=cita,
                 psicologo=cita.psicologo,
@@ -698,11 +766,12 @@ class CrearReviewView(FormView):
                 puntuacion=form.cleaned_data['puntuacion'],
                 comentario=form.cleaned_data['comentario']
             )
-        except IntegrityError:
-            # Manejar error de unicidad
-            form.add_error(None, "Ya has calificado esta sesión.")
+            print("¡Reseña creada exitosamente!")
+        except IntegrityError as e:
+            print(f"Error IntegrityError: {str(e)}")
+            form.add_error(None, "Error al crear la reseña")
             return self.form_invalid(form)
-        
+            
         return super().form_valid(form)
 
 class CitaDeleteView(DeleteView):
@@ -719,4 +788,5 @@ class CitaDeleteView(DeleteView):
 
 class GraciasReviewView(TemplateView):
     template_name = 'gracias_review.html'    
+    
     

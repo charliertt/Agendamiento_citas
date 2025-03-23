@@ -257,6 +257,24 @@ class Contacto(models.Model):
         return f"{self.nombre} - {self.get_deseo_display()}"
 
 
+class Notificacion(models.Model):
+    TIPOS = (
+        ('contacto', 'Nuevo mensaje de contacto'),
+        ('cita', 'Nueva cita agendada'),
+        ('sistema', 'Actualización del sistema'),
+        ('recordatorio', 'Recordatorio de cita'),
+    )
+
+    usuario = models.ForeignKey(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='notificaciones')
+    tipo = models.CharField(max_length=20, choices=TIPOS)
+    mensaje = models.CharField(max_length=255)
+    enlace = models.URLField(blank=True, null=True)
+    leida = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} - {self.mensaje[:50]}"
+
         
 
 

@@ -35,8 +35,9 @@
                 {% endfor %}
               </div>
             {% endif %}
-            <form method="post">
+            <form method="post" action="{% url 'crear_review' token=token %}">
               {% csrf_token %}
+              
               
               <div class="mb-4">
                 <label class="form-label">Calificación</label>

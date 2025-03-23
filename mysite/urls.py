@@ -108,12 +108,22 @@ urlpatterns = [
         template_name='registration/password_reset_complete.html'  # Deberías crear este similar a tu password_change_done
     ), name='password_reset_complete'),
     
-    path('review/<str:token>/', dashboard_views.CrearReviewView.as_view(), name='crear_review'),
-   path(
+
+    #__________________________________reviews______________________________________________
+    
+
+     path(
         'review/gracias/', 
-        TemplateView.as_view(template_name='gracias_review.html'),  # Usa TemplateView directamente
-        name='gracias_review'
+        TemplateView.as_view(template_name='gracias_review.html'),
+        name='gracias_review'  # Asegúrate de agregar el nombre
     ),
+    
+    # URL para crear reseña (con token)
+    path('review/<str:token>/', dashboard_views.CrearReviewView.as_view(), name='crear_review'),
+  
+   
+
+    
 ]
 
 
