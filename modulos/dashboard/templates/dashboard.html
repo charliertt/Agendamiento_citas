@@ -11,7 +11,7 @@
 				<div class="col">
 					<!-- Page pre-title -->
 					<div class="page-pretitle">
-						Overview
+						Panel
 					</div>
 					<h2 class="page-title">
 						Administra
@@ -630,6 +630,30 @@
     <script src="{% static 'js/calendario.js' %}"></script>
 </div>
 </div>
+
+<script>
+	document.querySelectorAll('.mark-as-read').forEach(button => {
+		button.addEventListener('click', function(e) {
+			e.preventDefault();
+			const notificacionId = this.dataset.id;
+			
+			fetch(`/marcar-notificacion-leida/${notificacionId}/`, {
+				method: 'POST',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+					'X-CSRFToken': '{{ csrf_token }}'
+				},
+			})
+			.then(response => response.json())
+			.then(data => {
+				if(data.status === 'success') {
+					this.closest('.list-group-item').remove();
+				}
+			});
+		});
+	});
+	</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const table = new DataTable('#tabla_usuarios', {

@@ -320,6 +320,15 @@ def procesar_contacto(request):
             deseo = contact_form.cleaned_data.get('deseo')
             mensaje = contact_form.cleaned_data.get('mensaje')
 
+            User = get_user_model()
+            email = contact_form.cleaned_data['email']
+
+            try:
+                usuario = User.objects.get(email=email)
+                contacto.usuario = usuario
+            except User.DoesNotExist:
+                pass
+
             # Contexto para renderizar el template del correo
             context = {
                 'nombre': nombre,

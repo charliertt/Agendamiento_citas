@@ -228,7 +228,14 @@ class Respuesta(models.Model):
         return f"Respuesta de {self.usuario.username}  (Calificación: {self.calificacion})"
 
 class Contacto(models.Model):
-    # Opciones para el campo "deseo"
+    usuario = models.ForeignKey(
+        UsuarioPersonalizado, 
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        verbose_name="Usuario relacionado"
+    )
+    
     TIPO_OPCIONES = (
         ('queja', 'Queja'),
         ('reclamo', 'Reclamo'),
@@ -240,6 +247,7 @@ class Contacto(models.Model):
         ('pendiente', 'Pendiente'),
         ('resuelto', 'Resuelto'),
     )
+    
 
     nombre = models.CharField(max_length=100, verbose_name="Nombre")
     email = models.EmailField(verbose_name="Correo electrónico")
@@ -259,22 +267,45 @@ class Contacto(models.Model):
 
 class Notificacion(models.Model):
     TIPOS = (
-        ('contacto', 'Nuevo mensaje de contacto'),
-        ('cita', 'Nueva cita agendada'),
-        ('sistema', 'Actualización del sistema'),
-        ('recordatorio', 'Recordatorio de cita'),
+        ('contacto', 'Nuevo mensaje'),
+        ('cita', 'Actualización cita'),
+        ('sistema', 'Actualización sistema'),
     )
 
-    usuario = models.ForeignKey(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='notificaciones')
+    DESTINATARIOS = (
+        ('estudiante', 'Estudiante'),
+        ('psicologo', 'Psicólogo'),
+        ('administrativo', 'Administrativo'),
+        ('todos', 'Todos los usuarios'),
+    )
+
+    usuario = models.ForeignKey(
+        UsuarioPersonalizado, 
+        on_delete=models.CASCADE, 
+        related_name='notificaciones',
+        null=True,  # Permitir notificaciones globales
+        blank=True
+    )
+    destinatario_tipo = models.CharField(
+        max_length=20, 
+        choices=DESTINATARIOS,
+        default='todos'
+    )
     tipo = models.CharField(max_length=20, choices=TIPOS)
     mensaje = models.CharField(max_length=255)
+    relacionado_con = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Relacionado con"
+    )
     enlace = models.URLField(blank=True, null=True)
     leida = models.BooleanField(default=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.mensaje[:50]}"
-
         
 
 

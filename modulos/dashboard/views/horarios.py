@@ -1,0 +1,45 @@
+# horario.py
+from .base_importaciones import (
+    Horario,
+    HorarioForm,
+    login_required,
+    never_cache,
+    messages,
+    redirect,
+    render,
+    get_object_or_404,
+    HttpResponseForbidden
+)
+
+@never_cache
+@login_required
+def horarios(request):
+    horarios_list = Horario.objects.all()
+    return render(request, 'horarios.html', {
+        'horarios': horarios_list,
+        'form': HorarioForm()
+    })
+
+@never_cache
+@login_required
+def crear_editar_horario(request, horario_id):
+    horario = get_object_or_404(Horario, id=horario_id) if horario_id != 0 else None
+    
+    if request.method == 'POST':
+        form = HorarioForm(request.POST, instance=horario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "¡Operación exitosa!")
+            return redirect('horarios')
+        messages.error(request, "Errores en el formulario")
+    
+    return redirect('horarios')
+
+@never_cache
+@login_required
+def eliminar_horario(request, horario_id):
+    if request.method == 'POST':
+        horario = get_object_or_404(Horario, pk=horario_id)
+        horario.delete()
+        messages.success(request, 'Horario eliminado')
+    return redirect('horarios')

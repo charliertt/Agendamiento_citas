@@ -2,11 +2,13 @@ from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from django.urls import path
 from modulos.landing_page import views as landing_views
+
 from modulos.dashboard import views as dashboard_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView 
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +36,7 @@ urlpatterns = [
 
     #validaciones formulario de estudiante
 	path('registro_estudiante/', dashboard_views.registro_estudiante, name="registro_estudiante"),
+    
 	path('verificar_email/', dashboard_views.verificar_email, name='verificar_email'),
 	
     path('verificar_username/', dashboard_views.verificar_username, name='verificar_username'),
@@ -105,7 +108,7 @@ urlpatterns = [
     ), name='password_reset_confirm'),
     
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
-        template_name='registration/password_reset_complete.html'  # Deberías crear este similar a tu password_change_done
+        template_name='registration/password_reset_complete.html'  
     ), name='password_reset_complete'),
     
 
@@ -120,6 +123,7 @@ urlpatterns = [
     
     # URL para crear reseña (con token)
     path('review/<str:token>/', dashboard_views.CrearReviewView.as_view(), name='crear_review'),
+    path('marcar-notificacion-leida/<int:notificacion_id>/',  dashboard_views.marcar_notificacion_leida, name='marcar_notificacion_leida'),
   
    
 
