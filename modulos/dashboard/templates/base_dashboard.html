@@ -9,16 +9,16 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	<title>Punto Mental.</title>
 	<!-- CSS files -->
-	<link href="{% static 'css/tabler.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/tabler-flags.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/tabler-socials.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/tabler-payments.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/tabler-vendors.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/tabler-marketing.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/demo.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/datatables.css' %}" rel="stylesheet" />
-	<link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" />
-	<link href="^{% static 'css/main.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-flags.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-socials.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-payments.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-vendors.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-marketing.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/demo.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/datatables.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/datatables.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/main.css' %}" rel="stylesheet">
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 
 
@@ -33,7 +33,7 @@
 </head>
 
 <body>
-	<script src="{% static 'js/demo-theme.min.js' %}?1738096685"></script>
+	<script src="{% static 'dashboard/js/demo-theme.min.js' %}?1738096685"></script>
 	<div class="page">
 		<!-- Navbar -->
 		<header class="navbar navbar-expand-md d-print-none">
@@ -162,7 +162,7 @@
 					  {% if request.user.imagen %}
 						<span class="avatar" style="background-image: url({{ request.user.imagen.url }})"></span>
 					  {% else %}
-						<span class="avatar" style="background-image: url({% static 'img/imagen.png' %})"></span>
+						<span class="avatar" style="background-image: url({% static 'dashboard/img/imagen.png' %})"></span>
 					  {% endif %}
 					  <div class="d-none d-xl-block ps-2">
 						<div>{{ user.username }}</div>
@@ -559,13 +559,13 @@
 			{% endblock %}
 		</body>
 
-		<script src="{% static 'libs/apexcharts/dist/apexcharts.min.js' %}?1738096685" defer></script>
-		<script src="{% static 'libs/jsvectormap/dist/jsvectormap.min.js' %}?1738096685" defer></script>
-		<script src="{% static 'libs/jsvectormap/dist/maps/world.js' %}?1738096685" defer></script>
-		<script src="{% static 'libs/jsvectormap/dist/maps/world-merc.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/apexcharts/dist/apexcharts.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/jsvectormap/dist/jsvectormap.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/jsvectormap/dist/maps/world.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/jsvectormap/dist/maps/world-merc.js' %}?1738096685" defer></script>
 		<!-- Tabler Core -->
-		<script src="{% static 'js/tabler.min.js' %}?1738096685" defer></script>
-		<script src="{% static 'js/demo.min.js' %}?1738096685" defer></script>
-		<script src="{% static 'js/datatables.min.js' %}?1738096685" defer></script>
-		<script src="{% static 'js/datatables.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/tabler.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/demo.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/datatables.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/datatables.js' %}?1738096685" defer></script>
 		<script src='fullcalendar/dist/index.global.js'></script>

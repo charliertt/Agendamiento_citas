@@ -54,8 +54,8 @@
 										<span class="avatar avatar-xl" id="imagen_perfil"
 											style="background-image: url({{ usuario.imagen.url }})"></span>
 										{% else %}
-										<span class="avatar avatar-xl"
-											style="background-image: url('/static/img/imagen.png')"></span>
+										
+											<span class="avatar avatar-xl" style="background-image: url({% static 'dashboard/img/imagen.png' %})"></span>
 										{% endif %}
 									</div>
 									<div class="col-auto">

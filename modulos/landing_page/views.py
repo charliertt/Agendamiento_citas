@@ -11,7 +11,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import authenticate, login, get_user_model, logout
 
 # Create your views here.
 
@@ -325,7 +325,7 @@ def procesar_contacto(request):
 
             try:
                 usuario = User.objects.get(email=email)
-                contacto.usuario = usuario
+                Contacto.usuario = usuario
             except User.DoesNotExist:
                 pass
 

@@ -1,8 +1,11 @@
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, FormView
+from itsdangerous import URLSafeSerializer, BadSignature
+from django.conf import settings
+from django.template.loader import get_template, render_to_string
 
 from .base_importaciones import (
-    messages,  timezone, CitaForm, Cita, 
+    messages,  timezone, CitaForm, Cita,  EmailMultiAlternatives
 )
 
 
@@ -119,3 +122,17 @@ class CitaUpdateView(UpdateView):
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+        
+        
+
+
+class CitaDeleteView(DeleteView):
+    model = Cita
+    # Esta plantilla se usa para confirmar la eliminación; también podrías hacer la confirmación mediante un modal.
+    template_name = "citas.html"
+    success_url = reverse_lazy("citas")
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, "¡Cita eliminada correctamente!")
+        print("Mensaje de eliminación añadido")  # Verifica esto en la consola
+        return self.delete(request, *args, **kwargs)

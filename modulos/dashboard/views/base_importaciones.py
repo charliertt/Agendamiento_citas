@@ -14,6 +14,7 @@ from django.http import HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import JsonResponse, Http404
+from django.core.mail import EmailMultiAlternatives
 
 # Modelos
 from modulos.dashboard.models import (
@@ -22,9 +23,13 @@ from modulos.dashboard.models import (
     Review, Notificacion
 )
 
+# UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm
+
+# from .forms import UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm
 # Formularios
 from ..forms import (  
     UsuarioPersonalizadoEditForm,
+    UsuarioPersonalizadoCreationForm,
     HorarioForm,
     PreguntasForm,
     CitaForm,

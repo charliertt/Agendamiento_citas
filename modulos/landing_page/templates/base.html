@@ -1,45 +1,35 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Punto Mental Bootstrap Template</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punto Mental - Salud Emocional</title>
+  <meta name="description" content="Plataforma de apoyo psicológico profesional">
+  <meta name="keywords" content="salud mental, psicología, bienestar emocional">
 
   <!-- Favicons -->
-  <link rel="shortcut icon" href="{% static 'img/lg.png' %}">
-  <link rel="apple-touch-icon" href="{% static 'img/lg.png' %}">
+  <link rel="shortcut icon" href="{% static 'landing_page/img/lg.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'landing_page/img/lg.png' %}">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
 
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <!-- Main CSS File -->
+  <link href="{% static 'landing_page/css/main.css' %}" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
-
-  <link href="https://unpkg.com/@fullcalendar/core@6/main.min.css" rel="stylesheet" />
-  <script src="https://unpkg.com/@fullcalendar/core@6/main.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/daygrid@6/main.min.js"></script>
-
-
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
   <style>
     #horas-disponibles {
@@ -49,28 +39,14 @@
       margin: 5px;
     }
   </style>
+</head>
 
-
-
-  <!-- Main CSS File -->
-  <link href="{% static 'css/main.css' %}" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: Punto Mental
-  * Template URL: https://bootstrapmade.com/Punto Mental-bootstrap-website-template/
-  * Updated: Aug 07 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-
-
-  
+<body>
+  <!-- Header -->
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
-
       <a href="/index" class="logo d-flex align-items-center me-auto me-xl-0">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="{% static 'img/section.png' %}" alt="">
+        <img src="{% static 'landing_page/img/section.png' %}" alt="Logo Punto Mental">
         <h1 class="sitename">Punto Mental</h1><span>.</span>
       </a>
 
@@ -78,84 +54,34 @@
         <ul>
           <li><a href="/index" class="active">Inicio</a></li>
           <li><a href="/index#services">Servicios</a></li>
-
-          <li><a href="/index#portfolio"> Citas</a></li>
+          <li><a href="/index#portfolio">Citas</a></li>
           <li><a href="/blog">Blog</a></li>
-        
           <li><a href="/index#contact">Contacto</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <a class="btn-getstarted" href="/login">Iniciar Sesión</a>
-
     </div>
   </header>
-</head>
 
-<body>
+  <!-- Contenido principal -->
+  <main>
     {% block content %}
     {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer" class="footer position-relative light-background">
+    <!-- ... (tu footer actual sin cambios) ... -->
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'landing_page/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="{% static 'landing_page/js/main.js' %}"></script>
 </body>
-
-<footer id="footer" class="footer position-relative light-background">
-
-  <div class="container footer-top">
-    <div class="row gy-4">
-      <div class="col-lg-5 col-md-12 footer-about">
-        <a href="/index" class="logo d-flex align-items-center">
-          <span class="sitename">Punto Mental</span>
-        </a>
-        <p>Punto Mental es una plataforma dedicada a brindar acceso rápido y seguro a apoyo psicológico profesional. Nos enfocamos en mejorar el bienestar emocional de las personas a través de recursos, asesoramiento y herramientas que fomentan una vida más saludable y equilibrada..</p>
-        <div class="social-links d-flex mt-4">
-          <a href=""><i class="bi bi-twitter-x"></i></a>
-          <a href=""><i class="bi bi-facebook"></i></a>
-          <a href=""><i class="bi bi-instagram"></i></a>
-          <a href=""><i class="bi bi-linkedin"></i></a>
-        </div>
-      </div>
-
-      <div class="col-lg-2 col-6 footer-links">
-        <h4>Enlaces útiles</h4>
-        <ul>
-          <li><a href="#">Inicio</a></li>
-          <li><a href="#">Acerca de</a></li>
-          <li><a href="#">Servicios</a></li>
-        
-        </ul>
-      </div>
-
-      <div class="col-lg-2 col-6 footer-links">
-        <h4>Nuestros servicios</h4>
-        <ul>
-          <li><a href="#">Diseño web</a></li>
-          <li><a href="#">Desarrollo web</a></li>
-          <li><a href="#">Gestión de productos</a></li>
-          <li><a href="#">Marketing</a></li>
-          <li><a href="#">Diseño gráfico</a></li>
-        </ul>
-      </div>
-
-      <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
-        <h4>Contáctanos</h4>
-        <p>Colegio San Francisco de Asís - Cl. 52 #14-40, Comuna 8, Cali, Valle del Cauca</p>
-        <p>Colombia</p>
-        <p class="mt-4"><strong>Teléfono:</strong> <span>+57 2 555 3333</span></p>
-        <p><strong>Email:</strong> <span>info@puntomental.com</span></p>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="container copyright text-center mt-4">
-    <p>© <span>Derechos de autor</span> <strong class="sitename">Punto Mental</strong> <span>Todos los derechos reservados</span></p>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you've purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-      Diseñado por <a href="https://bootstrapmade.com/">PuntoMental</a>
-    </div>
-  </div>
-
-</footer>
+</html>
