@@ -34,7 +34,7 @@ EMAIL_HOST="smtp.gmail.com"
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
 EMAIL_HOST_USER="puntomentalcosfacali@gmail.com"
-EMAIL_HOST_PASSWORD="fowy djcy qezk eupd"
+EMAIL_HOST_PASSWORD="vpnh ktan npma sxeh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 

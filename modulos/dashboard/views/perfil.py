@@ -1,6 +1,7 @@
 import pytz
 from itsdangerous import URLSafeSerializer, BadSignature
 from django.template.loader import get_template, render_to_string
+from django.db import IntegrityError
 
 # Importaciones comunes desde base_imports
 from .base_importaciones import (
@@ -24,6 +25,7 @@ def perfil(request):
 @login_required
 def editar_perfil(request):
     usuario = request.user
+    print(f"\n--- INICIO DE PETICIÓN [{request.method}] ---") 
     
     if request.method == 'POST':
         try:
@@ -47,17 +49,36 @@ def editar_perfil(request):
             usuario.first_name = request.POST.get('first_name', usuario.first_name)
             usuario.last_name = request.POST.get('last_name', usuario.last_name)
             usuario.tipo_identificacion = request.POST.get('tipo_identificacion')
-            usuario.identificacion = nueva_identificacion  # Usamos el valor ya validado
+            usuario.identificacion = nueva_identificacion  
             usuario.eps = request.POST.get('eps', usuario.eps)
             usuario.alergias = request.POST.get('alergias', usuario.alergias)
             usuario.enfermedades = request.POST.get('enfermedades', usuario.enfermedades)
-            usuario.email = nuevo_email  # Usamos el valor ya validado
+            usuario.email = nuevo_email  
+            
+            print("\nArchivos recibidos:", request.FILES)
+            print("Datos POST:", request.POST)
 
-            # Manejo de la imagen de perfil
+           
             if 'imagen-clear' in request.POST:
                 usuario.imagen.delete(save=True) 
+                
+                print("\n>>> Borrando imagen existente")
+                usuario.imagen.delete(save=True)
+                
+                print("\nEstado ANTES de imagen:", usuario.imagen)
+                
+           
+            if 'imagen' in request.FILES:
+             
+                usuario.imagen = request.FILES['imagen']
+            
+          
+            print("Estado DESPUÉS de imagen:", usuario.imagen)
             
             usuario.save()
+            print("\nUsuario guardado. Imagen final:", usuario.imagen.url if usuario.imagen else "Sin imagen")
+            
+        
 
             # Actualizar especialización para psicólogos
             if usuario.rol == 'psicologo':

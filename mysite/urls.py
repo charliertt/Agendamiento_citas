@@ -36,6 +36,10 @@ urlpatterns = [
 
     #validaciones formulario de estudiante
 	path('registro_estudiante/', dashboard_views.registro_estudiante, name="registro_estudiante"),
+ 
+    
+    path('review/', dashboard_views.ListaCitasReviewView.as_view(), name='review'),
+ 
     
 	path('verificar_email/', dashboard_views.verificar_email, name='verificar_email'),
 	
@@ -120,6 +124,9 @@ urlpatterns = [
         TemplateView.as_view(template_name='gracias_review.html'),
         name='gracias_review'  # Asegúrate de agregar el nombre
     ),
+     
+     
+     
     
     # URL para crear reseña (con token)
     path('review/<str:token>/', dashboard_views.CrearReviewView.as_view(), name='crear_review'),

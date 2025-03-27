@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, FormView, CreateView
+from django.views.generic import TemplateView, FormView, CreateView, ListView
 from itsdangerous import URLSafeSerializer, BadSignature
 
 
@@ -89,6 +89,16 @@ class CrearReviewView(FormView):
             
         return super().form_valid(form)
 
+
+class ListaCitasReviewView(ListView):
+    template_name = 'review.html'
+    model = Review
+    context_object_name = 'reviews'
+    ordering = ['-fecha_creacion']  
+
+    # Opcional: Filtros adicionales
+    def get_queryset(self):
+        return Review.objects.all()
     
 class GraciasReviewView(TemplateView):
     template_name = 'gracias_review.html'    

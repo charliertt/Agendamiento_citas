@@ -45,7 +45,7 @@
 			  
 			  <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 d-flex align-items-center">
 				<a href="/dashboard" class="d-flex align-items-center">
-				  <img src="{% static 'img/lg.png' %}" width="110" height="52" alt="Tabler" class="navbar-brand-image">
+				  <img src="{% static 'dashboard/img/lg.png' %}" width="110" height="52" alt="Tabler" class="navbar-brand-image">
 				  <h2 class="mb-0 ms-2">Punto mental</h2>
 				</a>
 			  </div>
@@ -99,7 +99,7 @@
 								<h3 class="card-title">Tus notificaciones</h3>
 								{% if request.user.rol != 'estudiante' %}
 								<div class="card-actions">
-									<a href="{% url 'todas_notificaciones' %}" class="btn btn-sm btn-link">Ver todas</a>
+									<a href="" class="btn btn-sm btn-link">Ver todas</a>
 								</div>
 								{% endif %}
 							</div>
@@ -279,10 +279,9 @@
 											</span>
 										</a>
 									</li>
-									<li class="nav-item dropdown">
-										<a class="nav-link dropdown-toggle" href="#navbar-extra"
-											data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button"
-											aria-expanded="false">
+									<li class="nav-item ">
+										<a class="nav-link" href="/review/">
+										
 											<span class="nav-link-icon d-md-none d-lg-inline-block">
 												<!-- Download SVG icon from http://tabler.io/icons/icon/star -->
 												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -294,117 +293,10 @@
 												</svg>
 											</span>
 											<span class="nav-link-title">
-												Extra
+												Reseña
 											</span>
 										</a>
-										<div class="dropdown-menu">
-											<div class="dropdown-menu-columns">
-												<div class="dropdown-menu-column">
-													<a class="dropdown-item" href="./activity.html">
-														Activity
-													</a>
-													<a class="dropdown-item" href="./chat.html">
-														Chat
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./cookie-banner.html">
-														Cookie banner
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./empty.html">
-														Empty page
-													</a>
-													<a class="dropdown-item" href="./faq.html">
-														FAQ
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./gallery.html">
-														Gallery
-													</a>
-													<a class="dropdown-item" href="./invoice.html">
-														Invoice
-													</a>
-													<a class="dropdown-item" href="./job-listing.html">
-														Job listing
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./license.html">
-														License
-													</a>
-													<a class="dropdown-item" href="./logs.html">
-														Logs
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./marketing/index.html">
-														Marketing
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./music.html">
-														Music
-													</a>
-													<a class="dropdown-item" href="./page-loader.html">
-														Page loader
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-												</div>
-												<div class="dropdown-menu-column">
-													<a class="dropdown-item" href="./payment-providers.html">
-														Payment providers
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./photogrid.html">
-														Photogrid
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./pricing.html">
-														Pricing cards
-													</a>
-													<a class="dropdown-item" href="./pricing-table.html">
-														Pricing table
-													</a>
-													<a class="dropdown-item" href="./search-results.html">
-														Search results
-													</a>
-													<a class="dropdown-item" href="./settings.html">
-														Settings
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./tasks.html">
-														Tasks
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./trial-ended.html">
-														Trial ended
-														<span
-															class="badge badge-sm bg-green-lt text-uppercase ms-auto">New</span>
-													</a>
-													<a class="dropdown-item" href="./uptime.html">
-														Uptime monitor
-													</a>
-													<a class="dropdown-item" href="./users.html">
-														Users
-													</a>
-													<a class="dropdown-item" href="./widgets.html">
-														Widgets
-													</a>
-													<a class="dropdown-item" href="./wizard.html">
-														Wizard
-													</a>
-												</div>
-											</div>
-										</div>
-									</li>
+										
 									<li class="nav-item dropdown">
 										<a class="nav-link dropdown-toggle" href="#navbar-layout"
 											data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button"

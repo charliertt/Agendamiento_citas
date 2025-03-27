@@ -215,8 +215,8 @@
 	function clearAvatar() {
 		document.getElementById('avatarInput').value = '';
 		document.getElementById('imagen-clear').checked = true;
-		document.querySelector('.avatar').style.backgroundImage = "url('/static/img/imagen.png')";
-		document.querySelector('#imagen_perfil').style.backgroundImage = "url('/static/img/imagen.png')";
+		document.querySelector('.avatar').style.backgroundImage = "url('{% static 'dashboard/img/imagen.png' %}')";
+    	document.querySelector('#imagen_perfil').style.backgroundImage = "url('{% static 'dashboard/img/imagen.png' %}')";
 	}
 </script>
 </div>
