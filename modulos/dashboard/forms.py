@@ -4,6 +4,22 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review
 from django.core.exceptions import ObjectDoesNotExist
 
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'})
+    )
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Nueva contraseña'})
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar contraseña'})
+    )
+
 
 class UsuarioPersonalizadoCreationForm(UserCreationForm):
     # Campo extra para psicólogos (puedes mantener o adaptar según tus necesidades)

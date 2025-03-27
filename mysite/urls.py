@@ -8,6 +8,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView 
+from modulos.dashboard.forms import CustomPasswordResetForm, CustomSetPasswordForm
+
 
 
 urlpatterns = [
@@ -97,6 +99,7 @@ urlpatterns = [
     # Restablecimiento de contraseña (USUARIOS NO LOGUEADOS)
     path('password-reset/', auth_views.PasswordResetView.as_view(
         template_name='registration/password_reset.html',
+        form_class=CustomPasswordResetForm,
         email_template_name='registration/password_reset_email.html',
         subject_template_name='registration/password_reset_subject.txt',
         success_url=reverse_lazy('password_reset_done')
@@ -108,6 +111,7 @@ urlpatterns = [
     
     path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
         template_name='registration/password_reset_confirm.html',
+        form_class=CustomSetPasswordForm,
         success_url=reverse_lazy('password_reset_complete')
     ), name='password_reset_confirm'),
     
