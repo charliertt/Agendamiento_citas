@@ -115,7 +115,7 @@
 							</div>
 							<div class="h1 mb-3 me-2">{{ promedio_reseñas|floatformat:1 }}/5</div>
 							<div class="d-flex mb-2">
-								<div>Conversion rate</div>
+								<div>Reseñas</div>
 								<div class="ms-auto">
 									<span class="text-green d-inline-flex align-items-center lh-1">
 										{{ cantidad_reseñas }} reseñas
@@ -560,7 +560,7 @@
 											{% if usuario.imagen %}
 												<span class="avatar" style="background-image: url({{ usuario.imagen.url }})"></span>
 											{% else %}
-												<span class="avatar" style="background-image: url({% static 'img/imagen.png' %})"></span>
+												<span class="avatar" style="background-image: url({% static 'dashboard/img/imagen.png' %})"></span>
 											{% endif %}
 										</td>
 										

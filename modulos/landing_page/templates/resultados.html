@@ -1,10 +1,188 @@
-<section id="resultados" class="resultados section">
-    <div class="container text-center">
-      <h2>Resultados</h2>
-      <p>Respuestas correctas: {{ respuestas_correctas }} de {{ total_preguntas }}</p>
-      <p>Porcentaje: {{ porcentaje }}%</p>
-      <!-- Puedes agregar un botón para reiniciar o redirigir a otra página -->
-      <a href="{% url 'preguntas' %}" class="btn btn-primary">Reiniciar</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punto Mental - Salud Emocional</title>
+  <meta name="description" content="Plataforma de apoyo psicológico profesional">
+  <meta name="keywords" content="salud mental, psicología, bienestar emocional">
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" href="{% static 'landing_page/img/lg.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'landing_page/img/lg.png' %}">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'landing_page/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'landing_page/css/main.css' %}" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    #horas-disponibles {
+      margin-top: 20px;
+    }
+    #horas-disponibles button {
+      margin: 5px;
+    }
+  </style>
+</head>
+
+  <!-- =======================================================
+  * Template Name: Punto Mental
+  * Template URL: https://bootstrapmade.com/Punto Mental-bootstrap-website-template/
+  * Updated: Aug 07 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+
+
+  
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+
+      <a href="/index" class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <img src="{% static 'img/section.png' %}" alt="">
+        <h1 class="sitename">Punto Mental</h1><span>.</span>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+       
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    
+
     </div>
+  </header>
+</head>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<body class="blog-page">
+
+ 
+
+  <main class="main mt-4">
+
+
+
+    <section id="resultados" class="resultados section py-5 bg-light mt-4">
+      <div class="container mt-4">
+          <div class="row justify-content-center">
+              <div class="col-lg-8 col-md-10">
+                  <div class="card shadow-lg border-0 rounded-3">
+                      <div class="card-body p-5 mt-4">
+                          <div class="mb-4">
+                              <h3 class=" fw-bold mb-3">Resultados diagnóstico</h3>
+                              
+                              <div class="d-flex justify-content-center gap-5 my-4">
+                                  <div class="text-center">
+                                      <div class="badge bg-success-soft rounded-pill p-3 mb-2">
+                                          <i class="bi bi-check2-circle fs-2 text-success"></i>
+                                      </div>
+                                      <h3 class="h2 fw-bold">{{ respuestas_correctas }}</h3>
+                                      <p class="text-muted mb-0">Correctas</p>
+                                  </div>
+                                  
+                                  <div class="text-center">
+                                      <div class="badge bg-primary-soft rounded-pill p-3 mb-2">
+                                          <i class="bi bi-percent fs-2 text-primary"></i>
+                                      </div>
+                                      <h3 class="h2 fw-bold">{{ porcentaje }}%</h3>
+                                      <p class="text-muted mb-0">Porcentaje</p>
+                                  </div>
+                              </div>
+                              
+                              <p class="text-muted mb-4">
+                                  Has completado {{ total_preguntas }} preguntas en total
+                              </p>
+                              
+                              <a href="{% url 'preguntas' %}" class="btn btn-primary btn-lg px-5 py-3">
+                                  <i class="bi bi-arrow-repeat me-2"></i>Reiniciar Test
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
   </section>
   
+
+  <footer id="footer" class="footer position-relative light-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-5 col-md-12 footer-about">
+          <a href="/index" class="logo d-flex align-items-center">
+            <span class="sitename">Punto Mental</span>
+          </a>
+          <p>Punto Mental es una plataforma dedicada a brindar acceso rápido y seguro a apoyo psicológico profesional. Nos enfocamos en mejorar el bienestar emocional de las personas a través de recursos, asesoramiento y herramientas que fomentan una vida más saludable y equilibrada..</p>
+          <div class="social-links d-flex mt-4">
+            <a href=""><i class="bi bi-twitter-x"></i></a>
+            <a href=""><i class="bi bi-facebook"></i></a>
+            <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+  
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Enlaces útiles</h4>
+          <ul>
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#">Acerca de</a></li>
+            <li><a href="#">Servicios</a></li>
+          
+          </ul>
+        </div>
+  
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Nuestros servicios</h4>
+          <ul>
+            <li><a href="#">Diseño web</a></li>
+            <li><a href="#">Desarrollo web</a></li>
+            <li><a href="#">Gestión de productos</a></li>
+            <li><a href="#">Marketing</a></li>
+            <li><a href="#">Diseño gráfico</a></li>
+          </ul>
+        </div>
+  
+        <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+          <h4>Contáctanos</h4>
+          <p>Colegio San Francisco de Asís - Cl. 52 #14-40, Comuna 8, Cali, Valle del Cauca</p>
+          <p>Colombia</p>
+          <p class="mt-4"><strong>Teléfono:</strong> <span>+57 2 555 3333</span></p>
+          <p><strong>Email:</strong> <span>info@puntomental.com</span></p>
+        </div>
+  
+      </div>
+    </div>
+  
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Derechos de autor</span> <strong class="sitename">Punto Mental</strong> <span>Todos los derechos reservados</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Diseñado por <a href="https://bootstrapmade.com/">PuntoMental</a>
+      </div>
+    </div>
+  
+  </footer>
+</main>
