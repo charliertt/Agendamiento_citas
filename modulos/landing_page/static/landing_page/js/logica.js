@@ -107,9 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
       // Usuario existente: precarga los campos y oculta el contenedor de contraseñas
       precargarCampos(userData);
       document.getElementById('passwordFields').style.display = 'none';
+      document.querySelectorAll('#passwordFields input').forEach(input => {
+        input.disabled = true;
+      });
     } else {
       // Usuario nuevo: muestra los campos de contraseña
       document.getElementById('passwordFields').style.display = 'block';
+      document.querySelectorAll('#passwordFields input').forEach(input => {
+        input.disabled = false;
+      });
     }
   }
   

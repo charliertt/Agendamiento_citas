@@ -1,6 +1,7 @@
 from .base_importaciones import (
     JsonResponse)
-
+from django.contrib.auth import authenticate, login, get_user_model, logout
+from modulos.dashboard.models import UsuarioPersonalizado
 def verificar_email(request):
     email = request.GET.get('email', '')
     User = get_user_model()
