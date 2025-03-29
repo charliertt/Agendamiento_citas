@@ -1,5 +1,5 @@
 from .base_importaciones import (JsonResponse, get_user_model,
-                                 Notificacion, Contacto, Cita)
+                                 Notificacion, Contacto, Cita, Respuesta)
 
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.db.models.signals import post_save
@@ -57,3 +57,16 @@ def crear_notificacion_cita(sender, instance, created, **kwargs):
         mensaje=f"Nueva cita con {instance.estudiante.usuario.get_full_name()}",
         enlace=f"/citas/{instance.id}/"
     )
+
+
+
+@receiver(post_save, sender=Respuesta)
+def crear_notificacion_cuestionario(sender, instance, created, **kwargs):
+    if created:
+        Notificacion.objects.create(
+            usuario=instance.usuario,
+            destinatario_tipo='estudiante',
+            tipo='cuestionario',
+            mensaje=f"¡Cuestionario completado! Calificación: {instance.calificacion:.2f}",
+            enlace=f"/respuestas/{instance.id_respuesta}/"
+        )

@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+
             // Actualiza la sección final del modal con los datos de confirmación
             document.getElementById('final-psychologist').textContent = data.psychologist;
             document.getElementById('final-datetime').textContent = data.datetime;
@@ -210,6 +211,31 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStep = 3;
             updateModalTitle(currentStep);
             updateButtons(currentStep);
+
+            form.reset();
+            document.getElementById('emailInput').value = ''; // Limpiar email de verificación
+            verifiedEmail = '';
+            selectedDateTime = {};
+            selectedPsychologist = '';
+            selectedSpecialty = '';
+            selectedPsycholoid = '';
+            
+            // Limpiar campos ocultos
+            document.getElementById('hiddenDateField').value = '';
+            document.getElementById('hiddenTimeField').value = '';
+            document.getElementById('hiddenPsicologoField').value = '';
+            document.getElementById('hiddenPsicologoFieldID').value = '';
+
+            // Restablecer campos de contraseña
+            document.getElementById('passwordFields').style.display = 'block';
+            document.querySelectorAll('#passwordFields input').forEach(input => {
+              input.disabled = false;
+              input.value = '';
+            });
+
+            // Limpiar selección de horario
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('selectedTimeDisplay').style.display = 'none';
           } else {
             console.error('Error al agendar la cita:', data.error);
             console.log('Detalles del error:', data.errors);

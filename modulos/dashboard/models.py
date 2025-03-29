@@ -270,6 +270,7 @@ class Notificacion(models.Model):
         ('contacto', 'Nuevo mensaje'),
         ('cita', 'Actualización cita'),
         ('sistema', 'Actualización sistema'),
+        ('cuestionario', 'Cuestionario completado'),
     )
 
     DESTINATARIOS = (
