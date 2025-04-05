@@ -1,0 +1,139 @@
+{% extends "base_dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+	<div class="page-wrapper">
+<!-- Page header -->
+<div class="page-header d-print-none">
+	<div class="container-xl">
+		<div class="row g-2 align-items-center">
+			<div class="col">
+				<h2 class="page-title">
+					
+				</h2>
+				
+				{% include 'layout/mensajes.html' %}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+		<!-- Page body -->
+		<div class="page-body">
+			<div class="container-xl">
+				<div class="d-flex justify-content-between">
+					
+	
+					
+					
+					
+					
+						
+					
+	
+
+				</div>
+			
+				
+				
+<div class="card mt-2">
+	<div class="card-body p-0">
+		
+
+		
+		<div id="table-default" class="table-responsive">
+			
+			<table id="respuestasTable" class="table  table-hover text-center align-middle">
+				<thead class="table-dark">
+					<tr>
+						<th class="text-center">Usuario</th>
+						<th class="text-center">Calificación</th>
+						<th class="text-center">Nota</th>
+						<th class="text-center">Fecha</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for nota in notas %}
+					<tr>
+						<td>
+							<span class="fw-bold">{{ nota.usuario.username }}</span>
+						</td>
+						<td>
+							{% if nota.calificacion >= 4 %}
+								<span class="badge bg-success text-white text-center">{{ nota.calificacion }}</span>
+							{% elif nota.calificacion >= 3 %}
+								<span class="badge bg-warning text-white text-center">{{ nota.calificacion }}</span>
+							{% else %}
+								<span class="badge bg-danger text-white text-center">{{ nota.calificacion }}</span>
+							{% endif %}
+						</td>
+						<td class="text-start">
+							{% if nota.nota %}
+								{{ nota.nota }}
+							{% else %}
+								<span class="text-muted fst-italic">Sin nota</span>
+							{% endif %}
+						</td>
+						<td>
+							{{ nota.fecha_respuesta|date:"d M Y - H:i" }}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+		<footer class="footer footer-transparent d-print-none">
+	<div class="container-xl">
+		<div class="row text-center align-items-center flex-row-reverse">
+			<div class="col-lg-auto ms-lg-auto">
+				
+			</div>
+			<div class="col-12 col-lg-auto mt-3 mt-lg-0">
+				
+			</div>
+		</div>
+	</div>
+</footer>
+	</div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar DataTables
+        const table = new DataTable('#respuestasTable', {
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+            },
+            
+        });
+
+       
+
+
+	
+
+		
+	
+    });
+
+    
+</script>
+	<!-- Libs JS -->
+
+</body>
+{% endblock %}
+
+</html>

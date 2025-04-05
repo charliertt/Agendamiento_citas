@@ -35,7 +35,14 @@ class CitaListView(ListView):
     template_name = "citas.html"  # Plantilla para listar las citas
     context_object_name = "citas"
     ordering = ['-fecha_hora']  
-    
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.rol == 'estudiante':
+            # Filtrar las citas para que solo muestre las del estudiante logueado
+            qs = qs.filter(estudiante__usuario=self.request.user)
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Formulario para la creación de una nueva cita
@@ -46,6 +53,7 @@ class CitaListView(ListView):
         # Agregar la URL para crear cita
         context['crear_cita_url'] = reverse('crear_cita')
         return context
+
 class CitaUpdateView(UpdateView):
     model = Cita
     form_class = CitaForm

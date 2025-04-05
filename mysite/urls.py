@@ -41,6 +41,9 @@ urlpatterns = [
  
     
     path('review/', dashboard_views.ListaCitasReviewView.as_view(), name='review'),
+    path('reviews_profile/', dashboard_views.reviews_perfil, name='reviews_perfil'),
+    
+    path('buzon_profile/', dashboard_views.buzon_profile, name='buzon_profile'),
  
     
 	path('verificar_email/', dashboard_views.verificar_email, name='verificar_email'),
@@ -135,6 +138,9 @@ urlpatterns = [
     # URL para crear reseña (con token)
     path('review/<str:token>/', dashboard_views.CrearReviewView.as_view(), name='crear_review'),
     path('marcar-notificacion-leida/<int:notificacion_id>/',  dashboard_views.marcar_notificacion_leida, name='marcar_notificacion_leida'),
+    
+    #notas
+    path('notas/', dashboard_views.notas, name='notas'),
   
    
 

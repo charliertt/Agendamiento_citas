@@ -110,12 +110,24 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('#passwordFields input').forEach(input => {
         input.disabled = true;
       });
+
+      document.querySelectorAll('#appointmentForm input, #appointmentForm select, #appointmentForm textarea').forEach(input => {
+        if (input.id !== 'id_comentarios') {
+          input.setAttribute('readonly', 'readonly');
+        }
+      });
+      
     } else {
       // Usuario nuevo: muestra los campos de contraseña
       document.getElementById('passwordFields').style.display = 'block';
       document.querySelectorAll('#passwordFields input').forEach(input => {
         input.disabled = false;
       });
+
+      document.querySelectorAll('#appointmentForm input, #appointmentForm select, #appointmentForm textarea').forEach(input => {
+        input.removeAttribute('readonly');
+      });
+      
     }
   }
   

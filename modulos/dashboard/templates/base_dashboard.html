@@ -172,7 +172,7 @@
 					</a>
 					<div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
 					  <a href="/perfil" class="dropdown-item">Perfil</a>
-					  <a href="#" class="dropdown-item">Reseñas</a>
+					  <a href="/review" class="dropdown-item">Reseñas</a>
 					  <div class="dropdown-divider"></div>
 					  <a href="./settings.html" class="dropdown-item">Configuración</a>
 					  <a href="/logout" class="dropdown-item">Cerrar sesión</a>
@@ -243,27 +243,35 @@
 															Citas
 														</a>
 														<div class="dropdown-menu">
-
+															{% if request.user.rol != 'estudiante' %}
 															<a href="/horarios" class="dropdown-item">
 																Horarios
 															</a>
+															{% endif %}
+															
 															<a href="/citas" class="dropdown-item">
 																Ver listado
 															</a>
 														</div>
 													</div>
 
-
+														{% if request.user.rol != 'estudiante' %}
 													<div class="dropdown-menu-column">
 														<a class="dropdown-item" href="/usuarios">
+															
 															Usuarios
 														</a>
 													</div>
+													{% endif %}
 												</div>
 											</div>
 									</li>
 									<li class="nav-item">
+										{% if request.user.rol != 'estudiante' %}
 										<a class="nav-link" href="/preguntas_tabla">
+										{%else%}
+										<a class="nav-link" href="/preguntas" target="_blank">
+										{%endif%}
 											<span class="nav-link-icon d-md-none d-lg-inline-block">
 												<!-- Download SVG icon from http://tabler.io/icons/icon/checkbox -->
 												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -275,11 +283,13 @@
 														d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
 												</svg>
 											</span>
+											
 											<span class="nav-link-title">
 												Cuestrionario
 											</span>
 										</a>
 									</li>
+									{% if request.user.rol != 'estudiante' %}
 									<li class="nav-item ">
 										<a class="nav-link" href="/review/">
 										
@@ -297,6 +307,8 @@
 												Reseñas
 											</span>
 										</a>
+									</li>
+									{% endif %}
 										
 									<li class="nav-item">
 										<a class="nav-link" href="#navbar-layout"
@@ -325,6 +337,20 @@
 										
 									</li>
 								
+									{% if request.user.rol != 'estudiante' %}
+									<li class="nav-item">
+										<a class="nav-link" href="/notas">
+											<span class="nav-link-icon d-md-none d-lg-inline-block">
+												<!-- Download SVG icon from http://tabler.io/icons/icon/mail-opened -->
+												<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-logs"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 12h.01" /><path d="M4 6h.01" /><path d="M4 18h.01" /><path d="M8 18h2" /><path d="M8 12h2" /><path d="M8 6h2" /><path d="M14 6h6" /><path d="M14 12h6" /><path d="M14 18h6" /></svg>
+											</span>
+											<span class="nav-link-title">
+												Historico Notas
+											</span>
+										</a>
+									</li>
+
+
 									<li class="nav-item">
 										<a class="nav-link" href="/lista_contactos">
 											<span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -344,7 +370,7 @@
 											</span>
 										</a>
 									</li>
-									
+									{% endif %}
 									<li class="nav-item dropdown">
 										<a class="nav-link dropdown-toggle" href="#navbar-help"
 											data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button"

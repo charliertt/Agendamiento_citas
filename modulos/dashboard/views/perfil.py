@@ -8,7 +8,7 @@ from .base_importaciones import (
     messages, redirect, render, get_object_or_404,
     UsuarioPersonalizado, Psicologo, get_psicologo_context,
       never_cache,
-    login_required
+    login_required, Review, Contacto
 )
 
 
@@ -20,6 +20,33 @@ def perfil(request):
     
 
     return render(request, 'perfil.html', context)
+
+def reviews_perfil(request):
+    # Comprueba si el usuario tiene la relación con Psicologo
+    if hasattr(request.user, 'psicologo'):
+        reviews = Review.objects.filter(psicologo=request.user.psicologo)
+    # Comprueba si el usuario tiene la relación con Estudiante
+    elif hasattr(request.user, 'estudiante'):
+        reviews = Review.objects.filter(estudiante=request.user.estudiante)
+
+    else:
+        reviews = Review.objects.none()
+
+    context = {
+        'usuario': request.user,
+        'reviews': reviews,
+    }
+    return render(request, 'reviews_profile.html', context)
+
+def buzon_profile(request):
+    # Filtrar los contactos asociados al usuario logueado
+    contactos = Contacto.objects.filter(email=request.user.email)
+
+    context = {
+        'usuario': request.user,
+        'contactos': contactos,
+    }
+    return render(request, 'buzon_profile.html', context)
 
 @never_cache
 @login_required

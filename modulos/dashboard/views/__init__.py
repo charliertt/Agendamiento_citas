@@ -13,7 +13,9 @@ from .core import (
 
 from .perfil import (
     perfil,       
-    editar_perfil
+    editar_perfil,
+    reviews_perfil,
+    buzon_profile
 )
 
 from .autenticacion import (
@@ -67,4 +69,8 @@ from .notificacion import (
     crear_notificacion_cita,
     crear_notificacion_contacto
     
+)
+
+from .notas import (
+    notas
 )
