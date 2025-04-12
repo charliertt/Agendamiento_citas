@@ -15,9 +15,14 @@ from .base_importaciones import (
 @login_required
 def horarios(request):
     horarios_list = Horario.objects.all()
+    
+    # Adjuntar formulario de edición a cada horario
+    for horario in horarios_list:
+        horario.form_editar = HorarioForm(instance=horario)
+    
     return render(request, 'horarios.html', {
         'horarios': horarios_list,
-        'form': HorarioForm()
+        'form': HorarioForm()  # Formulario para crear
     })
 
 @never_cache
@@ -38,6 +43,7 @@ def crear_editar_horario(request, horario_id):
 @never_cache
 @login_required
 def eliminar_horario(request, horario_id):
+    
     if request.method == 'POST':
         horario = get_object_or_404(Horario, pk=horario_id)
         horario.delete()

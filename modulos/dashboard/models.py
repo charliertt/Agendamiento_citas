@@ -18,7 +18,6 @@ class UsuarioPersonalizado(AbstractUser):
     ROLES = [
         ('estudiante', 'Estudiante'),
         ('psicologo', 'Psicólogo'),
-        ('administrativo', 'Administrativo'),
     ]
 
     rol = models.CharField(max_length=20, choices=ROLES, default='estudiante')
@@ -75,10 +74,7 @@ class Psicologo(models.Model):
 
 
 
-class Administrativo(models.Model):
-    usuario = models.OneToOneField(UsuarioPersonalizado, on_delete=models.CASCADE, related_name='administrativo')
-    # Campos específicos para administrativos (si los hay)
-# Create your models here.
+
 
 class Horario(models.Model):
     psicologo = models.ForeignKey(Psicologo, on_delete=models.CASCADE, related_name='horarios')
@@ -276,7 +272,6 @@ class Notificacion(models.Model):
     DESTINATARIOS = (
         ('estudiante', 'Estudiante'),
         ('psicologo', 'Psicólogo'),
-        ('administrativo', 'Administrativo'),
         ('todos', 'Todos los usuarios'),
     )
 
