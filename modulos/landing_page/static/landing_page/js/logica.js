@@ -248,6 +248,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Limpiar selección de horario
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('selectedTimeDisplay').style.display = 'none';
+
+            
+            document.getElementById('mainActionButton').addEventListener('click', function() {
+              setTimeout(function() {
+                window.location.reload();
+              }, 500);
+            });
           } else {
             console.error('Error al agendar la cita:', data.error);
             console.log('Detalles del error:', data.errors);

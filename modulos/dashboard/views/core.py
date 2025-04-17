@@ -17,6 +17,8 @@ def dashboard(request):
     citas_completadas = Cita.objects.filter(estado='completada').count()
     conversion_rate = (citas_completadas / total_citas * 100) if total_citas > 0 else 0
     
+
+    respuestas = Respuesta.objects.filter(calificacion__gte=4.5).order_by('-id_respuesta')
     # Cálculo de reseñas
     reseñas = Review.objects.all()
     cantidad_reseñas = reseñas.count()
@@ -45,10 +47,6 @@ def dashboard(request):
     )
     citas_list = list(citas)
     bogota_tz = pytz.timezone('America/Bogota')
-    
-    
-    
-    
 
 
     for cita in citas_list:
@@ -70,24 +68,11 @@ def dashboard(request):
         )
     contactos_list = list(contactos)
     
-    proximas_citas = Cita.objects.filter(
-    estudiante__usuario=request.user,
-    estado='agendada',
-    ).order_by('fecha_hora').select_related('psicologo__usuario')
-    
     # Convertir datetime a string ISO
     for contacto in contactos_list:
         contacto['fecha_creacion'] = contacto['fecha_creacion'].isoformat()
 
     user = request.user
-    
-    notas = Respuesta.objects.filter(usuario=user).order_by('id_respuesta')
-    
-    
-    if request.user.rol == 'estudiante':
-        contactos_filtrados = Contacto.objects.filter(email=user.email)
-    else:
-        contactos_filtrados = Contacto.objects.all()
 
     if request.user.rol == 'estudiante':
         notificaciones = Notificacion.objects.filter(
@@ -104,13 +89,10 @@ def dashboard(request):
         'user': user,
         'num_estudiantes': Estudiante.objects.count(),
         'num_citas_agendadas': Cita.objects.filter(estado='agendada').count(),
-        'num_citas_agendadas_estudiante' : Cita.objects.filter( estudiante__usuario=request.user,estado='agendada').count(),
-        'num_contactos_pendientes': Contacto.objects.filter(estado='pendiente').count(),
-        'num_contactos_estudiante': Contacto.objects.filter( email=user.email).count(),
-        'num_resenas_estudiante' : Review.objects.filter(estudiante__usuario=request.user).count(),
+        'num_contactos': Contacto.objects.count(),
         'num_preguntas': Preguntas.objects.count(),
         'horarios': Horario.objects.all().order_by('dia_semana', 'hora_inicio'),
-        'contactos': contactos_filtrados,
+        'contactos': Contacto.objects.all(),
         'preguntas': Preguntas.objects.all(),
         'citas': Cita.objects.all(),
         'usuarios': UsuarioPersonalizado.objects.all(),
@@ -125,8 +107,7 @@ def dashboard(request):
         'porcentaje_cambio_citas': porcentaje_cambio_citas,  
         'notificaciones': notificaciones,
         'contador_notificaciones': notificaciones.count(),
-        'notas': notas,
-        'proximas_citas': proximas_citas,
+        'respuesta': Respuesta
         
         
     }

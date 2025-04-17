@@ -253,15 +253,25 @@ def agendar_cita(request):
             # Usuario nuevo: se procesa el formulario de registro completo
             form = EstudianteForm(request.POST)
             if form.is_valid():
-                usuario = form.save()  # Crea el usuario con rol "estudiante"
+                usuario = form.save()
                 estudiante = Estudiante.objects.create(usuario=usuario)
             else:
-                print("Errores en el formulario:", form.errors)
+    # Procesa los errores en un string legible
+                error_messages = []
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        error_messages.append(f"{field}: {error}")
+                
+                error_string = ", ".join(error_messages)
+                
                 return JsonResponse({
                     'success': False,
-                    'error': 'Datos inválidos',
-                    'errors': form.errors,
+                    'error': error_string,
+                    'errors': form.errors.as_json()
                 })
+              
+
+                
         except Estudiante.DoesNotExist:
             # Si el usuario existe pero no tiene un registro de estudiante, se crea
             estudiante = Estudiante.objects.create(usuario=usuario)
