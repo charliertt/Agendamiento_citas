@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
         },
+        
         buttonText: {
             today: 'Hoy',
             month: 'Mes',
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             day: 'Día',
             list: 'Lista'
         },
+        
         events: contactosData.map(contacto => {
             // Paso 1: Capturar la fecha original del backend
             const fechaOriginal = contacto.fecha_creacion;
@@ -92,32 +94,101 @@ document.addEventListener('DOMContentLoaded', function() {
     contactosCalendar.render();
     
 
+
+    
     
     
 
     // Calendario de Citas
     const citasData = JSON.parse(document.getElementById('citas-data').textContent);
+
+    citasData.forEach(cita => {
+        console.log('Datos de cita recibidos:', {
+            nombre: cita.nombre_completo,
+            fecha_hora: cita.fecha_hora,
+            fecha_parseada: new Date(cita.fecha_hora).toLocaleString('es-CO', {
+                timeZone: 'America/Bogota'
+            })
+        });
+    });
+
     const calendarCitasEl = document.getElementById('calendar_citas');
     
     const citasCalendar = new FullCalendar.Calendar(calendarCitasEl, {
+        // Configuración existente
         locale: 'es',
-        timeZone: 'America/Bogota',
+        timeZone: 'local',
         firstDay: 1,
         initialView: 'timeGridWeek',
         headerToolbar: {
-            left: 'prev,next Hoy',
+            left: 'prev,next today',
             center: 'title',
             right: 'timeGridWeek,timeGridDay,listWeek'
         },
-        events: citasData.map(cita => ({
-            title: `${cita.asunto} - ${cita.nombre_completo}`,
-            start: cita.fecha_hora,
+        buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            list: 'Lista'
+        },
+
+        
+        
+        // Ajustes para corregir la visualización
+        slotDuration: '01:00:00',
+        slotEventOverlap: false,
+        height: 'auto',                // Permite que el calendario se expanda según se necesite
+        contentHeight: 'auto',         // Altura automática del contenido
+        aspectRatio: 2.5,              // Relación ancho/alto (ajusta según necesites)
+        allDaySlot: false,             // Quitar la fila "todo el día" si no se usa
+        slotMinTime: '07:00:00',       // Hora mínima visible
+        slotMaxTime: '20:00:00',       // Hora máxima visible
+        
+        // Formato de hora
+        eventTimeFormat: { 
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+            meridiem: 'short'
+        },
+        events: citasData.map(cita => {
+            // Extraer la fecha y hora de la cadena ISO
+            const fechaHoraOriginal = cita.fecha_hora;
+            const [fecha, horaConOffset] = fechaHoraOriginal.split('T');
+            const [hora, min, segConOffset] = horaConOffset.split(':');
             
-            color: getCitaColor(cita.estado),
-            extendedProps: {
-                estado: cita.estado.toLowerCase() 
-            }
-        })),
+            // Crear objeto Date explícitamente con los componentes extraídos
+            const year = parseInt(fecha.split('-')[0]);
+            const month = parseInt(fecha.split('-')[1]) - 1; // Meses en JS son 0-indexed
+            const day = parseInt(fecha.split('-')[2]);
+            const hours = parseInt(hora);
+            const minutes = parseInt(min);
+            
+            // Crear fechas de inicio y fin explícitamente
+            const startDate = new Date(year, month, day, hours, minutes, 0);
+            const endDate = new Date(year, month, day, hours + 1, minutes, 0);
+            
+            console.log('Procesando cita con fechas explícitas:', {
+                nombre: cita.nombre_completo,
+                fecha_original: fechaHoraOriginal,
+                componentes: {fecha, hora, min, year, month, day, hours, minutes},
+                startDate_local: startDate.toLocaleString('es-CO'),
+                endDate_local: endDate.toLocaleString('es-CO')
+            });
+            
+            return {
+                title: `${cita.asunto} - ${cita.nombre_completo}`,
+                start: startDate,  // Usar objeto Date directamente
+                end: endDate,      // Usar objeto Date directamente
+                color: getCitaColor(cita.estado),
+                extendedProps: {
+                    estado: cita.estado.toLowerCase(),
+                    horaOriginal: hours // Guardamos la hora original para debugging
+                }
+            };
+        }),
+        
         eventContent: renderCitaContent,
         themeSystem: 'bootstrap5',
         eventTimeFormat: { 

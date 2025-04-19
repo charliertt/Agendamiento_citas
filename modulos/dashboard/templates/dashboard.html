@@ -638,10 +638,10 @@
 							<table class="table card-table table-vcenter">
 								<thead>
 								  <tr>
-									<th class="">Cita</th>
+									<th>Cita</th>
 									<th>Fecha y Hora</th>
 									<th>Estado</th>
-									<th>Notas</th>
+								
 								  </tr>
 								</thead>
 								<tbody>
@@ -651,7 +651,7 @@
 									
 									
 									<!-- Información de la cita: Asunto y participantes -->
-									<td class="w-100">
+									<td class="w-75">
 									  <a href="#" class="text-reset">{{ cita.asunto }}</a>
 									  <div class="text-muted small">
 										Estudiante: {{ cita.estudiante.usuario.username }}<br>
@@ -709,9 +709,7 @@
 									</td>
 									
 									<!-- Notas adicionales -->
-									<td>
-									  {{ cita.notas }}
-									</td>
+								
 								  </tr>
 								  {% endfor %}
 								</tbody>

@@ -1,0 +1,37 @@
+/* Añadir a tu CSS */
+.fc-timegrid-slot {
+    height: 70px !important;    /* Altura fija para cada slot de hora */
+}
+
+.fc-timegrid-event-harness {
+    width: 100% !important;  /* Hace que el evento ocupe más ancho */
+    max-width: 100% !important;
+}
+
+.fc-timegrid-event {
+    min-height: unset !important;
+    height: auto !important;
+    margin: 1px 0;
+    border-radius: 3px;
+}
+
+.cita-event {
+    padding: 6px !important;
+    height: 100%;
+    font-size: 12px; 
+    width: 100%;   /* Tamaño de fuente adecuado */
+}
+
+/* Mejorar la visibilidad de las etiquetas de hora */
+.fc-timegrid-axis-cushion {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Dar más espacio al contenido del evento */
+.estudiante-text {
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
