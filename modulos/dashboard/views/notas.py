@@ -4,4 +4,5 @@ from .base_importaciones import (Respuesta,
 
 def notas(request):
     notas = Respuesta.objects.all().order_by('id_respuesta')
-    return render(request, 'notas.html', {'notas': notas})
+    return render(request, 'notas.html', {'notas': notas,
+                                           'active_page': 'notas',})

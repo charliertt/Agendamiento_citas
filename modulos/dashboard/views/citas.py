@@ -35,6 +35,12 @@ class CitaListView(ListView):
     template_name = "citas.html"  # Plantilla para listar las citas
     context_object_name = "citas"
     ordering = ['-fecha_hora']  
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'review'  # Añade la variable active_page
+        return context
 
     def get_queryset(self):
         qs = super().get_queryset()

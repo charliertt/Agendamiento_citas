@@ -67,6 +67,7 @@ def dashboard(request):
             'fecha_creacion'
         )
     contactos_list = list(contactos)
+    num_contactos_pendientes = Contacto.objects.filter(estado='pendiente').count()
     
     # Convertir datetime a string ISO
     for contacto in contactos_list:
@@ -90,6 +91,7 @@ def dashboard(request):
         'num_estudiantes': Estudiante.objects.count(),
         'num_citas_agendadas': Cita.objects.filter(estado='agendada').count(),
         'num_contactos': Contacto.objects.count(),
+        'num_contactos_pendientes': num_contactos_pendientes,
         'num_preguntas': Preguntas.objects.count(),
         'horarios': Horario.objects.all().order_by('dia_semana', 'hora_inicio'),
         'contactos': Contacto.objects.all(),
@@ -100,6 +102,7 @@ def dashboard(request):
         'dashboard_url': reverse('dashboard'),
         'contactos_json': contactos_list,
         'citas_json': citas_list,
+        'active_page': 'inicio',  
         'conversion_rate': conversion_rate,
         'promedio_reseñas': promedio_reseñas,
         'porcentaje_satisfaccion': porcentaje_satisfaccion,

@@ -17,7 +17,10 @@ def preguntas_tabla(request):
 
     return render(request, 'preguntas_tabla.html', {
         'preguntas': preguntas_list,
-        'form': creation_form,  # Formulario de creación
+        'form': creation_form,
+        'active_page': 'cuestrionario', 
+         
+   
     })
 
 

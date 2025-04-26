@@ -23,7 +23,8 @@ def lista_contactos(request):
     respuesta_form = RespuestaForm()  # Instancia del formulario
     return render(request, 'lista_contactos.html', {
         'contactos': contactos,
-        'respuesta_form': respuesta_form
+        'respuesta_form': respuesta_form,
+         'active_page': 'buzon',
     })
 
 

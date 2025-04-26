@@ -538,7 +538,7 @@
 						<div class="card-body">
 							<div class="row align-items-center">
 								<div class="col-10">
-									<h3 class="h1">Hola, {{ user.first_name|capfirst }}</h3>
+									<h3 class="h1  ">Hola, {{ user.first_name|capfirst }}</h3>
 									{% if user.rol == "psicologo" %}
 										<div class="markdown text-secondary">
 											Como actor del sistema, podrás gestionar las peticiones, sugerencias y quejas de los estudiantes, administrar y agendar citas, gestionar el banco de preguntas relacionadas con salud mental, y editar tu disponibilidad de horarios para facilitar el agendamiento de nuevas sesiones.
@@ -645,74 +645,67 @@
 								  </tr>
 								</thead>
 								<tbody>
-								  {% for cita in citas %}
-								  <tr>
-									<!-- Checkbox (puedes ajustar si lo necesitas o quitarlo) -->
-									
-									
-									<!-- Información de la cita: Asunto y participantes -->
-									<td class="w-75">
-									  <a href="#" class="text-reset">{{ cita.asunto }}</a>
-									  <div class="text-muted small">
-										Estudiante: {{ cita.estudiante.usuario.username }}<br>
-										Psicólogo: {{ cita.psicologo.usuario.username }}
-									  </div>
-									</td>
-									
-									<!-- Fecha y Hora con icono de calendario -->
-									<td class="text-nowrap text-secondary">
-									  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-										   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-										   stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-										<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-										<path d="M16 3v4" />
-										<path d="M8 3v4" />
-										<path d="M4 11h16" />
-										<path d="M11 15h1" />
-										<path d="M12 15v3" />
-									  </svg>
-									  {{ cita.fecha_hora|date:"F j, Y H:i" }}
-									</td>
-									
-									<!-- Estado con icono personalizado -->
-									<td class="text-nowrap">
-									  {% if cita.estado == 'agendada' %}
-										<!-- Icono para estado Agendada -->
+									{% with citas_recientes=citas|dictsortreversed:"fecha_hora"|slice:":5" %}
+									{% for cita in citas_recientes %}
+									<tr>
+									  <td class="w-75">
+										<a href="#" class="text-reset">{{ cita.asunto }}</a>
+										<div class="text-muted small">
+										  Estudiante: {{ cita.estudiante.usuario.username }}<br>
+										  Psicólogo: {{ cita.psicologo.usuario.username }}
+										</div>
+									  </td>
+									  
+									  <td class="text-nowrap text-secondary">
 										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 											 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-											 stroke-linecap="round" stroke-linejoin="round"
-											 class="icon icon-tabler icons-tabler-outline icon-tabler-checkup-list">
-										  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-										  <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
-										  <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/>
-										  <path d="M9 14h.01"/>
-										  <path d="M9 17h.01"/>
-										  <path d="M12 16l1 1l3 -3"/>
+											 stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+										  <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+										  <path d="M16 3v4" />
+										  <path d="M8 3v4" />
+										  <path d="M4 11h16" />
+										  <path d="M11 15h1" />
+										  <path d="M12 15v3" />
 										</svg>
-									  {% elif cita.estado == 'completada' %}
-										<!-- Icono para estado Completada -->
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-											 viewBox="0 0 24 24" fill="currentColor"
-											 class="icon icon-tabler icons-tabler-filled icon-tabler-circle-check">
-										  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-										  <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"/>
-										</svg>
-									  {% elif cita.estado == 'cancelada' %}
-										<!-- Icono para estado Cancelada -->
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-											 viewBox="0 0 24 24" fill="currentColor"
-											 class="icon icon-tabler icons-tabler-filled icon-tabler-circle-x">
-										  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-										  <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-6.489 5.8a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z"/>
-										</svg>
-									  {% endif %}
-									</td>
-									
-									<!-- Notas adicionales -->
-								
-								  </tr>
-								  {% endfor %}
-								</tbody>
+										{{ cita.fecha_hora|date:"F j, Y H:i" }}
+									  </td>
+									  
+									  <td class="text-nowrap">
+										{% if cita.estado == 'agendada' %}
+										  <!-- Icono para estado Agendada -->
+										  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+											   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+											   stroke-linecap="round" stroke-linejoin="round"
+											   class="icon icon-tabler icons-tabler-outline icon-tabler-checkup-list">
+											<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+											<path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/>
+											<path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/>
+											<path d="M9 14h.01"/>
+											<path d="M9 17h.01"/>
+											<path d="M12 16l1 1l3 -3"/>
+										  </svg>
+										{% elif cita.estado == 'completada' %}
+										  <!-- Icono para estado Completada -->
+										  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+											   viewBox="0 0 24 24" fill="currentColor"
+											   class="icon icon-tabler icons-tabler-filled icon-tabler-circle-check">
+											<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+											<path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"/>
+										  </svg>
+										{% elif cita.estado == 'cancelada' %}
+										  <!-- Icono para estado Cancelada -->
+										  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+											   viewBox="0 0 24 24" fill="currentColor"
+											   class="icon icon-tabler icons-tabler-filled icon-tabler-circle-x">
+											<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+											<path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-6.489 5.8a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z"/>
+										  </svg>
+										{% endif %}
+									  </td>
+									</tr>
+									{% endfor %}
+									{% endwith %}
+								  </tbody>
 							  </table>
 							  
 						</div>

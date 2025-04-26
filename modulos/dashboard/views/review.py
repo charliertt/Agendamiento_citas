@@ -96,6 +96,11 @@ class ListaCitasReviewView(ListView):
     context_object_name = 'reviews'
     ordering = ['-fecha_creacion']  
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'review'  # Añade la variable active_page
+        return context
+
     # Opcional: Filtros adicionales
     def get_queryset(self):
         return Review.objects.all()
