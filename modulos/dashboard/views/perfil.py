@@ -15,7 +15,9 @@ from .base_importaciones import (
 
 
 def perfil(request):
-    context = {'usuario': request.user}
+    context = {'usuario': request.user,
+                'seccion_activa': 'perfil'}
+
     print( "hola", get_template('registration/password_change.html').origin)
     
 
@@ -34,6 +36,7 @@ def reviews_perfil(request):
 
     context = {
         'usuario': request.user,
+        'seccion_activa': 'reviews',  
         'reviews': reviews,
     }
     return render(request, 'reviews_profile.html', context)

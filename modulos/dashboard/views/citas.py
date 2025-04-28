@@ -39,7 +39,7 @@ class CitaListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_page'] = 'review'  # Añade la variable active_page
+        context['active_page'] = 'review'  
         return context
 
     def get_queryset(self):
