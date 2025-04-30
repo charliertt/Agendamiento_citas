@@ -1,8 +1,9 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review, Blog
 from django.core.exceptions import ObjectDoesNotExist
+from django_summernote.widgets import SummernoteWidget
 
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 
@@ -145,6 +146,32 @@ class HorarioForm(forms.ModelForm):
             'hora_fin': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'disponible': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        psicologo = cleaned_data.get('psicologo')
+        dia_semana = cleaned_data.get('dia_semana')
+        
+        # Verificar si la instancia actual está siendo editada
+        if self.instance and self.instance.pk:
+            # Para ediciones, excluir la instancia actual de la búsqueda
+            existe = Horario.objects.filter(
+                psicologo=psicologo, 
+                dia_semana=dia_semana
+            ).exclude(pk=self.instance.pk).exists()
+        else:
+            # Para nuevos registros
+            existe = Horario.objects.filter(
+                psicologo=psicologo, 
+                dia_semana=dia_semana
+            ).exists()
+        
+        if existe:
+            raise forms.ValidationError(
+                f"Ya existe un horario para {psicologo.usuario.get_full_name()} en {dia_semana}."
+            )
+        
+        return cleaned_data
 
 
 class PreguntasForm(forms.ModelForm):
@@ -275,3 +302,63 @@ class ReviewForm(forms.ModelForm):
             'puntuacion': 'Calificación',
             'comentario': 'Comentario (opcional)'
         }
+
+
+class BlogForm(forms.ModelForm):
+    """Formulario para crear y editar blogs con estilos de Bootstrap"""
+    
+    class Meta:
+        model = Blog
+        fields = ['titulo', 'categoria', 'contenido', 'imagen_principal', 'publicado']
+        widgets = {
+            'titulo': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Título del blog'
+                }
+            ),
+            'categoria': forms.Select(
+                attrs={
+                    'class': 'form-control'
+                }
+            ),
+            'contenido': SummernoteWidget(
+                attrs={
+                    'class': 'form-control summernote',
+                    'data-width': '100%',
+                    'data-height': '400'
+                }
+            ),
+            'imagen_principal': forms.ClearableFileInput(
+                attrs={
+                    'class': 'form-control-file'
+                }
+            ),
+            'publicado': forms.CheckboxInput(
+                attrs={
+                    'class': 'form-check-input'
+                }
+            ),
+        }
+        help_texts = {
+            'titulo': 'El título debe ser descriptivo y atractivo',
+            'imagen_principal': 'Recomendado: imagen de 1200x630 píxeles',
+        }
+
+    def __init__(self, *args, **kwargs):
+        print("Inicializando BlogForm con argumentos:", args, kwargs)
+        super().__init__(*args, **kwargs)
+        # Marcar campos obligatorios
+        self.fields['titulo'].required = True
+        self.fields['contenido'].required = True
+
+        print("Campos del formulario:", list(self.fields.keys()))
+
+        # Agregar clases de Bootstrap a los labels
+        for field_name, field in self.fields.items():
+            print(f"Configurando clases para el campo: {field_name}")
+            if field.widget.attrs.get('class', '').startswith('form-control'):
+                field.widget.attrs['class'] += ' mb-3'
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs['class'] += ' mb-2'
+        print("Formulario BlogForm inicializado correctamente.")

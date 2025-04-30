@@ -36,7 +36,16 @@ def crear_editar_horario(request, horario_id):
             form.save()
             messages.success(request, "¡Operación exitosa!")
             return redirect('horarios')
-        messages.error(request, "Errores en el formulario")
+        else:
+            # Mostrar errores específicos del formulario
+            for field, errors in form.errors.items():
+                for error in errors:
+                    # Si es un error no asociado a un campo específico (como los del clean())
+                    if field == '__all__':
+                        messages.error(request, error)
+                    else:
+                        field_name = form[field].label or field
+                        messages.error(request, f"{field_name}: {error}")
     
     return redirect('horarios')
 

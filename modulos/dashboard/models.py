@@ -90,7 +90,9 @@ class Horario(models.Model):
     )
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
-    disponible = models.BooleanField(default=True)  # Opcional: Para marcar si el horario está disponible o no.
+    disponible = models.BooleanField(default=True) 
+    
+  
 
     def __str__(self):
         return f"{self.psicologo.usuario.username} - {self.dia_semana}: {self.hora_inicio} a {self.hora_fin}"
@@ -302,6 +304,45 @@ class Notificacion(models.Model):
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.mensaje[:50]}"
-        
 
 
+
+# models.py (añadir al archivo existente)
+class Blog(models.Model):
+    titulo = models.CharField(max_length=200, verbose_name="Título")
+    slug = models.SlugField(unique=True, help_text="URL amigable generada automáticamente desde el título")
+    autor = models.ForeignKey(Psicologo, on_delete=models.CASCADE, related_name='blogs')
+    contenido = models.TextField(verbose_name="Contenido del Blog")
+    imagen_principal = models.ImageField(upload_to='blog_images/', blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    
+    CATEGORIAS = [
+        ('ansiedad', 'Ansiedad'),
+        ('depresion', 'Depresión'),
+        ('terapia', 'Terapia'),
+        ('neurociencia', 'Neurociencia'),
+        ('psicologia_positiva', 'Psicología Positiva'),
+        ('desarrollo_personal', 'Desarrollo Personal'),
+        ('otros', 'Otros'),
+    ]
+    
+    categoria = models.CharField(max_length=50, choices=CATEGORIAS, default='otros')
+    publicado = models.BooleanField(default=False, help_text="Marcar para publicar el blog")
+    
+    class Meta:
+        verbose_name = "Blog"
+        verbose_name_plural = "Blogs"
+        ordering = ['-fecha_creacion']
+    
+    def __str__(self):
+        return self.titulo
+    
+    def save(self, *args, **kwargs):
+        # Genera el slug automáticamente desde el título si no existe
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.titulo)
+        super().save(*args, **kwargs)
+
+# admin.py (crear o modificar este archivo)
