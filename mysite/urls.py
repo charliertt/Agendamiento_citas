@@ -1,6 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from modulos.landing_page import views as landing_views
 
 from modulos.dashboard import views as dashboard_views
@@ -16,7 +16,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', landing_views.index, name="index"),
     path('index/', landing_views.index, name="index"),  
-    path('blog/', landing_views.blog, name="blog"),     
+     path('blog/', landing_views.BlogListView.as_view(), name='blog'),
+    
+    # Vista filtrada por categoría
+    path('blog/categoria/<str:categoria>/', landing_views.BlogListView.as_view(), name='blog_category'),
+    
+    # Vista de detalle de un blog específico
+    path('blog/<slug:slug>/', landing_views.BlogDetailView.as_view(), name='blog_detail'),
+
+
     
     path('validar_pregunta/', landing_views.validar_pregunta, name='validar_pregunta'),
     
@@ -141,6 +149,9 @@ urlpatterns = [
     
     #notas
     path('notas/', dashboard_views.notas, name='notas'),
+
+
+     path('ckeditor/', include('ckeditor_uploader.urls')),
   
    
 
@@ -152,3 +163,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     	urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+    
