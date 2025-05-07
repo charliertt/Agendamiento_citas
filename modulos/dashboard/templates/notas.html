@@ -61,7 +61,7 @@
 					{% for nota in notas %}
 					<tr>
 						<td>
-							<span class="fw-bold">{{ nota.usuario.username }}</span>
+							<span class="fw-bold">{{ nota.usuario.first_name }} {{ nota.usuario.last_name }}</span>
 						</td>
 						<td>
 							{% if nota.calificacion >= 4 %}

@@ -77,40 +77,28 @@ z-index:100;
                 </div><!-- End meta top -->
 
                 <div class="content">
-                  <p>
-                    Acompáñame a ver con un poco más de detalle que hay detrás de la famosa película Intensamente 2 y que quizás no notaste cuando la viste. Será un aprendizaje interesante.
-                  </p>
-
-                  <p>
-                    En la famosa y tendenciosa película Intensamente 2, vemos como una chica llamada Riley enfrenta el difícil camino de la adolescencia, cuya etapa acarrea transformaciones importantes en el desarrollo emocional y en el sentido de vida de una persona.
-                  </p>
-
+                  {% if contenido_before_quote %}
+                      {{ contenido_before_quote|safe }}
+                  {% endif %}
+                  
                   <blockquote>
-                    <p>
-                      Las emociones juegan un papel fundamental en nuestro desarrollo y en nuestro día a día, tal como muestra la exitosa película Intensamente 2, recientemente estrenada.
-                    </p>
+                      <p>{{ blog.cita_destacada }}</p>
                   </blockquote>
-
-                  <p>
-                    Se evidencia   como se presentan cambios a través de sus emociones personificadas por unos interesantes y particulares amigos, demuestra un poco algunas cosas comunes en la vida real de los adolescentes e incluso de los adultos, sin ser aburrida o monótona, por el contrario, lleva a su consumidor a tocar sus más intimas fibras y contribuye con la promoción de reflexiones en su momento final.
-                  </p>
-
-                  <h3>Alegria y Tristeza</h3>
-                  <p>
-                    El personaje principal experimenta emociones nuevas que llegan de una manera muy particular y repentina como lo son la vergüenza y ansiedad que se hacen presentes en situaciones sociales y familiares, que reflejan la dificultad que enfrentan los adolescentes al manejar la introspección y las expectativas sociales. Por ejemplo, como cuando se sintió incómoda en eventos escolares o arrepentida por no cumplir con las expectativas de sus padres.
-                  </p>
-                  <img src="assets/img/blog/blog-inside-post.jpg" class="img-fluid" alt="">
-
-                  <h3>Ansiedad.</h3>
-                  <p>
-                   Riley tuvo que soportar y transitar por el sendero de la confusión sobre su rol social y su autoimagen. En la película se refleja en cómo los adolescentes exploran diferentes estilos y grupos para definir o contribuir medianamente con su identidad.  Aceptar todas las emociones fue crucial, todos los eventos le enseñaron a la protagonista y a los espectadores la importancia de reconocer tanto las emociones positivas como las que muchas veces no se desean experimentar y atesorarlas como partes valiosas del crecimiento personal y la construcción de su identidad apoyada y fundamentada en las creencias
-                  </p>
-                  <p>
-                    El movimiento interno de sentir que "puedo pertenecer" debe venir primero de la familia. En la medida en la que yo me siento "aceptado como soy" dentro de mi seno familiar, es mucho más probable que no busque encajar desesperadamente en otros espacios.
-                    El papel de la familia es dar a los niños esa sensación inherente de que SON valiosos desde que nacen. Así nace la inteligencia emocional. La misma que permitió a Riley abrazar sus emociones, pedir perdón y crecer.
-                  </p>
-
-                </div><!-- End post content -->
+                  
+                  {% if contenido_between %}
+                      {{ contenido_between|safe }}
+                  {% endif %}
+                  
+                  {% if blog.imagen_secundaria %}
+                      <div class="post-img-secondary mt-2">
+                          <img src="{{ blog.imagen_secundaria.url }}" alt="{{ blog.titulo }} - secundaria" class="img-fluid w-100 h-50">
+                      </div>
+                  {% endif %}
+                  
+                  {% if contenido_after_imagen %}
+                      {{ contenido_after_imagen|safe }}
+                  {% endif %}
+              </div><!-- End post content -->
 
                 <div class="meta-bottom">
                   <i class="bi bi-folder"></i>
@@ -138,149 +126,20 @@ z-index:100;
               <div class="author-container d-flex align-items-center">
                 <img src="assets/img/blog/blog-author.jpg" class="rounded-circle flex-shrink-0" alt="">
                 <div>
-                  <h4>Shirley Lopez</h4>
+                  <h4>{{ blog.autor.usuario.get_full_name }}</h4>
                   <div class="social-links">
                     <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
                     <a href="https://facebook.com/#"><i class="bi bi-facebook"></i></a>
                     <a href="https://instagram.com/#"><i class="biu bi-instagram"></i></a>
                   </div>
                   <p>
-                    Shirley López, nuestra psicóloga, está aquí para acompañarte en cada paso de tu proceso emocional. Con su experiencia y compromiso, te ayudará a superar tus problemas y mejorar tu bienestar, brindándote las herramientas necesarias para enfrentar los desafíos de manera saludable.
+                    {{ blog.autor.usuario.get_full_name }}, nuestra psicóloga, está aquí para acompañarte en cada paso de tu proceso emocional. Con su experiencia y compromiso, te ayudará a superar tus problemas y mejorar tu bienestar, brindándote las herramientas necesarias para enfrentar los desafíos de manera saludable.
                   </p>
                 </div>
               </div>
             </div>
 
-          </section><!-- /Blog Author Section -->
-
-          <!-- Blog Comments Section -->
-          <!-- <section id="blog-comments" class="blog-comments section">
-
-            <div class="container">
-
-              <h4 class="comments-count">8 Comments</h4>
-              <div id="comment-1" class="comment">
-                <div class="d-flex">
-                  <div class="comment-img"><img src="assets/img/blog/comments-1.jpg" alt=""></div>
-                  <div>
-                    <h5><a href="">Shirley Lopez</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                    <time datetime="2020-01-01">01 Jan,2022</time>
-                    <p>
-                      Me encantó como en la película Intensamente 2 se reflejan las emociones de Riley a través de sus personificaciones. Es increíble como algo que parece tan fantasioso se puede convertir en una lección tan valiosa para la vida real.
-                    </p>
-                  </div>
-                </div>
-              </div><!-- End comment #1 -->
-
-              <!-- <div id="comment-2" class="comment">
-                <div class="d-flex">
-                  <div class="comment-img"><img src="assets/img/blog/comments-2.jpg" alt=""></div>
-                  <div>
-                    <h5><a href="">Aron Alvarado</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                    <time datetime="2020-01-01">01 Jan,2022</time>
-                    <p>
-                      Me pareció increíble cómo Riley superó sus miedo y aceptó sus emociones. Es una lección valiosa para todos nosotros.
-                    </p>
-                  </div>
-                </div> -->
-
-                <!-- <div id="comment-reply-1" class="comment comment-reply">
-                  <div class="d-flex">
-                    <div class="comment-img"><img src="assets/img/blog/comments-3.jpg" alt=""></div>
-                    <div>
-                      <h5><a href="">Lynda Small</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                      <time datetime="2020-01-01">01 Jan,2022</time>
-                      <p>
-                        ¡Absolutamente! La película Intensamente 2 es una gran lección para todos nosotros. Es importante aceptar nuestras emociones y no luchar contra ellas.
-                      </p>
-                    </div>
-                  </div> -->
-
-                  <!-- <div id="comment-reply-2" class="comment comment-reply">
-                    <div class="d-flex">
-                      <div class="comment-img"><img src="assets/img/blog/comments-4.jpg" alt=""></div>
-                      <div>
-                        <h5><a href="">Sianna Ramsay</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                        <time datetime="2020-01-01">01 Jan,2022</time>
-                        <p>
-                          Me pareció increíble cómo Riley creció y se convirtió en una persona más fuerte y segura de sí misma después de aceptar sus emociones.
-                        </p>
-                      </div>
-                    </div>
-
-                  </div> -->
-
-                <!-- </div>End comment reply #1-->
-<!-- 
-              </div> --> 
-
-              <!-- <div id="comment-3" class="comment">
-                <div class="d-flex">
-                  <div class="comment-img"><img src="assets/img/blog/comments-5.jpg" alt=""></div>
-                  <div>
-                    <h5><a href="">Nolan Davidson</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                    <time datetime="2020-01-01">01 Jan,2022</time>
-                    <p>
-                      Me gustaría agregar que la película Intensamente 2 nos muestra que las emociones son algo normal y que debemos aceptarlas y no luchar contra ellas.
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-
-              <div id="comment-4" class="comment">
-                <div class="d-flex">
-                  <div class="comment-img"><img src="assets/img/blog/comments-6.jpg" alt=""></div>
-                  <div>
-                    <h5><a href="">Kay Duggan</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                    <time datetime="2020-01-01">01 Jan,2022</time>
-                    <p>
-                      ¡Absolutamente! La película Intensamente 2 es una gran lección para todos nosotros. Es importante aceptar nuestras emociones y no luchar contra ellas.
-                    </p>
-                  </div>
-                </div>
-
-              </div> -->
-
-            <!-- </div>
-
-          </section>/Blog Comments Section --> -->
-
-          <!-- Comment Form Section -->
-          <!-- <section id="comment-form" class="comment-form section">
-            <div class="container">
-
-              <form action="">
-
-                <h4>Post Comment</h4>
-                <p>Your email address will not be published. Required fields are marked * </p>
-                <div class="row">
-                  <div class="col-md-6 form-group">
-                    <input name="name" type="text" class="form-control" placeholder="Your Name*">
-                  </div>
-                  <div class="col-md-6 form-group">
-                    <input name="email" type="text" class="form-control" placeholder="Your Email*">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col form-group">
-                    <input name="website" type="text" class="form-control" placeholder="Your Website">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col form-group">
-                    <textarea name="comment" class="form-control" placeholder="Your Comment*"></textarea>
-                  </div>
-                </div>
-
-                <div class="text-center">
-                  <button type="submit" class="btn btn-primary">Post Comment</button>
-                </div>
-
-              </form>
-
-            </div>
-          </section>/Comment Form Section -->
+          </section>
 
         </div>
 
@@ -300,61 +159,47 @@ z-index:100;
             <div class="categories-widget widget-item">
               <h3 class="widget-title">Categorías</h3>
               <ul class="mt-3">
-                <li><a href="#">Ansiedad <span>(25)</span></a></li>
-                <li><a href="#">Depresión <span>(12)</span></a></li>
-                <li><a href="#">Terapia <span>(5)</span></a></li>
-                <li><a href="#">Neurociencia <span>(22)</span></a></li>
-                <li><a href="#">Psicología Positiva <span>(8)</span></a></li>
-                <li><a href="#">Desarrollo Personal <span>(14)</span></a></li>
+                {% for codigo, datos in categorias.items %}
+                  <li>
+                    <a href="{% url 'blog_list_categoria' categoria=codigo %}">
+                      {{ datos.nombre }} <span>({{ datos.count }})</span>
+                    </a>
+                  </li>
+                {% empty %}
+                  <li>No hay categorías disponibles.</li>
+                {% endfor %}
               </ul>
-
             </div><!--/Categories Widget -->
 
             <!-- Recent Posts Widget -->
             <div class="recent-posts-widget widget-item">
-
               <h3 class="widget-title">Post relacionados</h3>
-
-              <div class="post-item">
-                <img src="{% static 'img/ansiedad.png' %}" alt="" class="flex-shrink-0">
-                <div>
-                  <h4><a href="blog-details.html">Ansiedad: ¿cómo superarla?</a></h4>
-                  <time datetime="2020-01-01">Ene 10, 2020</time>
-                </div>
-              </div><!-- End recent post item-->
-
-              <div class="post-item">
-                <img src="{% static 'img/tristeza.png' %}" alt="" class="flex-shrink-0">
-                <div>
-                  <h4><a href="blog-details.html">Terapia cognitivo conductual para la depresión</a></h4>
-                  <time datetime="2020-01-01">Feb 10, 2020</time>
-                </div>
-              </div><!-- End recent post item-->
-
-              <div class="post-item">
-                <img src="{% static 'img/estres.png' %}" alt="" class="flex-shrink-0">
-                <div>
-                  <h4><a href="blog-details.html">El estrés y sus efectos en la salud</a></h4>
-                  <time datetime="2020-01-01">Mar 10, 2020</time>
-                </div>
-              </div><!-- End recent post item-->
-
-              <div class="post-item">
-                <img src="{% static 'img/autoestima.png' %}" alt="" class="flex-shrink-0">
-                <div>
-                  <h4><a href="blog-details.html">La importancia de la autoestima en la vida</a></h4>
-                  <time datetime="2020-01-01">Ago 10, 2020</time>
-                </div>
-              </div><!-- End recent post item-->
-
-              <div class="post-item">
-                <img src="{% static 'img/ansiydepre.png' %}" alt="" class="flex-shrink-0">
-                <div>
-                  <h4><a href="blog-details.html">La ansiedad y la depresión en la vida cotidiana</a></h4>
-                  <time datetime="2020-01-01">Oct 10, 2020</time>
-                </div>
-              </div><!-- End recent post item-->
-
+              {% if related_posts %}
+                {% for post in related_posts %}
+                  <div class="post-item d-flex mb-3">
+                    {% if post.imagen_principal %}
+                      <img 
+                        src="{{ post.imagen_principal.url }}" 
+                        alt="{{ post.titulo }}" 
+                        class="flex-shrink-0 me-2" 
+                        style="width:60px; height:60px; object-fit:cover;"
+                      >
+                    {% endif %}
+                    <div>
+                      <h4 class="mb-1">
+                        <a href="{% url 'blog_detail' slug=post.slug %}">
+                          {{ post.titulo|truncatechars:40 }}
+                        </a>
+                      </h4>
+                      <time class="text-muted small" datetime="{{ post.fecha_creacion|date:'Y-m-d' }}">
+                        {{ post.fecha_creacion|date:"M d, Y" }}
+                      </time>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p>No hay posts relacionados.</p>
+              {% endif %}
             </div><!--/Recent Posts Widget -->
 
             <!-- Tags Widget -->
@@ -392,16 +237,16 @@ z-index:100;
   <div id="preloader"></div>
 
   <!-- Vendor JS Files -->
-   <script src="{% static 'js/main.js' %}"></script>
-  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
-  <script src="{% static 'vendor/aos/aos.js' %}"></script>
-  <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
-  <script src="{% static 'vendor/purecounter/purecounter_vanilla.js' %}"></script>
-  <script src="{% static 'vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
-  <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
-  <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'landing_page/js/main.js' %}"></script>
 
+  <script src="{% static 'landing_page/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/swiper/swiper-bundle.min.js' %}"></script>
 </body>
 
 {% endblock %}

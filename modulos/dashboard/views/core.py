@@ -37,18 +37,37 @@ def dashboard(request):
     else:
         form = CitaForm()
     
-    citas = Cita.objects.all().values(
-    'id',
-    'fecha_hora',
-    'estado',
-    'asunto',
-    'estudiante__usuario__first_name',
-    'estudiante__usuario__last_name'
+  
+    
+    
+    if request.user.rol == 'estudiante':
+    # Obtener el estudiante asociado al usuario
+        estudiante = Estudiante.objects.get(usuario=request.user)
+        review_estudiante = Review.objects.filter(estudiante=estudiante).count()
+
+        citas = Cita.objects.filter(estudiante=estudiante)
+    else:
+        citas = Cita.objects.all()
+
+    citas = citas.values(
+        'id',
+        'fecha_hora',
+        'estado',
+        'asunto',
+        'psicologo__usuario__first_name',  # Añadir datos del psicólogo
+        'psicologo__usuario__last_name',
+        'psicologo__usuario__imagen',
+    
+        'estudiante__usuario__first_name',
+        'estudiante__usuario__last_name'
     )
+        
+
+    citas = citas.order_by('fecha_hora') 
     citas_list = list(citas)
     bogota_tz = pytz.timezone('America/Bogota')
-
-
+    
+    # Corregir la identación y procesamiento de datos de citas
     for cita in citas_list:
         # Convertir datetime a la zona horaria de Bogotá
         fecha_hora_utc = cita['fecha_hora']
@@ -56,22 +75,54 @@ def dashboard(request):
             fecha_hora_utc = timezone.make_aware(fecha_hora_utc)
             
         fecha_hora_bogota = fecha_hora_utc.astimezone(bogota_tz)
-        cita['nombre_completo'] = f"{cita.pop('estudiante__usuario__first_name')} {cita.pop('estudiante__usuario__last_name')}"
-        cita['fecha_hora'] = fecha_hora_bogota.isoformat()
+        
+        # Extraer nombres correctamente
+        cita['psicologo_nombre'] = (
+            f"{cita.pop('psicologo__usuario__first_name', '')} "
+            f"{cita.pop('psicologo__usuario__last_name', '')}"
+        ).strip()
+        
+        cita['estudiante_nombre'] = (
+            f"{cita.pop('estudiante__usuario__first_name', '')} "
+            f"{cita.pop('estudiante__usuario__last_name', '')}"
+        ).strip()
+        
+        # Guardar la imagen y convertir la fecha
+        cita['psicologo_imagen'] = cita.pop('psicologo__usuario__imagen', None)
+        cita['fecha_hora'] = fecha_hora_bogota
+
 
     # Convertir fecha_hora a string ISO con zona horaria
     
-        contactos = Contacto.objects.all().values(
-            'nombre', 
-            'deseo', 
-            'fecha_creacion'
-        )
-    contactos_list = list(contactos)
+   
+    
+    
+    if request.user.rol == 'estudiante':
+        estudiante = Estudiante.objects.get(usuario=request.user)
+        
+        qs_contactos = Contacto.objects.filter(email=request.user.email)
+    else:
+        qs_contactos = Contacto.objects.all()
+        
+        
+    contactos_list = list(
+    qs_contactos.values(
+        'nombre',
+        'deseo',
+        'mensaje',
+        'fecha_creacion',
+        'estado'
+    )
+)
+        
+   
+
+        
     num_contactos_pendientes = Contacto.objects.filter(estado='pendiente').count()
     
-    # Convertir datetime a string ISO
-    for contacto in contactos_list:
-        contacto['fecha_creacion'] = contacto['fecha_creacion'].isoformat()
+        
+    
+  
 
     user = request.user
 
@@ -86,18 +137,30 @@ def dashboard(request):
             leida=False
         ).order_by('-fecha_creacion')[:5]
 
+
+    
+        
+        
+        
     context = {
         'user': user,
         'num_estudiantes': Estudiante.objects.count(),
         'num_citas_agendadas': Cita.objects.filter(estado='agendada').count(),
+        'num_citas_agendadas_estudiante': Cita.objects.filter(estado='agendada', estudiante__usuario=user).count(),
+       'num_contactos_pendientes_estudiante':
+    (Contacto.objects.filter(usuario=request.user) if request.user.rol=='estudiante'
+     else Contacto.objects.all()
+    ).filter(estado='pendiente').count(),
+        'num_rewiews_estudiante': review_estudiante,
         'num_contactos': Contacto.objects.count(),
         'num_contactos_pendientes': num_contactos_pendientes,
         'num_preguntas': Preguntas.objects.count(),
         'horarios': Horario.objects.all().order_by('dia_semana', 'hora_inicio'),
-        'contactos': Contacto.objects.all(),
+        'contactos': qs_contactos,                
         'preguntas': Preguntas.objects.all(),
-        'citas': Cita.objects.all(),
+        'citas': citas_list,
         'usuarios': UsuarioPersonalizado.objects.all(),
+        'notas': Respuesta.objects.filter(usuario=user),
         'form': form,
         'dashboard_url': reverse('dashboard'),
         'contactos_json': contactos_list,

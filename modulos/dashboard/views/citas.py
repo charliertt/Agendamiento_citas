@@ -7,6 +7,7 @@ from django.template.loader import get_template, render_to_string
 from .base_importaciones import (
     messages,  timezone, CitaForm, Cita,  EmailMultiAlternatives
 )
+from .autenticacion import psicologo_required
 
 
 class CitaCreateView(CreateView):

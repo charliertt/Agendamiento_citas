@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     citasData.forEach(cita => {
         console.log('Datos de cita recibidos:', {
-            nombre: cita.nombre_completo,
+            nombre: cita.estudiante_nombre,
             fecha_hora: cita.fecha_hora,
             fecha_parseada: new Date(cita.fecha_hora).toLocaleString('es-CO', {
                 timeZone: 'America/Bogota'
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const endDate = new Date(year, month, day, hours + 1, minutes, 0);
             
             console.log('Procesando cita con fechas explícitas:', {
-                nombre: cita.nombre_completo,
+                nombre: cita.estudiante_nombre,
                 fecha_original: fechaHoraOriginal,
                 componentes: {fecha, hora, min, year, month, day, hours, minutes},
                 startDate_local: startDate.toLocaleString('es-CO'),
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             return {
-                title: `${cita.asunto} - ${cita.nombre_completo}`,
+                title: `${cita.asunto} - ${cita.estudiante_nombre}`,
                 start: startDate,  // Usar objeto Date directamente
                 end: endDate,      // Usar objeto Date directamente
                 color: getCitaColor(cita.estado),

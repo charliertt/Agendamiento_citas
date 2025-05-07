@@ -673,102 +673,53 @@
 
   <!-- Recent Posts Section -->
 
-  <section id="recent-posts" class="recent-posts section">
+ <section id="recent-posts" class="recent-posts section">
 
-    <!-- Section Title -->
-    <div class="container section-title" data-aos="fade-up">
-      <h2>Articulos Recientes</h2>
-      <p>Aquí encontrarás artículos escritos por nuestra psicóloga, con información actualizada sobre salud mental y
-        bienestar. Cada uno ofrece consejos prácticos y herramientas para mejorar tu calidad de vida.</p>
-    </div><!-- End Section Title -->
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Artículos Recientes</h2>
+    <p>Aquí encontrarás artículos escritos por nuestra psicóloga, con información actualizada sobre salud mental y bienestar. Cada uno ofrece consejos prácticos y herramientas para mejorar tu calidad de vida.</p>
+  </div><!-- End Section Title -->
 
-    <div class="container">
-
-      <div class="row gy-4">
-
-        <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+  <div class="container">
+    <div class="row gy-4">
+      {% for blog in blogs %}
+        <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:"1" }}00">
           <article>
 
-            <div class="post-img">
-              <img src="{% static 'landing_page/img/love.jpg' %}" alt="" class="img-fluid">
-            </div>
+            {% if blog.imagen_principal %}
+              <div class="post-img">
+                <img src="{{ blog.imagen_principal.url }}" alt="{{ blog.titulo }}" class="img-fluid">
+              </div>
+            {% endif %}
 
-            <p class="post-category">Amor</p>
+            <p class="post-category">{{ blog.get_categoria_display }}</p>
 
             <h2 class="title">
-              <a href="/blog">¿Por qué nos enamoramos los seres humanos ?</a>
+              <a href="{% url 'blog_detail' slug=blog.slug %}">{{ blog.titulo }}</a>
             </h2>
 
             <div class="d-flex align-items-center">
-              <img src="{% static 'landing_page/img/david.jpg' %}" alt="" class="img-fluid post-author-img flex-shrink-0">
+              {% if blog.autor.foto %}
+                <img src="{{ blog.autor.foto.url }}" alt="{{ blog.autor.get_full_name }}" class="img-fluid post-author-img flex-shrink-0">
+              {% endif %}
               <div class="post-meta">
-                <p class="post-author">Maria Doe</p>
+                <p class="post-author">{{ blog.autor.get_full_name }}</p>
                 <p class="post-date">
-                  <time datetime="2022-01-01">Jan 1, 2022</time>
+                  <time datetime="{{ blog.fecha_creacion|date:'Y-m-d' }}">{{ blog.fecha_creacion|date:"d M Y" }}</time>
                 </p>
               </div>
             </div>
 
           </article>
         </div><!-- End post list item -->
+      {% empty %}
+        <p>No hay artículos publicados todavía.</p>
+      {% endfor %}
+    </div><!-- End recent posts list -->
+  </div>
 
-        <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <article>
-
-            <div class="post-img">
-              <img src="{% static 'landing_page/img/intensamente.jpeg' %}" alt="" class="img-fluid">
-            </div>
-
-            <p class="post-category">Duda</p>
-
-            <h2 class="title">
-              <a href="/blog">Lo que no viste en la película Intensamente (dos) 2.</a>
-            </h2>
-
-            <div class="d-flex align-items-center">
-              <img src="{% static 'landing_page/img/star.png' %}" alt="" class="img-fluid post-author-img flex-shrink-0">
-              <div class="post-meta">
-                <p class="post-author">Allisa Mayer</p>
-                <p class="post-date">
-                  <time datetime="2022-01-01">Jun 5, 2022</time>
-                </p>
-              </div>
-            </div>
-
-          </article>
-        </div><!-- End post list item -->
-
-        <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-          <article>
-
-            <div class="post-img">
-              <img src="{% static 'landing_page/img/ansiedad.svg' %}" alt="" class="img-fluid">
-            </div>
-
-            <p class="post-category">Ansiedad</p>
-
-            <h2 class="title">
-              <a href="/blog">¿Cómo calmar un ataque de ansiedad?</a>
-            </h2>
-
-            <div class="d-flex align-items-center">
-              <img src="{% static 'landing_page/img/robot.png' %}" alt="" class="img-fluid post-author-img flex-shrink-0">
-              <div class="post-meta">
-                <p class="post-author">Mark Dower</p>
-                <p class="post-date">
-                  <time datetime="2022-01-01">Jun 22, 2022</time>
-                </p>
-              </div>
-            </div>
-
-          </article>
-        </div><!-- End post list item -->
-
-      </div><!-- End recent posts list -->
-
-    </div>
-
-  </section>
+</section>
 
 
   <!-- Contact Section -->

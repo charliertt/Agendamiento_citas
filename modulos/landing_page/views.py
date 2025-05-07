@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.conf import settings
 
 
 from modulos.dashboard.forms import BlogForm
@@ -144,6 +145,7 @@ def obtener_horarios_disponibles(request):
     return JsonResponse({'horarios': horarios_json})
 
 def index(request):
+    blogs = Blog.objects.filter(publicado=True).order_by('-fecha_creacion')[:6]
     psicologos = Psicologo.objects.prefetch_related('horarios').all()
     estudiante_form = EstudianteForm()
     contact_form=ContactoForm()
@@ -175,7 +177,8 @@ def index(request):
     context = {
         'psicologos_con_horarios': psicologos_con_horarios,
         'estudiante_form': estudiante_form,
-        "contact_form": contact_form
+        "contact_form": contact_form,
+        'blogs': blogs,
     }
     return render(request, 'index.html', context)
 
@@ -326,50 +329,49 @@ def procesar_contacto(request):
     if request.method == 'POST':
         contact_form = ContactoForm(request.POST)
         if contact_form.is_valid():
-            # Extraer datos del formulario
-            nombre = contact_form.cleaned_data.get('nombre')
-            email = contact_form.cleaned_data.get('email')
-            deseo = contact_form.cleaned_data.get('deseo')
-            mensaje = contact_form.cleaned_data.get('mensaje')
+            # Crear instancia sin guardar para asignar usuario
+            contacto = contact_form.save(commit=False)  # Clave para modificar datos
+            
+            # Asignar usuario (prioridad a usuario autenticado)
+            if request.user.is_authenticated:
+                contacto.usuario = request.user
+            else:
+                # Buscar usuario por email solo si no está autenticado
+                User = get_user_model()
+                email = contact_form.cleaned_data['email']
+                try:
+                    usuario = User.objects.get(email=email)
+                    contacto.usuario = usuario
+                except User.DoesNotExist:
+                    pass  # Contacto sin usuario asociado
+            
+            contacto.save()  # Guardar en BD con usuario asignado
 
-            User = get_user_model()
-            email = contact_form.cleaned_data['email']
-
-            try:
-                usuario = User.objects.get(email=email)
-                Contacto.usuario = usuario
-            except User.DoesNotExist:
-                pass
-
-            # Contexto para renderizar el template del correo
+            # Preparar datos para el correo
             context = {
-                'nombre': nombre,
-                'email': email,
-                'deseo': deseo,
-                'mensaje': mensaje,
+                'nombre': contacto.nombre,
+                'email': contacto.email,
+                'deseo': contacto.get_deseo_display(),
+                'mensaje': contacto.mensaje,
             }
 
-            # Asunto y direcciones
-            subject = f"Nuevo mensaje de contacto: {deseo}"
-            from_email = "puntomentalcosfacali@gmail.com"  # O settings.DEFAULT_FROM_EMAIL
-            recipient_list = [email]  # Asegúrate de tener configurado DEFAULT_FROM_EMAIL
+            # Configurar y enviar email
+            subject = f"Nuevo mensaje de contacto: {contacto.deseo}"
+            from_email = "puntomentalcosfacali@gmail.com" # Mejor usar configuración
+            recipient_list = ["puntomentalcosfacali@gmail.com"]  # Email del administrador
             
-
-            # Renderizar el contenido HTML usando el template 'emails/contacto_email.html'
             html_content = render_to_string('contacto_email.html', context)
-            # También se puede definir una versión en texto plano
-            text_content = f"Nombre: {nombre}\nEmail: {email}\nTipo de solicitud: {deseo}\nMensaje:\n{mensaje}"
-
-            # Crear el mensaje y adjuntar la versión HTML
+            text_content = f"Nombre: {contacto.nombre}\nEmail: {contacto.email}\nTipo: {contacto.deseo}\nMensaje:\n{contacto.mensaje}"
+            
             msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
             msg.attach_alternative(html_content, "text/html")
             msg.send()
 
-            # Opcional: guardar el formulario en la base de datos
-            contact_form.save()
-
-            # Redireccionar a una página de éxito o mostrar un mensaje
-            return redirect('index')  # Asegúrate de tener configurada esta URL
+            messages.success(request, "¡Tu mensaje se ha enviado correctamente!")
+            return redirect('index')
+        
+        else:
+            messages.error(request, "Por favor corrige los errores en el formulario.")
     else:
         contact_form = ContactoForm()
 
@@ -518,6 +520,30 @@ class BlogDetailView(DetailView):
         # Agregar blogs recientes para el sidebar
         context['blogs_recientes'] = Blog.objects.filter(publicado=True).exclude(id=self.object.id)[:5]
         
+        blog = self.object
+        contenido = blog.contenido
+        
+        # Dividir el contenido en segmentos usando marcadores
+        split_cita = contenido.split('[CITA]', 1)
+        if len(split_cita) == 2:
+            before_quote, after_quote = split_cita
+            split_imagen = after_quote.split('[IMAGEN]', 1)
+            if len(split_imagen) == 2:
+                between_quote_imagen, after_imagen = split_imagen
+            else:
+                between_quote_imagen = after_quote
+                after_imagen = ''
+        else:
+            before_quote = contenido
+            between_quote_imagen = ''
+            after_imagen = ''
+        
+        context.update({
+            'contenido_before_quote': before_quote,
+            'contenido_between': between_quote_imagen,
+            'contenido_after_imagen': after_imagen,
+        })
+        
         # Obtener todas las categorías y contar blogs por categoría (para el sidebar)
         categorias = {}
         for codigo, nombre in Blog.CATEGORIAS:
@@ -528,6 +554,12 @@ class BlogDetailView(DetailView):
                     'count': count
                 }
         context['categorias'] = categorias
+        
+        context['related_posts'] = (
+            Blog.objects
+                .filter(publicado=True, categoria=blog.categoria)
+                .exclude(id=blog.id)[:5]
+        )
         
         return context
 

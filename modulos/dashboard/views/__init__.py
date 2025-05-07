@@ -74,3 +74,9 @@ from .notificacion import (
 from .notas import (
     notas
 )
+
+from .blog import (
+    blog_create,
+    blog_edit,
+    blog_listado
+)

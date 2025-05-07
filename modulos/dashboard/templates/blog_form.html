@@ -1,0 +1,212 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <h2 class="page-title text-center">
+                      {% if blog %}Editar Blog{% else %}Crear Blog{% endif %}
+                    </h2>
+                </div>
+                <div class="col-auto ms-auto">
+                    <div class="btn-list">
+                        <a href="/blog_listado" class="btn btn-secondary d-none d-sm-inline-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M5 12l14 0"></path>
+                                <path d="M5 12l6 6"></path>
+                                <path d="M5 12l6 -6"></path>
+                            </svg>
+                            Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-md-12">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="card mb-4"> 
+                            <div class="card-header">
+                                <h3 class="card-title">Información General</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label required">Título</label>
+                                        {{ form.titulo }}
+                                        {% if form.titulo.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.titulo.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label required">Categoría</label>
+                                        {{ form.categoria }}
+                                        {% if form.categoria.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.categoria.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado</label>
+                                        <div class="form-check form-switch">
+                                            {{ form.publicado }}
+                                            <label class="form-check-label" for="{{ form.publicado.id_for_label }}">
+                                                Publicar inmediatamente
+                                            </label>
+                                        </div>
+                                        {% if form.publicado.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.publicado.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Imagen Principal</label>
+                                        {% if blog.imagen_principal %}
+                                            <div class="mb-2">
+                                                <img src="{{ blog.imagen_principal.url }}" alt="{{ blog.titulo }}" class="img-thumbnail" style="max-height: 200px;">
+                                            </div>
+                                        {% endif %}
+                                        {{ form.imagen_principal }}
+                                        <small class="form-hint">Imagen que aparecerá en la parte superior del blog y en las vistas previas. Recomendado: 1200x675 px</small>
+                                        {% if form.imagen_principal.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.imagen_principal.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                      <label class="form-label">Imagen Secundaria</label>
+                                      {% if blog.imagen_secundaria %}
+                                        <div class="mb-2">
+                                          <img src="{{ blog.imagen_secundaria.url }}"
+                                               alt="{{ blog.titulo }} – secundaria"
+                                               class="img-thumbnail"
+                                               style="max-height: 150px;">
+                                        </div>
+                                      {% endif %}
+                                      {{ form.imagen_secundaria }}
+                                      <small class="form-hint">
+                                        Miniatura o ilustración adicional que aparecerá dentro del contenido. (e.g. 800×400 px)
+                                      </small>
+                                      {% if form.imagen_secundaria.errors %}
+                                        <div class="invalid-feedback d-block">
+                                          {{ form.imagen_secundaria.errors }}
+                                        </div>
+                                      {% endif %}
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title">Cita Destacada</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="form-label">Cita (aparecerá en blockquote)</label>
+                                        {{ form.cita_destacada }}
+                                        <small class="form-hint">Una frase o párrafo importante que quieras destacar en el artículo</small>
+                                        {% if form.cita_destacada.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.cita_destacada.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Contenido del Blog</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ form.contenido }}
+                                        {% if form.contenido.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.contenido.errors }}
+                                            </div>
+                                        {% endif %}
+                                        <small class="form-hint">
+                                            Consejos de formato:
+                                            <ul class="mt-2">
+                                                <li>Utiliza encabezados (H3, H4) para organizar el contenido</li>
+                                                <li>Añade imágenes para hacer más visual el artículo</li>
+                                                <li>Usa párrafos cortos para facilitar la lectura</li>
+                                                <li>Resalta en negrita o cursiva las ideas importantes</li>
+                                            </ul>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-end">
+                                <div class="d-flex">
+                                    <a href="" class="btn btn-link">Cancelar</a>
+                                    <button type="submit" class="btn btn-primary ms-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M5 12l5 5l10 -10" />
+                                        </svg>
+                                        {% if blog %}Actualizar{% else %}Crear{% endif %} Blog
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Script opcional para mostrar nombre del archivo seleccionado en el input de imagen
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('{{ form.imagen_principal.id_for_label }}');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                const fileName = this.files[0]?.name;
+                if (fileName) {
+                    const label = this.nextElementSibling;
+                    if (label) label.textContent = fileName;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

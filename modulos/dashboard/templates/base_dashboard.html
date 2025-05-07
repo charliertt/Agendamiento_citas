@@ -11,6 +11,7 @@
 	<link rel="shortcut icon" href="{% static 'dashboard/img/lg.png' %}">
 	<!-- CSS files -->
 	<link href="{% static 'dashboard/css/tabler.min.css' %}" rel="stylesheet" />
+	{{ form.media }}
 	<link href="{% static 'dashboard/css/tabler-flags.min.css' %}" rel="stylesheet" />
 	<link href="{% static 'dashboard/css/tabler-socials.min.css' %}" rel="stylesheet" />
 	<link href="{% static 'dashboard/css/tabler-payments.min.css' %}" rel="stylesheet" />
@@ -192,7 +193,7 @@
 							<div class="col">
 								<ul class="navbar-nav">
 									<li class="nav-item {% if active_page == 'inicio' %}active{% endif %}">
-										<a class="nav-link" href="./">
+										<a class="nav-link" href="{% url 'dashboard' %}">
 											<span class="nav-link-icon d-md-none d-lg-inline-block">
 												<!-- Download SVG icon from http://tabler.io/icons/icon/home -->
 												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -309,11 +310,16 @@
 										</a>
 									</li>
 									{% endif %}
+
+									
+									{% if request.user.rol == 'estudiante' %}
+									<li class="nav-item   {% if active_page == 'blog' %}active{% endif %}">
 										
-									<li class="nav-item">
-										<a class="nav-link" href="#navbar-layout"
-											data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button"
-											aria-expanded="false">
+								
+										<a class="nav-link"  href="{% url 'blog' %}" target="_blank">
+									
+										
+										
 											<span class="nav-link-icon d-md-none d-lg-inline-block">
 												<!-- Download SVG icon from http://tabler.io/icons/icon/layout-2 -->
 												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -336,6 +342,41 @@
 										</a>
 										
 									</li>
+									{% endif %}
+
+									{% if request.user.rol != 'estudiante' %}
+									
+									<li class="nav-item   {% if active_page == 'blog' %}active{% endif %}">
+										
+									
+									
+										<a class="nav-link"  href="{% url 'blog_listado' %}" >
+										
+											<span class="nav-link-icon d-md-none d-lg-inline-block">
+												<!-- Download SVG icon from http://tabler.io/icons/icon/layout-2 -->
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+													viewBox="0 0 24 24" fill="none" stroke="currentColor"
+													stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+													class="icon icon-1">
+													<path
+														d="M4 4m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+													<path
+														d="M4 13m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+													<path
+														d="M14 4m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+													<path
+														d="M14 15m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+												</svg>
+											</span>
+											<span class="nav-link-title">
+											Blog
+											</span>
+										</a>
+										
+									</li>
+
+									{% endif %}
+								
 								
 									{% if request.user.rol != 'estudiante' %}
 									

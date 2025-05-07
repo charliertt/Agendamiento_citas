@@ -34,7 +34,7 @@ EMAIL_HOST="smtp.gmail.com"
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
 EMAIL_HOST_USER="puntomentalcosfacali@gmail.com"
-EMAIL_HOST_PASSWORD="vpnh ktan npma sxeh"
+EMAIL_HOST_PASSWORD="qvmy nryn gfrd tmjg"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -77,17 +77,25 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 CKEDITOR_CONFIGS = {
     'default': {
-        'toolbar': 'Custom',
-        'toolbar_Custom': [
-            ['Bold', 'Italic', 'Underline'],
-            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-            ['Link', 'Unlink'],
-            ['RemoveFormat', 'Source'],
-            ['Image', 'Table'],
-            ['Format', 'FontSize'],
-        ],
-        'height': 400,
+        'toolbar': 'Full',
+        'height': 300,
         'width': '100%',
+        'extraPlugins': ','.join([
+            'uploadimage',  # Para subir imágenes
+            'image2',       # Mejorado plugin de imágenes
+            'autogrow',     # Auto-expandir el editor
+            'autolink',     # Auto-enlazar URLs
+            'clipboard',    # Operaciones de clipboard
+            'dialog',       # Diálogos de UI
+            'a11yhelp',     # Ayuda de accesibilidad
+        ]),
+        'toolbar_Full': [
+            ['Format', 'Bold', 'Italic', 'Underline', 'Strike', 'SpellChecker'],
+            ['NumberedList', 'BulletedList', 'Indent', 'Outdent', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Image', 'Table', 'Link', 'Unlink', 'Anchor', 'SectionLink', 'Subscript', 'Superscript'],
+            ['Undo', 'Redo'], ['Source'],
+            ['Maximize']
+        ],
     },
 }
 
@@ -177,6 +185,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-CKEDITOR_UPLOAD_PATH = "uploads/"  
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 AUTH_USER_MODEL = 'dashboard.UsuarioPersonalizado'

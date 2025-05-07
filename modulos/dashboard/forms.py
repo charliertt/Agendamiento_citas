@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review, Blog
 from django.core.exceptions import ObjectDoesNotExist
 from django_summernote.widgets import SummernoteWidget
+from ckeditor.widgets import CKEditorWidget
+
 
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 
@@ -305,60 +307,39 @@ class ReviewForm(forms.ModelForm):
 
 
 class BlogForm(forms.ModelForm):
-    """Formulario para crear y editar blogs con estilos de Bootstrap"""
-    
+    contenido = forms.CharField(widget=CKEditorWidget())
+
     class Meta:
         model = Blog
-        fields = ['titulo', 'categoria', 'contenido', 'imagen_principal', 'publicado']
+        fields = [
+            'titulo',
+            'categoria',
+            'imagen_principal',
+            'imagen_secundaria',      # ← añadido
+            'cita_destacada',
+            'contenido',
+            'publicado',
+        ]
         widgets = {
-            'titulo': forms.TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Título del blog'
-                }
-            ),
-            'categoria': forms.Select(
-                attrs={
-                    'class': 'form-control'
-                }
-            ),
-            'contenido': SummernoteWidget(
-                attrs={
-                    'class': 'form-control summernote',
-                    'data-width': '100%',
-                    'data-height': '400'
-                }
-            ),
-            'imagen_principal': forms.ClearableFileInput(
-                attrs={
-                    'class': 'form-control-file'
-                }
-            ),
-            'publicado': forms.CheckboxInput(
-                attrs={
-                    'class': 'form-check-input'
-                }
-            ),
+            'titulo': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Título del artículo'
+            }),
+            'categoria': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'imagen_principal': forms.FileInput(attrs={
+                'class': 'form-control'
+            }),
+            'imagen_secundaria': forms.FileInput(attrs={    # ← añadido
+                'class': 'form-control'
+            }),
+            'cita_destacada': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Escribe aquí una frase o párrafo destacado del artículo'
+            }),
+            'publicado': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
         }
-        help_texts = {
-            'titulo': 'El título debe ser descriptivo y atractivo',
-            'imagen_principal': 'Recomendado: imagen de 1200x630 píxeles',
-        }
-
-    def __init__(self, *args, **kwargs):
-        print("Inicializando BlogForm con argumentos:", args, kwargs)
-        super().__init__(*args, **kwargs)
-        # Marcar campos obligatorios
-        self.fields['titulo'].required = True
-        self.fields['contenido'].required = True
-
-        print("Campos del formulario:", list(self.fields.keys()))
-
-        # Agregar clases de Bootstrap a los labels
-        for field_name, field in self.fields.items():
-            print(f"Configurando clases para el campo: {field_name}")
-            if field.widget.attrs.get('class', '').startswith('form-control'):
-                field.widget.attrs['class'] += ' mb-3'
-            if isinstance(field.widget, forms.CheckboxInput):
-                field.widget.attrs['class'] += ' mb-2'
-        print("Formulario BlogForm inicializado correctamente.")

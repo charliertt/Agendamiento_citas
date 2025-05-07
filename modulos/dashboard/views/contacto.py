@@ -6,6 +6,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
+from .autenticacion import psicologo_required
+
 # 
 from .base_importaciones import (
     Contacto,
@@ -18,6 +20,7 @@ from .base_importaciones import (
 )
 
 
+@psicologo_required
 def lista_contactos(request):
     contactos = Contacto.objects.all()
     respuesta_form = RespuestaForm()  # Instancia del formulario
@@ -28,6 +31,7 @@ def lista_contactos(request):
     })
 
 
+@psicologo_required
 def responder_contacto(request, contacto_id):
     contacto = get_object_or_404(Contacto, id=contacto_id)
     

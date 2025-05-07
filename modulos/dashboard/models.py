@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.text import slugify
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 
@@ -260,6 +262,7 @@ class Contacto(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADO_OPCIONES, default='pendiente', verbose_name="Estado")
 
     def __str__(self):
+
         return f"{self.nombre} - {self.get_deseo_display()}"
 
 
@@ -311,11 +314,15 @@ class Notificacion(models.Model):
 class Blog(models.Model):
     titulo = models.CharField(max_length=200, verbose_name="Título")
     slug = models.SlugField(unique=True, help_text="URL amigable generada automáticamente desde el título")
-    autor = models.ForeignKey(Psicologo, on_delete=models.CASCADE, related_name='blogs')
-    contenido = models.TextField(verbose_name="Contenido del Blog")
-    imagen_principal = models.ImageField(upload_to='blog_images/', blank=True, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    autor = models.ForeignKey('Psicologo', on_delete=models.CASCADE, related_name='blogs')
+    
+    
+    contenido = RichTextUploadingField(verbose_name="Contenido del Blog")
+    
+    imagen_principal = models.ImageField(upload_to='blog_images/', blank=True, null=True, verbose_name="Imagen Principal")
+    imagen_secundaria = models.ImageField(upload_to='blog_images/',blank=True, null=True, verbose_name="Imagen Secundaria")
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    fecha_actualizacion = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
     
     CATEGORIAS = [
         ('ansiedad', 'Ansiedad'),
@@ -327,8 +334,16 @@ class Blog(models.Model):
         ('otros', 'Otros'),
     ]
     
-    categoria = models.CharField(max_length=50, choices=CATEGORIAS, default='otros')
-    publicado = models.BooleanField(default=False, help_text="Marcar para publicar el blog")
+    categoria = models.CharField(max_length=50, choices=CATEGORIAS, default='otros', verbose_name="Categoría")
+    publicado = models.BooleanField(default=False, help_text="Marcar para publicar el blog", verbose_name="Publicado")
+    
+    # Nuevo campo para cita destacada
+    cita_destacada = models.TextField(
+        verbose_name="Cita destacada", 
+        blank=True, 
+        null=True,
+        help_text="Una cita o frase destacada que aparecerá en blockquote"
+    )
     
     class Meta:
         verbose_name = "Blog"
@@ -341,7 +356,6 @@ class Blog(models.Model):
     def save(self, *args, **kwargs):
         # Genera el slug automáticamente desde el título si no existe
         if not self.slug:
-            from django.utils.text import slugify
             self.slug = slugify(self.titulo)
         super().save(*args, **kwargs)
 

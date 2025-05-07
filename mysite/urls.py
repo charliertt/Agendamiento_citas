@@ -16,13 +16,22 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', landing_views.index, name="index"),
     path('index/', landing_views.index, name="index"),  
-     path('blog/', landing_views.BlogListView.as_view(), name='blog'),
+    path('blog/', landing_views.BlogListView.as_view(), name='blog'),
+    path('blog/crear/', dashboard_views.blog_create, name='blog_create'),
+    path('blog/<slug:slug>/editar/', dashboard_views.blog_edit, name='blog_edit'),
+    path('blog/categoria/<str:categoria>/', landing_views.BlogListView.as_view(), name='blog_list_categoria'),
+    
+    
+    
     
     # Vista filtrada por categoría
     path('blog/categoria/<str:categoria>/', landing_views.BlogListView.as_view(), name='blog_category'),
     
     # Vista de detalle de un blog específico
     path('blog/<slug:slug>/', landing_views.BlogDetailView.as_view(), name='blog_detail'),
+    
+    path('blog_listado/', dashboard_views.blog_listado, name='blog_listado'),
+
 
 
     

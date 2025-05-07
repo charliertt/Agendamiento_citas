@@ -11,8 +11,10 @@ from .base_importaciones import (
     HttpResponseForbidden
 )
 
+from .autenticacion import psicologo_required
+
 @never_cache
-@login_required
+@psicologo_required
 def horarios(request):
     horarios_list = Horario.objects.all()
     
@@ -26,7 +28,7 @@ def horarios(request):
     })
 
 @never_cache
-@login_required
+@psicologo_required
 def crear_editar_horario(request, horario_id):
     horario = get_object_or_404(Horario, id=horario_id) if horario_id != 0 else None
     
@@ -50,7 +52,7 @@ def crear_editar_horario(request, horario_id):
     return redirect('horarios')
 
 @never_cache
-@login_required
+@psicologo_required
 def eliminar_horario(request, horario_id):
     
     if request.method == 'POST':

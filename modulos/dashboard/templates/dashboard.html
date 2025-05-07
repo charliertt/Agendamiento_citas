@@ -277,7 +277,7 @@
 								Peticiones
 							</div>
 							<div class="text-secondary">
-								{{ num_contactos_estudiante }}
+								{{ num_contactos_pendientes_estudiante }}
 							</div>
 						</div>
 					</div>
@@ -298,7 +298,7 @@
 								Reseñas
 							</div>
 							<div class="text-secondary">
-								{{ num_resenas_estudiante }}
+								{{  num_rewiews_estudiante }}
 							</div>
 						</div>
 					</div>
@@ -380,7 +380,9 @@
 									</div>
 								  </div>
 								  {% empty %}
-									<p>No hay contactos.</p>
+								  <h4>No tienes solicitudes, sugerencias o reclamos.</h4>
+								  <p class="text-muted">No se encontraron mensajes asociados a tu correo electrónico ({{ user.email }}).</p>
+								  <a href="{% url 'contacto' %}" class="btn btn-primary mt-2">Crear una nueva solicitud</a>
 								  {% endfor %}
 								</div>
 							  </div>
@@ -454,20 +456,21 @@
 						<div>
 							<div class="card-body">
 								<div class="divide-y">
-									{% for cita in proximas_citas %}
+									{% for cita in citas %}
+									{% if cita.estado == 'agendada' %}
 									<div>
 										<div class="row">
 											<div class="col-auto">
 												<!-- Avatar del psicólogo -->
 												{% if cita.psicologo.imagen %}
-												<span class="avatar" style="background-image: url({{ cita.psicologo.imagen.url }})"></span>
+												<span class="avatar" style="background-image: url({{ MEDIA_URL }}{{ cita.psicologo.usuario.imagen.url }})"></span>
 												{% else %}
 												<span class="avatar" style="background-image: url({% static 'dashboard/img/imagen.png' %})"></span>
 												{% endif %}
 											</div>
 											<div class="col">
 												<div class="text-truncate">
-													<strong>Cita con {{ cita.psicologo.usuario.get_full_name }}</strong>
+													<strong>Cita con {{ cita.psicologo_nombre }}</strong>
 													<div class="d-flex align-items-center text-secondary mt-1">
 														<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
 															<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -493,9 +496,10 @@
 											</div>
 										</div>
 									</div>
+									{% endif %}
 									{% empty %}
 									<div class="text-center py-3">
-										<span class="text-muted">No tienes citas próximas</span>
+										<span class="text-muted">No tienes citas próximas agendadas</span>
 									</div>
 									{% endfor %}
 								</div>
@@ -649,14 +653,14 @@
 								  </tr>
 								</thead>
 								<tbody>
-									{% with citas_recientes=citas|dictsortreversed:"fecha_hora"|slice:":5" %}
-									{% for cita in citas_recientes %}
+								
+									{% for cita in citas|dictsortreversed:"fecha_hora"|slice:":5" %}
 									<tr>
 									  <td class="w-75">
 										<a href="#" class="text-reset">{{ cita.asunto }}</a>
 										<div class="text-muted small">
-										  Estudiante: {{ cita.estudiante.usuario.username }}<br>
-										  Psicólogo: {{ cita.psicologo.usuario.username }}
+										  Estudiante: {{ cita.estudiante_nombre}}<br>
+										  Psicólogo: {{  cita.psicologo_nombre }}
 										</div>
 									  </td>
 									  
@@ -708,7 +712,7 @@
 									  </td>
 									</tr>
 									{% endfor %}
-									{% endwith %}
+									
 								  </tbody>
 							  </table>
 							  
@@ -725,7 +729,7 @@
 								<option value="">Todos</option>
 								<option value="estudiante">Estudiantes</option>
 								<option value="psicologo">Psicólogos</option>
-								<option value="administrativo">Administrativos</option>
+							
 							</select>
 			
 						</div>
@@ -760,8 +764,7 @@
 												<span class="badge badge-outline text-blue bg-blue-100">{{ usuario.get_rol_display }}</span>
 											{% elif usuario.rol == 'psicologo' %}
 												<span class="badge badge-outline text-green bg-green-100">{{ usuario.get_rol_display }}</span>
-											{% elif usuario.rol == 'administrativo' %}
-												<span class="badge badge-outline text-yellow bg-yellow-100">{{ usuario.get_rol_display }}</span>
+										
 											{% else %}
 												-
 											{% endif %}
@@ -805,7 +808,7 @@
 									{% for nota in notas %}
 					<tr>
 						<td>
-							<span class="fw-bold">{{ nota.usuario.username }}</span>
+							<span class="fw-bold"> {{ nota.usuario.first_name }} {{ nota.usuario.last_name }}</span>
 						</td>
 						<td>
 							<span class="d-block text-center">

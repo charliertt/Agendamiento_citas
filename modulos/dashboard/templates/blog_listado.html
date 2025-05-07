@@ -1,0 +1,112 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block extrahead %} {{ form.media }} {% endblock %}
+{% block content %}
+
+<style>
+    .compact-card {
+        height: 280px;  /* Altura fija para todas las cards */
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+    .compact-card:hover {
+        transform: translateY(-5px);
+    }
+    .compact-img {
+        height: 150px;
+        object-fit: cover;
+        border-radius: 3px 3px 0 0;
+    }
+    .card-body-compact {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .truncate-3-lines {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+<div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col text-center">
+                    <h2 class="page-title">Gestionar Blogs</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+          
+				<a href="{% url 'blog_create' %}" class="btn btn-primary ms-auto mb-4">
+					+
+			   </a>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">  <!-- Layout responsivo -->
+                {% for blog in blogs %}
+                <div class="col">  <!-- Cada card ocupa el ancho de la columna -->
+                    <div class="card compact-card shadow-sm">
+                        <a href="{% url 'blog_edit' slug=blog.slug %}">
+                            {% if blog.imagen_principal %}
+                            <img class="compact-img card-img-top" src="{{ blog.imagen_principal.url }}" alt="{{ blog.titulo }}">
+                            {% else %}
+                            <img class="compact-img card-img-top" src="{% static 'default_blog_image.jpg' %}" alt="{{ blog.titulo }}">
+                            {% endif %}
+                        </a>
+                        
+                        <div class="card-body-compact">
+                            <div>
+                                <h5 class="card-title mb-2">
+                                    <a href="{% url 'blog_edit' slug=blog.slug %}" class="text-dark text-decoration-none">
+                                        {{ blog.titulo|truncatechars:40 }}
+                                    </a>
+                                </h5>
+                                <p class="text-secondary small mb-3 truncate-3-lines">
+                                    {{ blog.contenido|safe|striptags|truncatechars:120 }}
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center flex-grow-1">
+                                    {% if blog.autor.foto %}
+                                    <img src="{{ blog.autor.foto.url }}" 
+                                         class="rounded-circle me-2" 
+                                         width="30" 
+                                         height="30" 
+                                         alt="{{ blog.autor.get_full_name }}">
+                                    {% endif %}
+                                    <div>
+                                        <small class="text-muted d-block">{{ blog.autor.get_full_name }}</small>
+                                        <small class="text-muted">{{ blog.fecha_creacion|date:"d M Y" }}</small>
+                                    </div>
+                                </div>
+                                <a href="#" class="text-decoration-none text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" 
+                                         fill="none" stroke="currentColor" stroke-width="2" 
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">No hay blogs para mostrar</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

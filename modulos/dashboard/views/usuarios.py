@@ -1,6 +1,9 @@
 from .base_importaciones import (UsuarioPersonalizado, Psicologo, UsuarioPersonalizadoEditForm, UsuarioPersonalizadoCreationForm 
-    , messages, redirect, render, get_object_or_404, Estudiante)
+    , messages, redirect, render, get_object_or_404, Estudiante,  login_required, never_cache)
 
+from .autenticacion import psicologo_required
+
+@psicologo_required
 def usuarios(request):
     usuarios_list = list(UsuarioPersonalizado.objects.all())
     
@@ -21,6 +24,8 @@ def usuarios(request):
         'usuarios': usuarios_list,
         'form': creation_form,  # Formulario de creación
     })   
+
+@login_required(login_url='/login')
 def crear_usuario(request):
     if request.method == 'POST':
         form = UsuarioPersonalizadoCreationForm(request.POST, request.FILES)
@@ -37,6 +42,7 @@ def crear_usuario(request):
         form = UsuarioPersonalizadoCreationForm()
     
     return render(request, 'usuarios.html', {'form': form})
+@login_required(login_url='/login')
 def editar_usuario(request, usuario_id):
     usuario = get_object_or_404(UsuarioPersonalizado, id=usuario_id)
     
@@ -76,7 +82,8 @@ def editar_usuario(request, usuario_id):
             messages.error(request, 'Corrige los errores')
     else:
         form = UsuarioPersonalizadoEditForm(instance=usuario)
-    
+  
+@login_required(login_url='/login')  
 def eliminar_usuario(request, usuario_id):
     usuario = UsuarioPersonalizado.objects.get(pk=usuario_id)
     if request.method == 'POST':
