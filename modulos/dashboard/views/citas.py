@@ -7,7 +7,7 @@ from django.template.loader import get_template, render_to_string
 from .base_importaciones import (
     messages,  timezone, CitaForm, Cita,  EmailMultiAlternatives
 )
-from .autenticacion import psicologo_required
+
 
 
 class CitaCreateView(CreateView):
@@ -15,6 +15,11 @@ class CitaCreateView(CreateView):
     form_class = CitaForm
     template_name = "citas.html"
     success_url = reverse_lazy("citas")
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         # Obtén el valor de la fecha/hora ingresado en el formulario
@@ -26,6 +31,7 @@ class CitaCreateView(CreateView):
         
         messages.success(self.request, "¡Cita creada correctamente!")
         return super().form_valid(form)
+    
 
     def form_invalid(self, form):
         messages.error(self.request, "Hubo un error al crear la cita. Verifica los datos ingresados.")
@@ -40,7 +46,15 @@ class CitaListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_page'] = 'review'  
+        context['active_page'] = 'citas'
+        context['crear_cita_url'] = reverse('crear_cita')
+        context['form'] = CitaForm(user=self.request.user)  # Pasar usuario aquí también
+        
+        # Configurar formularios de edición para cada cita
+        for cita in context['citas']:
+            cita.form_editar = CitaForm(instance=cita, user=self.request.user)
+        
+        return context
         return context
 
     def get_queryset(self):
@@ -50,22 +64,18 @@ class CitaListView(ListView):
             qs = qs.filter(estudiante__usuario=self.request.user)
         return qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Formulario para la creación de una nueva cita
-        context['form'] = CitaForm()
-        # Para cada cita en la lista, asignamos un formulario de edición
-        for cita in context['citas']:
-            cita.form_editar = CitaForm(instance=cita)
-        # Agregar la URL para crear cita
-        context['crear_cita_url'] = reverse('crear_cita')
-        return context
+    
 
 class CitaUpdateView(UpdateView):
     model = Cita
     form_class = CitaForm
     template_name = "citas.html"  
     success_url = reverse_lazy("citas")
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         # Obtener instancia antes de guardar cambios
@@ -85,6 +95,13 @@ class CitaUpdateView(UpdateView):
             # Enviar correo de completado con enlace
             elif new_estado == 'completada':
                 self.enviar_correo_completada(cita)
+                
+        if self.request.user.rol == 'estudiante':
+        # Verificar que no modifique campos restringidos
+            if form.cleaned_data['estado'] not in ['cancelada']:
+                form.add_error('estado', 'No tienes permiso para este estado')
+                return self.form_invalid(form)
+        
 
         messages.success(self.request, "¡Cita editada correctamente!")
         return response

@@ -119,31 +119,35 @@
                       <h4 class="lead fs-4 mx-1 mb-5 text-center">{{ pregunta.pregunta }}</h4>
   
                       <div class="row g-4 justify-content-center mt-4">
-                          <div class="col-12 col-md-4">
-                              <div class="option-card card h-100 border-3 hover-shadow bg-danger">
-                                  <div class="card-body d-flex align-items-center justify-content-center ">
-                                      <label class="w-75 h-100 d-flex align-items-center justify-content-center cursor-pointer">
-                                          <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="False" 
-                                                 class="visually-hidden" required>
-                                          <span class="fs-6 fw-bold text-white">FALSO</span>
-                                      </label>
-                                  </div>
-                              </div>
-                          </div>
-                          
-                          <div class="col-12 col-md-4">
-                              <div class="option-card card h-100 border-3 hover-shadow bg-primary">
-                                  <div class="card-body d-flex align-items-center justify-content-center ">
-                                      <label class="w-75 h-100 d-flex align-items-center justify-content-center cursor-pointer">
-                                          <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="True" 
-                                                 class="visually-hidden" required>
-                                          <span class="fs-6 fw-bold text-white">VERDADERO</span>
-                                      </label>
-                                  </div>
+
+                        <div class="col-12 col-md-4">
+                          <div class="option-card card h-100 border-3 bg-danger">
+                              <div class="card-body d-flex align-items-center justify-content-center">
+                                  <label class="w-100 h-100 d-flex align-items-center justify-content-center cursor-pointer">
+                                      <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="False" 
+                                             class="visually-hidden" required
+                                             onchange="toggleSelection(this)">
+                                      <span class="fs-6 fw-bold text-white">FALSO</span>
+                                  </label>
                               </div>
                           </div>
                       </div>
+                      
+                      <div class="col-12 col-md-4">
+                          <div class="option-card card h-100 border-3 bg-primary">
+                              <div class="card-body d-flex align-items-center justify-content-center">
+                                  <label class="w-100 h-100 d-flex align-items-center justify-content-center cursor-pointer">
+                                      <input type="radio" name="respuesta_{{ pregunta.id_pregunta }}" value="True" 
+                                             class="visually-hidden" required
+                                             onchange="toggleSelection(this)">
+                                      <span class="fs-6 fw-bold text-white">VERDADERO</span>
+                                  </label>
+                              </div>
+                          </div>
+                      </div>
+
                   </div>
+                </div>
   
                   <div class="card-footer bg-light">
                       <div class="d-flex justify-content-between align-items-center">
@@ -165,29 +169,28 @@
   </section>
   
   <style>
-      .option-card {
-          transition: all 0.2s ease;
-      
-      }
-      
-      .option-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
-      }
-      
-      .option-card input:checked + span {
-          color: white!important;
-      }
-      
-     
-      
-      .cursor-pointer {
-          cursor: pointer;
-      }
-      
-      .hover-shadow {
-          transition: box-shadow 0.2s ease;
-      }
+       /* Estilos para opción seleccionada */
+    .option-card.selected {
+        border: 3px solid #ffd700 !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+        transform: scale(1.02);
+    }
+    
+    .option-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        overflow: hidden; /* Añade esto */
+    }
+
+    .option-card .card-body {
+    transition: transform 0.3s ease; /* Mejora la transición */
+}
+    
+    /* Refuerza visualmente el hover */
+    .option-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    }
   </style>
     
 
@@ -207,35 +210,6 @@
 
           
 
-          <!-- <div class="col-lg-4">
-            <article>
-
-              <div class="post-img">
-                <img src="assets/img/blog/blog-6.jpg" alt="" class="img-fluid">
-              </div>
-
-              <p class="post-category">Entertainment</p>
-
-              <h2 class="title">
-                <a href="blog-details.html">Distinctio provident quibusdam numquam aperiam aut</a>
-              </h2>
-
-              <div class="d-flex align-items-center">
-                <img src="assets/img/blog/blog-author-6.jpg" alt="" class="img-fluid post-author-img flex-shrink-0">
-                <div class="post-meta">
-                  <p class="post-author">Mika Lendon</p>
-                  <p class="post-date">
-                    <time datetime="2022-01-01">Feb 14, 2022</time>
-                  </p>
-                </div>
-              </div>
-
-            </article>
-          </div> -->
-<!-- /Blog Posts Section -->
-
-    <!-- Blog Pagination Section -->
-    
 
     <footer id="footer" class="footer position-relative light-background">
 
@@ -301,6 +275,42 @@
   </main>
 
 
+  <script>
+    function handleCardClick(card) {
+    const radio = card.querySelector('input[type="radio"]');
+    if (!radio) return;
+
+    // Remueve selección previa
+    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    
+    // Marca la nueva selección
+    radio.checked = true;
+    card.classList.add('selected');
+}
+
+document.querySelectorAll('.option-card').forEach(card => {
+    card.addEventListener('click', () => handleCardClick(card));
+});
+
+    function toggleSelection(radio) {
+    // Remueve la selección de todas las opciones
+    document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Agrega la clase selected al contenedor padre
+    if(radio.checked) {
+        radio.closest('.option-card').classList.add('selected');
+    }
+}
+
+// Resalta la opción seleccionada al cargar (si hay respuesta previa)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+        radio.closest('.option-card').classList.add('selected');
+    });
+});
+  </script>
 
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

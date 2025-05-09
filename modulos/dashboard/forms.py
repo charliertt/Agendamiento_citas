@@ -202,7 +202,7 @@ class CitaForm(forms.ModelForm):
                     'class': 'form-control',
                     'type': 'datetime-local'
                 },
-                format='%Y-%m-%dT%H:%M'  # Formato que espera el input datetime-local
+                format='%Y-%m-%dT%H:%M'
             ),
             'estudiante': forms.Select(attrs={'class': 'form-control'}),
             'psicologo': forms.Select(attrs={'class': 'form-control'}),
@@ -215,14 +215,32 @@ class CitaForm(forms.ModelForm):
             }),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
-        # Para una instancia nueva, asignar el estado por defecto 'agendada'
-        if not self.instance.pk:
+        self.user = user
+
+        # Estado inicial solo para no estudiantes
+        if not self.instance.pk and user and user.rol != 'estudiante':
             self.fields['estado'].initial = 'agendada'
-        # Si se está editando una instancia existente, formatear la fecha para el input datetime-local
+
+        # Formatear fecha existente
         if self.instance and self.instance.pk and self.instance.fecha_hora:
             self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
+
+        # Ajustes para estudiantes
+        if user and user.rol == 'estudiante':
+            # Filtrar opciones de estado
+            self.fields['estado'].choices = [
+                choice for choice in self.fields['estado'].choices 
+                if choice[0] not in ['completada']
+            ]
+            # Hacer fecha/hora readonly
+            self.fields['fecha_hora'].widget.attrs['readonly'] = True
+
+    def clean_fecha_hora(self):
+        if self.user and self.user.rol == 'estudiante':
+            return self.instance.fecha_hora
+        return self.cleaned_data.get('fecha_hora')
 
 
 class EstudianteForm(UserCreationForm):

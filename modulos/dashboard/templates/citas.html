@@ -103,17 +103,25 @@
 							<!-- Footer con botones -->
 							<div class="card-footer bg-transparent border-top pt-3">
 								<div class="d-flex justify-content-between align-items-center">
+									{% if cita.estado != 'completada' %}
 									<a href="#" class="btn btn-sm btn-outline-primary" 
 									   data-bs-toggle="modal" 
 									   data-bs-target="#modal-editar-cita-{{ cita.id }}">
 										<i class="fas fa-edit me-1"></i>Editar
 									</a>
+									{%elif cita.estado == 'completada'%}
+									<p>Completada ✅</p>
+									{% endif %}
+									
+
+									{% if request.user.rol != 'estudiante' %}
 								
 									<a href="#" class="btn btn-sm btn-outline-danger"
 										data-bs-toggle="modal" 
 										data-bs-target="#modal-eliminar-cita-{{ cita.id }}">
 										<i class="fas fa-trash me-1"></i>Eliminar
 									</a>
+									{% endif %}
 								</div>
 							</div>
 						</div>

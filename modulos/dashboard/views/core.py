@@ -95,7 +95,8 @@ def dashboard(request):
     # Convertir fecha_hora a string ISO con zona horaria
     
    
-    
+    review_estudiante = 0
+
     
     if request.user.rol == 'estudiante':
         estudiante = Estudiante.objects.get(usuario=request.user)
