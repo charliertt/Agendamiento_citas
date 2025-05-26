@@ -195,13 +195,14 @@ class PreguntasForm(forms.ModelForm):
 class CitaForm(forms.ModelForm):
     class Meta:
         model = Cita
-        fields = ['fecha_hora', 'estudiante', 'psicologo', 'asunto', 'estado', 'notas']
+        fields = [
+            'fecha_hora', 'estudiante',
+            'psicologo', 'asunto',
+            'estado', 'notas'
+        ]
         widgets = {
             'fecha_hora': forms.DateTimeInput(
-                attrs={
-                    'class': 'form-control',
-                    'type': 'datetime-local'
-                },
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
                 format='%Y-%m-%dT%H:%M'
             ),
             'estudiante': forms.Select(attrs={'class': 'form-control'}),
@@ -209,8 +210,7 @@ class CitaForm(forms.ModelForm):
             'asunto': forms.TextInput(attrs={'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
             'notas': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
+                'class': 'form-control', 'rows': 3,
                 'placeholder': 'Comentarios adicionales (opcional)'
             }),
         }
@@ -219,28 +219,33 @@ class CitaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.user = user
 
-        # Estado inicial solo para no estudiantes
+        # Inicialización común...
         if not self.instance.pk and user and user.rol != 'estudiante':
             self.fields['estado'].initial = 'agendada'
 
-        # Formatear fecha existente
         if self.instance and self.instance.pk and self.instance.fecha_hora:
-            self.fields['fecha_hora'].initial = self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
+            self.fields['fecha_hora'].initial = (
+                self.instance.fecha_hora.strftime('%Y-%m-%dT%H:%M')
+            )
 
-        # Ajustes para estudiantes
+        # Para rol 'estudiante'
         if user and user.rol == 'estudiante':
-            # Filtrar opciones de estado
-            self.fields['estado'].choices = [
-                choice for choice in self.fields['estado'].choices 
-                if choice[0] not in ['completada']
-            ]
-            # Hacer fecha/hora readonly
-            self.fields['fecha_hora'].widget.attrs['readonly'] = True
+            # 1) Deshabilitamos los selects
+            self.fields['estudiante'].disabled = True
+            self.fields['psicologo'].disabled = True
 
-    def clean_fecha_hora(self):
-        if self.user and self.user.rol == 'estudiante':
-            return self.instance.fecha_hora
-        return self.cleaned_data.get('fecha_hora')
+            # 2) Los hacemos no requeridos
+            self.fields['estudiante'].required = False
+            self.fields['psicologo'].required = False
+
+            # 3) (Opcional) Filtrar estados
+            self.fields['estado'].choices = [
+                choice for choice in self.fields['estado'].choices
+                if choice[0] != 'completada'
+            ]
+
+            # 4) Fecha/hora también readonly si lo deseas
+            self.fields['fecha_hora'].widget.attrs['readonly'] = True
 
 
 class EstudianteForm(UserCreationForm):

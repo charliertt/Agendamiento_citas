@@ -55,7 +55,7 @@ class CitaListView(ListView):
             cita.form_editar = CitaForm(instance=cita, user=self.request.user)
         
         return context
-        return context
+        
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -76,6 +76,21 @@ class CitaUpdateView(UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+    
+    def get_context_data(self, **kwargs):
+        # 1) Instancia tu ListView
+        list_view = CitaListView()
+        list_view.request = self.request
+        # 2) Define object_list a partir de get_queryset()
+        list_view.object_list = list_view.get_queryset()
+        # 3) Ahora sí puedes obtener su contexto
+        context = list_view.get_context_data(**kwargs)
+
+        # 4) Inyecta la info de la cita que estás editando
+        context['form_editar_id'] = self.object.id
+        context['cita_editando'] = self.object
+        return context
+
 
     def form_valid(self, form):
         # Obtener instancia antes de guardar cambios
@@ -102,7 +117,8 @@ class CitaUpdateView(UpdateView):
                 form.add_error('estado', 'No tienes permiso para este estado')
                 return self.form_invalid(form)
         
-
+        
+       
         messages.success(self.request, "¡Cita editada correctamente!")
         return response
 
@@ -155,6 +171,9 @@ class CitaUpdateView(UpdateView):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
         
+        
+    
+
         
 
 
