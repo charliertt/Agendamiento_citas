@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UsuarioPersonalizado,Blog,Preguntas, Psicologo, Estudiante, Horario, Cita, Contacto, Respuesta, Review, Cita, Notificacion
+from .models import UsuarioPersonalizado,Blog,Preguntas, Psicologo, Estudiante, Horario, Cita, Contacto, Respuesta, Review, Cita, Notificacion, HistorialClinico
 
 
 
@@ -15,6 +15,7 @@ admin.site.register(Contacto)
 admin.site.register(Respuesta)
 admin.site.register(Review)
 admin.site.register(Notificacion)
+admin.site.register(HistorialClinico)
 
 
 class BlogAdmin(admin.ModelAdmin):

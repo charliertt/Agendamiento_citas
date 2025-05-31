@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review, Blog
+from modulos.dashboard.models import UsuarioPersonalizado, Horario, Psicologo, Preguntas, Estudiante, Cita, Review, Blog, HistorialClinico
 from django.core.exceptions import ObjectDoesNotExist
 from django_summernote.widgets import SummernoteWidget
 from ckeditor.widgets import CKEditorWidget
@@ -366,3 +366,36 @@ class BlogForm(forms.ModelForm):
                 'class': 'form-check-input'
             }),
         }
+        
+
+
+class HistorialClinicoForm(forms.ModelForm):
+    # Define explícitamente los RichTextUploadingFields para usar el widget si no se detectan automáticamente.
+    # Para versiones más nuevas de Django, los widgets a menudo se infieren automáticamente de los tipos de campo del modelo.
+    # Si encuentras problemas, defínelos explícitamente:
+    # antecedentes_relevantes = forms.CharField(widget=CKEditorUploadingWidget(), required=False)
+    # evaluacion_sesion = forms.CharField(widget=CKEditorUploadingWidget())
+    # diagnostico_impresion = forms.CharField(widget=CKEditorUploadingWidget(), required=False)
+    # plan_intervencion_sugerencias = forms.CharField(widget=CKEditorUploadingWidget(), required=False)
+    # evolucion_observaciones_adicionales = forms.CharField(widget=CKEditorUploadingWidget(), required=False)
+
+    class Meta:
+        model = HistorialClinico
+        fields = [
+            'motivo_consulta_reporte',
+            'antecedentes_relevantes',
+            'evaluacion_sesion',
+            'diagnostico_impresion',
+            'plan_intervencion_sugerencias',
+            'evolucion_observaciones_adicionales',
+            'reporte_finalizado',
+        ]
+        # Puedes personalizar widgets aquí si es necesario, ej., para selectores de fecha o estilos específicos
+        widgets = {
+            'motivo_consulta_reporte': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Puedes personalizar aún más las propiedades de los campos del formulario aquí
+        self.fields['reporte_finalizado'].help_text = "Una vez finalizado, el reporte podría ser visible para el estudiante (funcionalidad futura)."

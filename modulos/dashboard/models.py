@@ -56,6 +56,11 @@ class UsuarioPersonalizado(AbstractUser):
 
     def __str__(self):
         return f"{self.username} - {self.get_rol_display()}"
+    
+    
+    
+
+
 
 
 
@@ -359,4 +364,72 @@ class Blog(models.Model):
             self.slug = slugify(self.titulo)
         super().save(*args, **kwargs)
 
+
+
+class HistorialClinico(models.Model):
+    cita = models.OneToOneField(
+        Cita,
+        on_delete=models.CASCADE,
+        related_name='historial_clinico',
+        limit_choices_to={'estado': 'completada'}, # Asegura que el historial solo sea para citas completadas
+        verbose_name="Cita Asociada"
+    )
+    # Campos redundantes, se pueden acceder mediante self.cita.psicologo y self.cita.estudiante
+    # psicologo = models.ForeignKey(Psicologo, on_delete=models.CASCADE, related_name='historiales_creados')
+    # estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='historiales_clinicos')
+    
+    # Campos a ser llenados por el psicólogo para el reporte
+    motivo_consulta_reporte = models.TextField(
+        verbose_name="Motivo de Consulta (para el reporte)", 
+        help_text="Detalle del motivo de la consulta tal como se registrará en el historial."
+    )
+    antecedentes_relevantes = RichTextUploadingField( #
+        verbose_name="Antecedentes Relevantes", 
+        blank=True, null=True,
+        help_text="Información previa del estudiante que sea pertinente para el caso."
+    )
+    evaluacion_sesion = RichTextUploadingField( #
+        verbose_name="Evaluación y Desarrollo de la Sesión",
+        help_text="Descripción de lo ocurrido y evaluado durante la sesión."
+    )
+    diagnostico_impresion = RichTextUploadingField( # Cambiado de TextField a RichText por consistencia #
+        verbose_name="Impresión Diagnóstica / Conceptualización del Caso", 
+        blank=True, null=True,
+        help_text="Análisis y conclusiones del psicólogo sobre el caso."
+    )
+    plan_intervencion_sugerencias = RichTextUploadingField( #
+        verbose_name="Plan de Intervención y Sugerencias", 
+        blank=True, null=True,
+        help_text="Acciones a seguir, recomendaciones para el estudiante o terceros."
+    )
+    evolucion_observaciones_adicionales = RichTextUploadingField( #
+        verbose_name="Evolución y Observaciones Adicionales", 
+        blank=True, null=True,
+        help_text="Progreso del estudiante y cualquier otra observación relevante."
+    )
+    
+    # Metadatos del reporte
+    fecha_creacion_reporte = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación del Reporte")
+    ultima_actualizacion_reporte = models.DateTimeField(auto_now=True, verbose_name="Última Actualización del Reporte")
+    reporte_finalizado = models.BooleanField(
+        default=False, 
+        verbose_name="Reporte Finalizado", 
+        help_text="Marcar si el psicólogo ha completado y revisado el reporte. Esto podría habilitar su descarga por el estudiante en el futuro."
+    )
+    # archivo_pdf_adjunto = models.FileField(upload_to='reportes_clinicos/', blank=True, null=True, verbose_name="Archivo PDF Adjunto") # Considerar generar sobre la marcha
+
+    class Meta:
+        verbose_name = "Historial Clínico"
+        verbose_name_plural = "Historiales Clínicos"
+        ordering = ['-cita__fecha_hora'] # Ordenar por la fecha de la cita
+
+    def __str__(self):
+        return f"Historial Clínico para Cita #{self.cita.id} ({self.cita.estudiante.usuario.username})"
+
+    def save(self, *args, **kwargs):
+        # Pre-llenar motivo_consulta_reporte desde cita.asunto si está vacío en la creación
+        if not self.pk and self.cita and self.cita.asunto and not self.motivo_consulta_reporte:
+            self.motivo_consulta_reporte = self.cita.asunto
+        super().save(*args, **kwargs)
+        
 # admin.py (crear o modificar este archivo)
