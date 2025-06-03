@@ -164,7 +164,31 @@ urlpatterns = [
   
    
 
+    #______reportes_________________________
+    path(
+        'citas/<int:cita_id>/historial/crear/',
+        dashboard_views.crear_editar_historial_clinico,
+        name='crear_historial_clinico'
+    ),
+    path(
+        'citas/<int:cita_id>/historial/<int:historial_id>/editar/',
+        dashboard_views.crear_editar_historial_clinico,
+        name='editar_historial_clinico'
+    ),
     
+     path(
+        'citas/<int:cita_id>/historial/<int:historial_id>/pdf/',
+        dashboard_views.ver_pdf_historial,
+        name='ver_pdf_historial'
+    ),
+     
+    path(
+        'reportes/',
+        dashboard_views.lista_reportes,
+        name='lista_reportes'
+    ),
+    
+
 ]
 
 

@@ -20,7 +20,7 @@ from django.core.mail import EmailMultiAlternatives
 from modulos.dashboard.models import (
     UsuarioPersonalizado, Psicologo, Horario,
     Preguntas, Cita, Estudiante, Contacto,
-    Review, Notificacion, Respuesta, Blog
+    Review, Notificacion, Respuesta, Blog, HistorialClinico
 )
 
 # UsuarioPersonalizadoCreationForm, UsuarioPersonalizadoEditForm
@@ -37,7 +37,8 @@ from ..forms import (
     ReviewForm,
     EmailAuthenticationForm,
     RespuestaForm,
-    BlogForm
+    BlogForm,
+    HistorialClinicoForm
 )
 
 # Utilidades comunes

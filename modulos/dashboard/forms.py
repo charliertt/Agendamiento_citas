@@ -390,7 +390,7 @@ class HistorialClinicoForm(forms.ModelForm):
             'evolucion_observaciones_adicionales',
             'reporte_finalizado',
         ]
-        # Puedes personalizar widgets aquí si es necesario, ej., para selectores de fecha o estilos específicos
+       
         widgets = {
             'motivo_consulta_reporte': forms.Textarea(attrs={'rows': 3}),
         }
@@ -398,4 +398,4 @@ class HistorialClinicoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Puedes personalizar aún más las propiedades de los campos del formulario aquí
-        self.fields['reporte_finalizado'].help_text = "Una vez finalizado, el reporte podría ser visible para el estudiante (funcionalidad futura)."
+        self.fields['reporte_finalizado'].help_text = "Una vez finalizado, el reporte será visible para el psicólogo."

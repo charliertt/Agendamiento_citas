@@ -93,16 +93,25 @@
                                 {% if cita.estado == 'completada' %}
                                     {% if request.user.is_authenticated and request.user.rol == 'psicologo' and request.user.psicologo == cita.psicologo %}
                                         {% if cita.historial_clinico %}
-                                        <a href="" class="btn btn-sm btn-outline-secondary">
+
+                                        <a href="{% url 'editar_historial_clinico' cita.id cita.historial_clinico.id %}" class="btn btn-sm btn-outline-secondary">
                                             <i class="fas fa-file-medical-alt me-1"></i> Editar Reporte
                                         </a>
-                                        <a href="" class="btn btn-sm btn-outline-success" target="_blank">
+
+                                        
+                                        
+                                       
+
+                                        <a href="{% url 'ver_pdf_historial' cita.id cita.historial_clinico.id %}" class="btn btn-sm btn-outline-success" target="_blank">
                                             <i class="fas fa-file-pdf me-1"></i> Ver PDF
                                         </a>
                                         {% else %}
-                                        <a href="" class="btn btn-sm btn-primary">
+
+										
+                                        <a href="{% url 'crear_historial_clinico' cita.id %}">
                                             <i class="fas fa-plus-circle me-1"></i> Crear Reporte Clínico
                                         </a>
+										
                                         {% endif %}
                                     {% elif request.user.is_authenticated and request.user.rol == 'estudiante' and cita.historial_clinico and cita.historial_clinico.reporte_finalizado %}
                                         <a href="" class="btn btn-sm btn-outline-success" target="_blank">

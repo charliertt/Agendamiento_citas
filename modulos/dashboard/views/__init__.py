@@ -80,3 +80,10 @@ from .blog import (
     blog_edit,
     blog_listado
 )
+
+from .reporte import (
+    crear_editar_historial_clinico,
+    ver_pdf_historial,
+    lista_reportes
+   
+)

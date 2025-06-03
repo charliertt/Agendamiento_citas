@@ -1,19 +1,18 @@
 # En tu_app/views.py
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required #, user_passes_test (para verificaciones de rol)
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
-from weasyprint import HTML, CSS # Para generación de PDF
-from django.conf import settings # Para archivos estáticos en PDF si es necesario
-import os # Para unir rutas
+import os
 
 
+from weasyprint import HTML
 
 from .base_importaciones import (
     messages,  timezone, CitaForm, Cita,  EmailMultiAlternatives,
     Cita, HistorialClinico, Estudiante, HistorialClinicoForm
 )
-
 
 # Función auxiliar para verificación de rol (opcional, puedes hacerlo directamente en las vistas)
 def es_psicologo(user):
@@ -49,7 +48,7 @@ def crear_editar_historial_clinico(request, cita_id, historial_id=None):
             # No es necesario establecer psicologo o estudiante ya que se derivan de la cita
             historial_guardado.save()
             # messages.success(request, "Historial clínico guardado exitosamente.")
-            return redirect('citas', cita_id=cita.id) # O donde quieras redirigir, ej., una vista de detalle del reporte
+            return redirect('citas') # O donde quieras redirigir, ej., una vista de detalle del reporte
     else:
         form = HistorialClinicoForm(instance=historial)
 
@@ -61,91 +60,58 @@ def crear_editar_historial_clinico(request, cita_id, historial_id=None):
     })
 
 
-@login_required
-def generar_pdf_historial_clinico(request, historial_id):
-    historial = get_object_or_404(HistorialClinico, id=historial_id)
-    cita = historial.cita
+def ver_pdf_historial(request, cita_id, historial_id):
+    # 1. Recupera el HistorialClinico (o como se llame tu modelo) asegurándote 
+    #    de que pertenece a la cita indicada.
+    cita = get_object_or_404(Cita, id=cita_id, estado='completada')
+    historial = get_object_or_404(
+        HistorialClinico,
+        id=historial_id,
+        cita=cita
+    )
 
-    # Verificación de permisos: solo el psicólogo asignado o el estudiante (si está finalizado)
-    # Por ahora, solo el psicólogo
-    if not (es_psicologo(request.user) and request.user.psicologo == cita.psicologo): #
-        # Potencialmente permitir al estudiante si historial.reporte_finalizado es True en el futuro
-        # messages.error(request, "No tiene permiso para ver este reporte.")
-        raise Http404 # O redirigir
-
-    # Datos para la plantilla PDF
-    context = {
+    # 2. Renderiza un template HTML con los datos del historial
+    #    Crea un archivo template llamado "historial_pdf.html" (ver sección 3).
+    html_string = render_to_string('pdf/pdf_template_historial_clinico.html', {
         'historial': historial,
         'cita': cita,
-        'estudiante': cita.estudiante, #
-        'psicologo_reporte': cita.psicologo, # Renombrado para evitar conflicto si 'psicologo' está en el contexto general #
-        'usuario_estudiante': cita.estudiante.usuario, #
-        'usuario_psicologo': cita.psicologo.usuario, #
-    }
-    
-    # Renderizar plantilla HTML a una cadena
-    html_string = render_to_string('pdf/pdf_template_historial_clinico.html', context) # Crea esta plantilla
-    
-    # CSS básico para el PDF (considera un archivo CSS separado para estilos más complejos)
-    # Ejemplo de enlazar un archivo CSS estático:
-    # css_path = os.path.join(settings.STATIC_ROOT, 'css/pdf_styles.css') # Asegúrate de que STATIC_ROOT esté configurado
-    # if not os.path.exists(css_path): # Alternativa o error si no se encuentra el CSS
-    #    css_path = None
-    # stylesheets = [CSS(css_path)] if css_path else None
+    })
 
-    base_url = request.build_absolute_uri('/') # Necesario para que WeasyPrint encuentre archivos estáticos como imágenes si se referencian en la plantilla
+    # 3. Genera el PDF a partir de ese HTML
+    #    El parámetro base_url es útil para que WeasyPrint resuelva rutas estáticas (CSS, imágenes).
+    pdf_bytes = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
-    html = HTML(string=html_string, base_url=base_url)
-    pdf_file = html.write_pdf(
-        # stylesheets=stylesheets # Descomenta si usas CSS externo
-    )
-    
-    response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'filename="historial_clinico_cita_{cita.id}_{cita.estudiante.usuario.username}.pdf"' #
-    # Para mostrar en el navegador:
-    # response['Content-Disposition'] = f'inline; filename="historial_clinico_cita_{cita.id}.pdf"'
+    # 4. Devuelve una HttpResponse con content_type='application/pdf'
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    # inline = lo abre en el navegador; si quisieras forzar descarga, usa attachment
+    response['Content-Disposition'] = f'inline; filename="historial_{historial_id}.pdf"'
     return response
 
-@login_required
-def listar_reportes_psicologo(request):
-    if not es_psicologo(request.user): #
-        # messages.error(request, "Acceso denegado.")
-        return redirect('dashboard') # O alguna otra página apropiada
 
-    psicologo_actual = request.user.psicologo #
-    # Obtener todos los historiales clínicos creados por este psicólogo
-    historiales = HistorialClinico.objects.filter(cita__psicologo=psicologo_actual).order_by('-fecha_creacion_reporte')
-    
-    # También obtener citas completadas por este psicólogo que AÚN NO tienen un historial clínico
-    citas_sin_historial = Cita.objects.filter(
-        psicologo=psicologo_actual, #
-        estado='completada' #
-    ).exclude(historial_clinico__isnull=False).order_by('-fecha_hora') #
+def lista_reportes(request):
+    """
+    Muestra dos secciones:
+      1) Citas completadas que aún NO tienen HistorialClinico
+      2) Historiales Clínicos creados (con sus datos)
+    """
 
-    return render(request, 'psicologo/lista_reportes.html', { # Crea esta plantilla
-        'historiales': historiales,
+    # 1. Todas las citas que ya estén en estado 'completada'
+    citas_completadas = Cita.objects.filter(estado='completada')
+
+    # 2. De esas, filtramos las que NO tienen historial_clinico asociado
+    #    (historial_clinico es el related_name en tu OneToOneField).
+    citas_sin_historial = citas_completadas.filter(historial_clinico__isnull=True)
+
+    # 3. Obtenemos todos los HistorialClinico que ya se hayan creado,
+    #    usando select_related para evitar consultas N+1 al iterar
+    historiales = HistorialClinico.objects.select_related(
+        'cita__estudiante__usuario',
+        'cita__psicologo__usuario'
+    ).order_by('-ultima_actualizacion_reporte')
+
+    # 4. Pasamos ambas listas al contexto
+    return render(request, 'lista_reportes.html', {
         'citas_sin_historial': citas_sin_historial,
-        'psicologo_actual': psicologo_actual
+        'historiales': historiales,
     })
 
-@login_required
-def listar_reportes_estudiante_para_psicologo(request, estudiante_id):
-    if not es_psicologo(request.user): #
-        # messages.error(request, "Acceso denegado.")
-        return redirect('dashboard') 
-
-    estudiante = get_object_or_404(Estudiante, id=estudiante_id) #
-    psicologo_actual = request.user.psicologo #
-
-    # Asegurar que el psicólogo esté viendo reportes de estudiantes con los que ha tenido citas, o implementar otra lógica
-    # Para simplificar, mostraremos todos los reportes del estudiante si el psicólogo lo solicita.
-    # Agrega lógica más restrictiva si es necesario (ej., el psicólogo solo puede ver reportes de *sus* citas con el estudiante).
-    historiales_estudiante = HistorialClinico.objects.filter(
-        cita__estudiante=estudiante #
-        # Opcionalmente, agrega: cita__psicologo=psicologo_actual si el psicólogo solo puede ver reportes que él creó
-    ).order_by('-cita__fecha_hora') #
-
-    return render(request, 'psicologo/reportes_por_estudiante.html', { # Crea esta plantilla
-        'historiales_estudiante': historiales_estudiante,
-        'estudiante_seleccionado': estudiante,
-    })

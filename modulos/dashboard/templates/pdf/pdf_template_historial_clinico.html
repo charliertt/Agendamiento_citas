@@ -31,22 +31,23 @@
 <body>
     <div class="header">
         <h1>HISTORIAL CLÍNICO PSICOLÓGICO</h1>
-        <p>Institución Educativa XYZ</p> </div>
+        <p>SAN FRANCISCO DE ASÍS</p> </div>
 
     <div class="section-title">Información del Estudiante</div>
     <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
         <tr>
             <td style="width:25%; font-weight:bold; padding: 5px; border: 1px solid #ddd;">Nombre Completo:</td>
-            <td style="width:75%; padding: 5px; border: 1px solid #ddd;">{{ usuario_estudiante.get_full_name|default:"N/A" }}</td> </tr>
+            <td style="width:75%; padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.usuario.first_name }} {{ cita.estudiante.usuario.last_name }}</td> </tr>
         <tr>
             <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Identificación:</td>
-            <td style="padding: 5px; border: 1px solid #ddd;">{{ usuario_estudiante.get_tipo_identificacion_display|default:"N/A" }}: {{ usuario_estudiante.identificacion|default:"N/A" }}</td> </tr>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.get_tipo_identificacion_display|default:"N/A" }}:
+                {{ cita.estudiante.identificacion|default:"N/A" }}</td> </tr>
          <tr>
             <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Correo Electrónico:</td>
-            <td style="padding: 5px; border: 1px solid #ddd;">{{ usuario_estudiante.email|default:"N/A" }}</td> </tr>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.usuario.email|default:"N/A" }}</td> </tr>
         <tr>
             <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">EPS:</td>
-            <td style="padding: 5px; border: 1px solid #ddd;">{{ usuario_estudiante.eps|default:"Ninguna" }}</td> </tr>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.eps|default:"Ninguna" }}</td> </tr>
         </table>
 
     <div class="section-title">Información de la Cita</div>
@@ -59,10 +60,10 @@
             <td style="padding: 5px; border: 1px solid #ddd;">{{ cita.fecha_hora|date:"d/m/Y H:i A" }}</td> </tr>
         <tr>
             <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Psicólogo/a:</td>
-            <td style="padding: 5px; border: 1px solid #ddd;">{{ usuario_psicologo.get_full_name|default:"N/A" }}</td> </tr>
+            <td style="padding: 5px; border: 1px solid #ddd;">     {{ cita.psicologo.usuario.first_name }} {{ cita.psicologo.usuario.last_name }}</td> </tr>
          <tr>
             <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Especialización:</td>
-            <td style="padding: 5px; border: 1px solid #ddd;">{{ psicologo_reporte.especializacion|default:"N/A" }}</td> </tr>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.psicologo.especializacion|default:"N/A" }}</td> </tr>
     </table>
 
     <div class="section-title">Detalle del Historial Clínico</div>
@@ -101,7 +102,8 @@
     {% endif %}
 
     <div class="footer-info" style="margin-top: 30px; font-size: 9pt; color: #555;">
-        <p>Fecha de generación del reporte: {{ historial.ultima_actualizacion_reporte|date:"d/m/Y H:i A" }}</p>
+        <p>Fecha de generación del reporte: {% now "d/m/Y H:i A" %}</p>
+
         {% if historial.reporte_finalizado %}
             <p>Estado del reporte: Finalizado</p>
         {% else %}
