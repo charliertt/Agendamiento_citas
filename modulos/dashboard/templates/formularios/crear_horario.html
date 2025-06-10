@@ -1,0 +1,44 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="modal-horario" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Horario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'crear_editar_horario' 0 %}" id="form-crear-horario">
+          {% csrf_token %}
+          
+          <div class="row row-bordered">
+            <!-- Campo Psicólogo -->
+            <div class="col-md-6">
+              {{ form.psicologo|as_crispy_field }}
+            </div>
+            
+            <!-- Campos específicos -->
+            {% for field in form %}
+              {% if field.name in "dia_semana,hora_inicio,hora_fin,disponible" %}
+                <div class="col-md-6">
+                  {{ field|as_crispy_field }}
+                  
+                  <!-- Mensajes de ayuda específicos -->
+                  {% if field.name == "hora_inicio" %}
+                    <small class="form-text text-muted">Formato HH:MM (24 horas)</small>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Crear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para auto-abrir el modal -->

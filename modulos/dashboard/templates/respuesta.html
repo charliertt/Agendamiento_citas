@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Respuesta a tu Consulta | Tu Empresa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body style="margin:0; padding:0; background-color:#f7fafc;">
+    <!-- Contenedor principal responsive -->
+    <table align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:680px; margin:30px auto; background:#ffffff; border-radius:12px; overflow:hidden; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
+      <!-- Encabezado con gradiente -->
+      <tr>
+        <td style="background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%); padding:32px 20px; text-align:center; color:#ffffff;">
+          <img src="https://drive.google.com/file/d/1pGFMOaGtw3pMvRbHHRz1jOe78ag8H0hy/view?usp=sharing" alt="Logo Empresa" width="120" style="max-width:120px; height:auto; margin-bottom:16px;">
+          <h1 style="margin:0; font-size:28px; font-weight:600; letter-spacing:-0.5px;">Hola {{ nombre }},</h1>
+          <p style="margin:12px 0 0; font-size:16px; opacity:0.95;">Aquí está nuestra respuesta</p>
+        </td>
+      </tr>
+      
+      <!-- Contenido principal -->
+      <tr>
+        <td style="padding:40px 32px; color:#2d3748; line-height:1.6;">
+          <p style="margin:0 0 24px;">Gracias por contactarnos sobre <strong style="color:#2d3748;">{{ deseo }}</strong>. Hemos preparado cuidadosamente la siguiente respuesta para ti:</p>
+          
+          <!-- Bloque de respuesta destacado -->
+          <div style="margin:32px 0; padding:24px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; position:relative;">
+            <div style="position:absolute; left:-12px; top:20px; width:24px; height:24px; background:#007BFF; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+              <span style="color:#fff; font-size:14px;">✓</span>
+            </div>
+            <div style="font-size:16px; color:#4a5568;">
+              {{ respuesta }}
+            </div>
+          </div>
+
+          <!-- Llamado a acción -->
+          <table role="presentation" cellspacing="0" cellpadding="0" style="margin:32px auto;">
+            <tr>
+              <td style="background:#007BFF; padding:12px 24px; border-radius:6px; text-align:center;">
+                <a href="[ENLACE_CONTACTO]" style="color:#ffffff; text-decoration:none; font-weight:600; font-size:15px; display:inline-block;">¿Necesitas más ayuda? Contáctanos</a>
+              </td>
+            </tr>
+          </table>
+          
+          <!-- Mensaje de cierre -->
+          <p style="margin:24px 0 0; color:#4a5568;">
+            Atentamente,<br>
+            <span style="color:#007BFF; font-weight:600;">Equipo de Soporte</span><br>
+            <span style="font-size:14px;">PuntoMental</span>
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Pie de página mejorado -->
+      <tr>
+        <td style="background:#f8fafc; padding:32px 24px; text-align:center; font-size:13px; color:#718096; border-top:1px solid #e2e8f0;">
+          <p style="margin:0 0 16px;">Síguenos en nuestras redes:</p>
+          <div style="margin-bottom:20px;">
+            <a href="[FB_LINK]" style="margin:0 8px; text-decoration:none;"><img src="[ICON_FB]" alt="Facebook" width="24"></a>
+            <a href="[TW_LINK]" style="margin:0 8px; text-decoration:none;"><img src="[ICON_TW]" alt="Twitter" width="24"></a>
+            <a href="[IG_LINK]" style="margin:0 8px; text-decoration:none;"><img src="[ICON_IG]" alt="Instagram" width="24"></a>
+          </div>
+          <p style="margin:8px 0; font-size:12px; color:#a0aec0;">
+            © 2025 Tu Empresa · Todos los derechos reservados<br>
+            <a href="[POLITICA_PRIV]" style="color:#718096; text-decoration:underline;">Política de Privacidad</a> · 
+            <a href="[DESUSCRIBIR]" style="color:#718096; text-decoration:underline;">Desuscribirse</a>
+          </p>
+          <p style="margin:16px 0 0; font-size:12px; color:#a0aec0;">
+            Dirección física · Teléfono · Email de contacto
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

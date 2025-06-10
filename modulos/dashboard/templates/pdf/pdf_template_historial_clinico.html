@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial Clínico - Cita #{{ cita.id }}</title> <style>
+        @page {
+            size: letter; /* o A4 */
+            margin: 1in; /* Márgenes de la página */
+            /* Puedes añadir @bottom-center para paginación, etc. */
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-size: 10pt;
+            }
+        }
+        body { font-family: "Helvetica", "Arial", sans-serif; font-size: 11pt; line-height: 1.5; color: #333; }
+        .header, .footer { text-align: center; margin-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 18pt; color: #0056b3; }
+        .header p { margin: 0; font-size: 10pt; }
+        .section-title { font-size: 14pt; font-weight: bold; color: #0056b3; border-bottom: 1px solid #0056b3; padding-bottom: 5px; margin-top: 20px; margin-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .info-grid .label { font-weight: bold; }
+        .info-grid .value { }
+        .content-block { margin-bottom: 15px; }
+        .content-block h3 { font-size: 12pt; font-weight: bold; margin-top: 0; margin-bottom: 5px; }
+        .rich-text-content p { margin-top: 0; } /* Ajusta según la salida de CKEditor */
+        .signature-area { margin-top: 50px; border-top: 1px solid #ccc; padding-top:10px; }
+        .signature-area p { margin-bottom: 40px; }
+        /* Añade más estilos específicos para la imagen de tu institución */
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{% static 'dashboard/img/colegio.png' %}" style="max-height: 150px;" alt="">
+        <h1>HISTORIAL CLÍNICO PSICOLÓGICO</h1>
+        <p>SAN FRANCISCO DE ASÍS</p> </div>
+
+    <div class="section-title">Información del Estudiante</div>
+    <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr>
+            <td style="width:25%; font-weight:bold; padding: 5px; border: 1px solid #ddd;">Nombre Completo:</td>
+            <td style="width:75%; padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.usuario.first_name }} {{ cita.estudiante.usuario.last_name }}</td> </tr>
+        <tr>
+            <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Identificación:</td>
+            <td style="padding: 5px; border: 1px solid #ddd;">    {{ cita.estudiante.usuario.get_tipo_identificacion_display|default:"N/A" }}:
+  {{ cita.estudiante.usuario.identificacion|default:"N/A" }}</td> </tr>
+         <tr>
+            <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Correo Electrónico:</td>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.usuario.email|default:"N/A" }}</td> </tr>
+        <tr>
+            <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">EPS:</td>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.estudiante.eps|default:"Ninguna" }}</td> </tr>
+        </table>
+
+    <div class="section-title">Información de la Cita</div>
+     <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr>
+            <td style="width:25%; font-weight:bold; padding: 5px; border: 1px solid #ddd;">ID Cita:</td>
+            <td style="width:75%; padding: 5px; border: 1px solid #ddd;">#{{ cita.id }}</td> </tr>
+        <tr>
+            <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Fecha y Hora:</td>
+            <td style="padding: 5px; border: 1px solid #ddd;">{{ cita.fecha_hora|date:"d/m/Y H:i A" }}</td> </tr>
+        <tr>
+            <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Psicólogo/a:</td>
+            <td style="padding: 5px; border: 1px solid #ddd;">     {{ cita.psicologo.usuario.first_name }} {{ cita.psicologo.usuario.last_name }}</td> </tr>
+         <tr>
+            <td style="font-weight:bold; padding: 5px; border: 1px solid #ddd;">Especialización:</td>
+            <td style="padding: 5px; border: 1px solid #ddd;">  {{ cita.psicologo.especializacion|default:"N/A" }}</td> </tr>
+    </table>
+
+    <div class="section-title">Detalle del Historial Clínico</div>
+
+    <div class="content-block">
+        <h3>Motivo de Consulta (reportado):</h3>
+        <div class="rich-text-content">{{ historial.motivo_consulta_reporte|safe|default:"No especificado" }}</div>
+    </div>
+
+    {% if historial.antecedentes_relevantes %}
+    <div class="content-block">
+        <h3>Antecedentes Relevantes:</h3>
+        <div class="rich-text-content">{{ historial.antecedentes_relevantes|safe }}</div> </div>
+    {% endif %}
+
+    <div class="content-block">
+        <h3>Evaluación y Desarrollo de la Sesión:</h3>
+        <div class="rich-text-content">{{ historial.evaluacion_sesion|safe|default:"No especificado" }}</div> </div>
+
+    {% if historial.diagnostico_impresion %}
+    <div class="content-block">
+        <h3>Impresión Diagnóstica / Conceptualización del Caso:</h3>
+        <div class="rich-text-content">{{ historial.diagnostico_impresion|safe }}</div> </div>
+    {% endif %}
+
+    {% if historial.plan_intervencion_sugerencias %}
+    <div class="content-block">
+        <h3>Plan de Intervención y Sugerencias:</h3>
+        <div class="rich-text-content">{{ historial.plan_intervencion_sugerencias|safe }}</div> </div>
+    {% endif %}
+
+    {% if historial.evolucion_observaciones_adicionales %}
+    <div class="content-block">
+        <h3>Evolución y Observaciones Adicionales:</h3>
+        <div class="rich-text-content">{{ historial.evolucion_observaciones_adicionales|safe }}</div> </div>
+    {% endif %}
+
+    <div class="footer-info" style="margin-top: 30px; font-size: 9pt; color: #555;">
+        <p>Fecha de generación del reporte: {% now "d/m/Y H:i A" %}</p>
+
+        {% if historial.reporte_finalizado %}
+            <p>Estado del reporte: Finalizado</p>
+        {% else %}
+            <p>Estado del reporte: Borrador</p>
+        {% endif %}
+    </div>
+
+    <div class="signature-area">
+        <p>Firma del Psicólogo/a:</p>
+        <img src="{% static 'dashboard/img/firma.png' %}" style="max-height: 100px;" alt="">
+        <div style="width: 250px; height: 60px; border-bottom: 1px solid #333;"></div>
+        <p>{{ cita.psicologo.usuario.first_name }} {{ cita.psicologo.usuario.last_name }}</p> <p>{{ cita.psicologo.especializacion|default:"N/A" }}</p> </div>
+
+</body>
+</html>

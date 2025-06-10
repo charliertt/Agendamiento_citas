@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punto Mental - Salud Emocional</title>
+  <meta name="description" content="Plataforma de apoyo psicológico profesional">
+  <meta name="keywords" content="salud mental, psicología, bienestar emocional">
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" href="{% static 'landing_page/img/lg.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'landing_page/img/lg.png' %}">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'landing_page/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'landing_page/css/main.css' %}" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    #horas-disponibles {
+      margin-top: 20px;
+    }
+    #horas-disponibles button {
+      margin: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+      <a href="/index" class="logo d-flex align-items-center me-auto me-xl-0">
+        <img src="{% static 'landing_page/img/section.png' %}" alt="Logo Punto Mental">
+        <h1 class="sitename">Punto Mental</h1><span>.</span>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="/index" class="active">Inicio</a></li>
+          <li><a href="/index#services">Servicios</a></li>
+          <li><a href="/index#portfolio">Citas</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/index#contact">Contacto</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a class="btn-getstarted" href="/login">Iniciar Sesión</a>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer" class="footer position-relative light-background">
+    <!-- ... (tu footer actual sin cambios) ... -->
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'landing_page/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="{% static 'landing_page/js/main.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Mensaje de Contacto</title>
+  <style>
+    /* Estilos base */
+    .container {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .header {
+      padding: 25px;
+      background: #e74c3c;
+      color: white;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .header p {
+      margin: 10px 0 0;
+      font-size: 14px;
+    }
+    .body {
+      padding: 25px;
+      color: #333333;
+      line-height: 1.6;
+    }
+    .body h3 {
+      margin: 0 0 15px;
+      color: #e74c3c;
+      font-size: 18px;
+    }
+    .body p {
+      margin: 8px 0;
+    }
+    .body a {
+      color: #e74c3c;
+      text-decoration: none;
+    }
+    .message {
+      margin: 25px 0;
+      border-top: 2px solid #eeeeee;
+      padding-top: 20px;
+    }
+    .message-box {
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 4px;
+    }
+    .footer {
+      padding: 20px;
+      background: #f8f8f8;
+      border-top: 1px solid #eeeeee;
+      text-align: center;
+      font-size: 12px;
+      color: #666666;
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #f6f6f6;">
+  <div class="container">
+    <!-- Encabezado -->
+    <div class="header">
+      <h2>📬 Nuevo Mensaje Recibido</h2>
+      <p>Formulario de contacto - Prioridad: Alta</p>
+    </div>
+    
+    <!-- Cuerpo -->
+    <div class="body">
+      <!-- Datos del remitente -->
+      <div class="contact-info">
+        <h3>📋 Información del contacto</h3>
+        <p>
+          <strong>Nombre:</strong><br>
+          {{ nombre }}
+        </p>
+        <p>
+          <strong>Email:</strong><br>
+          <a href="mailto:{{ email }}">{{ email }}</a>
+        </p>
+        <p>
+          <strong>Tipo de solicitud:</strong><br>
+          {{ deseo }}
+        </p>
+      </div>
+
+      <!-- Mensaje -->
+      <div class="message">
+        <h3>📝 Mensaje</h3>
+        <div class="message-box">
+          {{ mensaje|linebreaksbr }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie -->
+    <div class="footer">
+      <p>Este mensaje fue generado automáticamente</p>
+      <p>❤ 2025 PuntoMental</p>
+    </div>
+  </div>
+</body>
+</html>

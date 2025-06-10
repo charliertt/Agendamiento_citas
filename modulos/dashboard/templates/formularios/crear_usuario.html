@@ -1,0 +1,74 @@
+{% load crispy_forms_tags %}
+<div class="modal modal-blur fade" id="modal-usuario" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-usuario-titulo">Crear usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario único -->
+                <form method="post" action="{% url 'crear_usuario' %}" enctype="multipart/form-data" id="form-usuario">
+                    {% csrf_token %}
+                    <div class="row row-bordered"> 
+                        {% for field in form %}
+                            {% if field.name in "tipo_identificacion,username,first_name,last_name" %}
+                                <div class="col-md-4">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% elif field.name == "password1" %}
+                                <div class="col-md-6">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% elif field.name == "password2" %}
+                                <div class="col-md-6">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% elif field.name in "identificacion,email,eps,alergias,enfermedades" %}
+                                <div class="col-md-4">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% elif field.name in "rol,imagen" %}
+                                <div class="col-md-12">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <!-- Campos específicos para psicólogo -->
+                        <div class="col-md-12" id="campos-psicologo" style="display: none;">
+                            {{ form.especializacion|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary ms-auto">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rolSelect = document.getElementById('id_rol');  // ID del campo de selección de rol
+        const camposPsicologo = document.getElementById('campos-psicologo');  // ID del bloque de campos de psicólogo
+    
+        if (rolSelect && camposPsicologo) {
+            // Función para mostrar u ocultar los campos de psicólogo
+            function toggleCamposPsicologo() {
+                if (rolSelect.value === 'psicologo') {  // Ajusta este valor según tu formulario
+                    camposPsicologo.style.display = 'block';
+                } else {
+                    camposPsicologo.style.display = 'none';
+                }
+            }
+    
+            // Escuchar cambios en el campo de selección de rol
+            rolSelect.addEventListener('change', toggleCamposPsicologo);
+    
+            // Ejecutar la función al cargar la página para manejar el estado inicial
+            toggleCamposPsicologo();
+        }
+    });
+    </script>

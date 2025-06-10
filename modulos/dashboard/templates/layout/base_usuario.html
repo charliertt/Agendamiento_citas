@@ -1,0 +1,53 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+	<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+	<title>Tabler - Premium and Open Source dashboard template with responsive and high quality UI.</title>
+	<!-- CSS files -->
+	<link href="{% static 'dashboard/css/tabler.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-flags.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-socials.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-payments.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-vendors.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/tabler-marketing.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/demo.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/datatables.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/datatables.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'dashboard/css/main.css' %}" rel="stylesheet">
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+	<style>
+		@import url('https://rsms.me/inter/inter.css');
+	</style>
+	
+</head>
+
+
+            </a>
+
+
+            <body>
+                {% block content %}
+                {% endblock %}
+            </body>
+
+
+
+           
+            <!-- Libs JS -->
+        <!-- Tabler Core -->
+		<script src="{% static 'dashboard/libs/apexcharts/dist/apexcharts.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/jsvectormap/dist/jsvectormap.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/jsvectormap/dist/maps/world.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/libs/jsvectormap/dist/maps/world-merc.js' %}?1738096685" defer></script>
+		<!-- Tabler Core -->
+		<script src="{% static 'dashboard/js/tabler.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/demo.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/datatables.min.js' %}?1738096685" defer></script>
+		<script src="{% static 'dashboard/js/datatables.js' %}?1738096685" defer></script>
+		<script src='fullcalendar/dist/index.global.js'></script>
+        </body>
+        </html>
+        

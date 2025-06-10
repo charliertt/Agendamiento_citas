@@ -1,0 +1,63 @@
+{% extends "base_dashboard.html" %}
+{% block content %}
+<div class="container-xl">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            {% if cita %}
+              Calificar sesión con {{ cita.psicologo.usuario.get_full_name }}
+            {% else %}
+              Error en la reseña
+            {% endif %}
+          </h2>
+        </div>
+
+        <div class="card-body">
+
+          
+          {% if error %}
+            <div class="alert alert-danger">
+              {% if error == "invalid_or_expired" %}
+                Enlace inválido o expirado.
+              {% elif error == "cita_not_found" %}
+                La cita no existe o fue eliminada.
+              {% else %}
+                {{ error }}
+              {% endif %}
+            </div>
+          {% else %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+            <form method="post" action="{% url 'crear_review' token=token %}">
+              {% csrf_token %}
+              
+              
+              <div class="mb-4">
+                <label class="form-label">Calificación</label>
+                {{ form.puntuacion }}
+              </div>
+              
+              <div class="mb-4">
+                <label class="form-label">Comentario (opcional)</label>
+                {{ form.comentario }}
+              </div>
+              
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-star me-2"></i>Enviar calificación
+              </button>
+            </form>
+          {% endif %}
+        </div>
+        
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

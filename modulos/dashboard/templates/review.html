@@ -1,0 +1,73 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <h2 class="page-title">
+                        Reseñas
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row justify-content-center">
+                <div class="col-8">
+
+
+					<div class="card"> 
+						<div class="card-body">
+							<div class="divide-y">
+								{% for review in reviews %}
+								<div>
+									<div class="row">
+										<div class="col-auto">
+											{# Suponiendo que el modelo Estudiante tenga un atributo "avatar" o "initials" #}
+							
+
+
+											{% if review.estudiante.imagen %}
+											<span class="avatar avatar-1" style="background-image: url({{ review.estudiante.imagen.url }})"></span>
+										{% else %}
+											<span class="avatar avatar-1" style="background-image: url({% static 'dashboard/img/imagen.png' %})"></span>
+										{% endif %}
+										</div>
+										<div class="col">
+											<div class="text-truncate">
+												<strong>{{ review.estudiante }}</strong>
+												comentó en la cita con <strong>{{ review.psicologo }}</strong>: 
+												<p>"{{ review.comentario }}"</p>
+												({{ review.puntuacion }}/5)
+											</div>
+											<div class="text-secondary">
+												{{ review.fecha|timesince }} ago
+											</div>
+										</div>
+										<div class="col-auto align-self-center">
+											<div class="badge bg-primary"></div>
+										</div>
+									</div>
+								</div>
+								{% empty %}
+								<p>No hay actividades para mostrar.</p>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+
+					
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

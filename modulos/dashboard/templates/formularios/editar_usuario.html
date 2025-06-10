@@ -1,0 +1,77 @@
+{% load crispy_forms_tags %}
+<div class="modal modal-blur fade" id="modal-usuario-{{ usuario.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-usuario-titulo">Editar usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <form method="post" action="{% url 'editar_usuario' usuario_id=usuario.id %}" enctype="multipart/form-data">
+                   {% csrf_token %}
+                   <div class="row">
+                       {% for field in usuario.form_editar %}
+                           {% if field.name == 'imagen' or field.name == 'rol' %}
+                               <div class="col-md-12">
+                           {% else %}
+                               <div class="col-md-4">
+                           {% endif %}
+                               {% if field.name != 'especializacion' %}
+                                   {{ field|as_crispy_field }}
+                               {% endif %}
+                           </div>
+                       {% endfor %}
+                       <!-- Campos específicos para psicólogo -->
+                       <div class="col-md-12" id="campos-psicologo-{{ usuario.id }}" style="display: none;">
+                           {{ usuario.form_editar.especializacion|as_crispy_field }}
+                       </div>
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancelar</button>
+                       <button type="submit" class="btn btn-primary ms-auto">Guardar</button>
+                   </div>
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM completamente cargado'); // Verifica que el DOM esté listo
+
+        // Seleccionar todos los modales de edición
+        const modalesEditar = document.querySelectorAll('[id^="modal-usuario-"]');
+
+        modalesEditar.forEach(modal => {
+            const usuarioId = modal.id.split('-')[2]; // Obtener el ID del usuario
+            const rolSelect = modal.querySelector('select[name="rol"]');
+            const camposPsicologo = modal.querySelector(`#campos-psicologo-${usuarioId}`);
+
+            console.log(`Modal de edición para usuario ${usuarioId}:`, modal); // Verifica el modal
+            console.log(`Rol Select para usuario ${usuarioId}:`, rolSelect); // Verifica el campo "rol"
+            console.log(`Campos Psicólogo para usuario ${usuarioId}:`, camposPsicologo); // Verifica el contenedor
+
+            // Función para mostrar/ocultar campos de psicólogo
+            function toggleCamposPsicologo() {
+                console.log(`Valor seleccionado en el rol para usuario ${usuarioId}:`, rolSelect.value); // Verifica el valor seleccionado
+                if (rolSelect.value === 'psicologo') {
+                    console.log(`Mostrando campos de psicólogo para usuario ${usuarioId}`); // Verifica si entra en esta condición
+                    camposPsicologo.style.display = 'block';
+                } else {
+                    console.log(`Ocultando campos de psicólogo para usuario ${usuarioId}`); // Verifica si entra en esta condición
+                    camposPsicologo.style.display = 'none';
+                }
+            }
+
+            if (rolSelect && camposPsicologo) {
+                console.log(`Agregando evento change al select de rol para usuario ${usuarioId}`); // Verifica si se agrega el evento
+                rolSelect.addEventListener('change', toggleCamposPsicologo);
+                toggleCamposPsicologo(); // Inicializar al cargar la página
+            } else {
+                console.error(`No se encontró el select de rol o el contenedor de campos de psicólogo para usuario ${usuarioId}`); // Mensaje de error si no se encuentran los elementos
+            }
+        });
+    });
+</script>

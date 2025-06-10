@@ -1,0 +1,176 @@
+{% extends "base_dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<div class="page-wrapper">
+	<!-- Page header -->
+	<div class="page-header d-print-none">
+		<div class="container-xl">
+			<div class="row g-2 align-items-center">
+				<div class="col">
+				
+
+					{% include 'layout/mensajes.html' %}
+
+
+
+					
+
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Page body -->
+	<div class="page-body">
+		<div class="container mx-auto w-75">
+			<div class="d-flex justify-content-end m-3">
+				<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-pregunta">
+					+
+				</a>
+			</div>
+
+			{% include 'formularios/crear_pregunta.html' %}
+
+		  <div class="card">
+			<div class="card-header">
+			  <h3 class="card-title">Listado de Preguntas</h3>
+			</div>
+			<div class="card-body">
+			  <div class="row">
+				{% for pregunta in preguntas %}
+				<div class="col-12 col-md-6 mb-3">
+				  <div class="card">
+					<div class="card-body">
+					  <!-- Encabezado de la pregunta -->
+					  <div class="d-flex justify-content-between align-items-center">
+						<div>
+						  <span class="badge bg-blue text-white">{{ pregunta.categoria }}</span>
+						  {% if pregunta.respuesta %}
+							<span class="badge bg-green text-white">Verdadero</span>
+						  {% else %}
+							<span class="badge bg-red text-white">Falso</span>
+						  {% endif %}
+						</div>
+						<div class="btn-group">
+						  <a href="#" class="btn btn-icon btn" title="Editar" data-bs-toggle="modal" data-bs-target="#modal-editar-pregunta-{{ pregunta.id_pregunta }}">
+							<!-- Icono de editar -->
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+							  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							  class="icon icon-tabler-pencil">
+							  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+							  <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/>
+							  <path d="M13.5 6.5l4 4"/>
+							</svg>
+						  </a>
+						  {% include 'formularios/editar_pregunta.html' %}
+						  <a href="#" class="btn btn-icon btn" title="Eliminar" data-bs-toggle="modal" data-bs-target="#modal-eliminar-pregunta-{{ pregunta.id_pregunta }}">
+							<!-- Icono de eliminar -->
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+							  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							  class="icon icon-tabler-trash">
+							  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+							  <path d="M4 7l16 0"/>
+							  <path d="M10 11l0 6"/>
+							  <path d="M14 11l0 6"/>
+							  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>
+							  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>
+							</svg>
+						  </a>
+						  {% include 'formularios/eliminar_pregunta.html' %}
+						</div>
+					  </div>
+					  <!-- Botón para ver/ocultar detalle -->
+					  <div class="mt-2">
+						<button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
+						  data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false"
+						  aria-controls="collapse{{ forloop.counter }}">
+						  Ver Detalle
+						  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-down ms-2" width="20" height="20"
+							viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+							stroke-linejoin="round">
+							<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+							<polyline points="6 9 12 15 18 9" />
+						  </svg>
+						</button>
+					  </div>
+					  <!-- Contenido colapsable -->
+					  <div class="collapse mt-3" id="collapse{{ forloop.counter }}">
+						<div class="card card-sm">
+						  <div class="card-body">
+							{{ pregunta.pregunta }}
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+				{% empty %}
+				<div class="col-12">
+				  <p class="text-muted">No hay preguntas para mostrar.</p>
+				</div>
+				{% endfor %}
+			  </div>
+			</div>
+		  </div>
+	  
+		  <!-- Script para alternar el botón de detalle -->
+		  <script>
+			document.addEventListener("DOMContentLoaded", function () {
+			  document.querySelectorAll('.collapse').forEach(function (collapseEl) {
+				collapseEl.addEventListener('shown.bs.collapse', function () {
+				  var btn = document.querySelector('[data-bs-target="#' + collapseEl.id + '"]');
+				  if (btn) {
+					btn.classList.remove('btn-outline-primary');
+					btn.classList.add('btn-outline-danger');
+					btn.innerHTML = 'Ocultar Detalle <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up ms-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="18 15 12 9 6 15" /></svg>';
+				  }
+				});
+				collapseEl.addEventListener('hidden.bs.collapse', function () {
+				  var btn = document.querySelector('[data-bs-target="#' + collapseEl.id + '"]');
+				  if (btn) {
+					btn.classList.remove('btn-outline-danger');
+					btn.classList.add('btn-outline-primary');
+					btn.innerHTML = 'Ver Detalle <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-down ms-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="6 9 12 15 18 9" /></svg>';
+				  }
+				});
+			  });
+			});
+		  </script>
+		</div>
+	  </div>
+	  
+
+
+
+			<footer class="footer footer-transparent d-print-none">
+				<div class="container-xl">
+					<div class="row text-center align-items-center flex-row-reverse">
+						<div class="col-lg-auto ms-lg-auto">
+
+						</div>
+						<div class="col-12 col-lg-auto mt-3 mt-lg-0">
+
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+
+
+
+
+	<!-- Libs JS -->
+
+	</body>
+	{% endblock %}
+
+	</html>

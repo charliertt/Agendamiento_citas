@@ -1,0 +1,110 @@
+{# lista_reportes.html #}
+{% extends "base_dashboard.html" %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-header">
+        <div class="container-xl">
+            <h2>Gestión de Reportes Clínicos</h2>
+        </div>
+    </div>
+
+    <div class="page-body">
+        <div class="container-xl">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {# ======= Primera tarjeta: Citas completadas pendientes de reporte ======= #}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Citas Completadas Pendientes de Reporte</h3>
+                </div>
+                <div class="card-body">
+                    {% if citas_sin_historial %}
+                        <ul class="list-group">
+                            {% for cita in citas_sin_historial %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Cita #{{ cita.id }} – 
+                                    {{ cita.estudiante.usuario.get_full_name }} 
+                                    ({{ cita.fecha_hora|date:"d/m/Y H:i" }})
+                                    <a href="{% url 'crear_historial_clinico' cita.id %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Crear Reporte
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No hay citas completadas pendientes de reporte.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# ======= Segunda tarjeta: Reportes Clínicos Creados ======= #}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Reportes Clínicos Creados</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table card-table table-vcenter text-nowrap datatable">
+                        <thead>
+                            <tr>
+                                <th>Cita ID</th>
+                                <th>Estudiante</th>
+                                <th>Fecha Cita</th>
+                                <th>Fecha Reporte</th>
+                                <th>Estado Reporte</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for historial in historiales %}
+                                <tr>
+                                    <td>#{{ historial.cita.id }}</td>
+                                    <td>{{ historial.cita.estudiante.usuario.get_full_name }}</td>
+                                    <td>{{ historial.cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ historial.ultima_actualizacion_reporte|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if historial.reporte_finalizado %}
+                                            <span class="badge bg-success text-white">Finalizado</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-white">Borrador</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {# Botón “Editar” #}
+										<a
+										href="{% url 'editar_historial_clinico' historial.cita.id historial.id %}"
+										class="btn btn-sm btn-outline-secondary"
+									  >
+										Editar
+									  </a>
+
+										
+                                        {# Botón “Ver PDF” #}
+                                        <a href="{% url 'ver_pdf_historial' historial.cita.id historial.id %}"
+                                           class="btn btn-sm btn-outline-info"
+                                           target="_blank">
+                                            Ver PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        No ha creado ningún reporte clínico.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

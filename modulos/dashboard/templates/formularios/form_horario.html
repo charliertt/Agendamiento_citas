@@ -1,0 +1,35 @@
+{% extends "base.html" %}  {# Si cuentas con un template base, de lo contrario puedes usar la estructura HTML completa #}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">
+        {% if horario %}
+            Editar Horario
+        {% else %}
+            Nuevo Horario
+        {% endif %}
+    </h2>
+    
+    {# Muestra los mensajes de error o éxito, si existen #}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% if horario %}
+                Guardar cambios
+            {% else %}
+                Crear Horario
+            {% endif %}
+        </button>
+        <a href="{% url 'horarios' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

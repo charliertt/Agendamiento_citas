@@ -1,0 +1,38 @@
+{% extends "base_perfil.html" %}
+{% load static %}
+
+{% block main %}
+	<div class="col-12 col-md-9 d-flex flex-column">
+		{% include 'layout/mensajes.html' %}
+		<div class="card-body">
+			<div class="divide-y">
+				{% for contacto in contactos %}
+				<div>
+					<div class="row">
+						<div class="col">
+							<div class="text-truncate">
+								<strong>{{ contacto.nombre }}</strong>
+								- {{ contacto.get_deseo_display }}:
+								<p>"{{ contacto.mensaje }}"</p>
+							</div>
+							<div class="text-secondary">
+								{{ contacto.fecha_creacion|timesince }} ago
+							</div>
+						</div>
+						<div class="col-auto align-self-center">
+							<span class="badge {% if contacto.estado == 'resuelto' %}bg-success text-white{% else %}bg-warning text-white{% endif %}">
+								{{ contacto.get_estado_display }}
+							</span>
+						</div>
+					</div>
+				</div>
+				{% empty %}
+				<p class="text-center">No hay contactos registrados.</p>
+				<div class="d-flex justify-content-center">
+					<img src="{% static 'dashboard/img/empty.png' %}">
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
